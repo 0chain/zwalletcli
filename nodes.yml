@@ -1,0 +1,86 @@
+---
+miners:
+- agent_name: ohio-m01
+  description: ohio-m01.ohio
+  id: 9a8ea695c4a2728a41be2888a96efa82bc010eec36246957330fd669f20db798
+  public_key: 24b65f996f5fefaab73aff55275c1c44d308cc2a910f9d5a08829772a1e0de5c
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7071
+  region_name: ohio
+
+- agent_name: ohio-m02
+  description: ohio-m02.ohio
+  id: d38b34e20cc8eaf7fe43cca9e27ac1b25210883a5559dd623694088579ea78f4
+  public_key: 11f206c9757c71584cb70fe3e3a6b9ffc9f5959690076861eb9e1c52e50642f9
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7072
+  region_name: ohio
+
+- agent_name: ohio-m03
+  description: ohio-m03.ohio
+  id: 36e0e3b6e29945cb45d81af56e8a0282d287711acb0f945770c977eb8dc99a70
+  public_key: f04d04244a6b9f53252aa5d4c456768c2f6ef96224935e889915d8bbfe61d97e
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7073
+  region_name: ohio
+
+- agent_name: ohio-m04
+  description: ohio-m04.ohio
+  id: cbce9c8cef7b0d471d2995d1a87c91b150841f8a7b96dfebc76ebd2a365acbc7
+  public_key: 87e8ae40265bc4b66ab428b3d80875a5de41fdd3757afc4fe977d8a252810b55
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7074
+  region_name: ohio
+
+- agent_name: ohio-m05
+  description: ohio-m05.ohio
+  id: 541031347f5e71f363d927ca8ca527b3f68fbf3b9aeb2156eb1cd4641a7aa751
+  public_key: 1cde72c2883b83c175743ac6a49542b839df42e45d8bdb02e6360071484a185a
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7075
+  region_name: ohio
+
+- agent_name: ohio-m06
+  description: ohio-m06.ohio
+  id: fed9cbf830ccab721a2377af0191bf82438b2042cf69f7c04fde9aa4b352dbd8
+  public_key: b0350705477f1f137649f89227cb789188df4c68f4f56311b91d428aa0a4b5b5
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7076
+  region_name: ohio
+
+- agent_name: ohio-m07
+  description: ohio-m07.ohio
+  id: bf370af4bf7a73512c9d1156796798f8eac62ccd342349b44344f6e9b5c7b1ce
+  public_key: a61825c3d2b514040862d9c4bea3908be23fe2154cba2876f95c897930697f37
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7077
+  region_name: ohio
+
+
+sharders:
+- agent_name: ohio-s01
+  description: ohio-s01.ohio
+  id: 386bb417095058feecd0cb1b47243ae8cde30407fc564c15c3e2f2d2e058375f
+  public_key: abe249894dffd4c50c3dc1e03208d660fcc43122d71a5caf49a4c407d5652ffa
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7171
+  region_name: ohio
+
+- agent_name: ohio-s02
+  description: ohio-s02.ohio
+  id: f3d05b4dd2f7a59c81248f54672c6ecf75278feebc6148a553bfedc4998b647c
+  public_key: bd6e636d05b2807d0ace3da5bc7a158e2608273be9132d1755a39274ceb8bf5c
+  public_ip: ohio.devj.testnet-0chain.net
+  n2n_ip: ohio.devj.testnet-0chain.net
+  port: 7172
+  region_name: ohio
+
+...
