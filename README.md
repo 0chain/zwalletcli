@@ -1,20 +1,20 @@
-# ZWallet Commandline Utility for 0Chain Blockchain
-ZWallet Commandline Utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.2
+# ZWallet Command-line Interface for 0Chain Blockchain
+ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.2
 ## Features
-ZWallet Commandline Utility supports following features:
+ZWallet Command-line utility supports following features:
 1. Create Wallets
 2. Get test tokens from 0Chain Faucet
 3. Send tokens between Wallets
 4. Lock and Unlock tokens to earn interest
 5. Recover wallet using passphrases
 
-ZWallet Commandline Utility provides a self-explaining "help" option that lists out the commands it supports and the parameters each command needs to perform the intended action
+ZWallet Command-line utility provides a self-explaining "help" option that lists out the commands it supports and the parameters each command needs to perform the intended action
 ## How to get it?
 There are two ways of getting ZWallet.
 1. If you would like to demo or get familiarize with 0Chain Blockchain on your Mac, download the executable from [here](https://0chain.net).
-2. If you've extended or added a new feature to 0Chain's ClientSDK code, you can extend ZWallet Commandline utility to test/demo the new feauture. [Here](https://github.com/0chain/zwalletcmd) is the link to ZWallet Repository
+2. If you've extended or added a new feature to 0Chain's ClientSDK code, you can extend ZWallet Command-line utility to test/demo the new feauture. [Here](https://github.com/0chain/zwalletcmd) is the link to ZWallet Repository
 ## Pre-requisites
-* ZWallet Commandline Utility application runs on Mac **OS X High Sierra** onwards.
+* ZWallet Command-line Utility application runs on Mac **OS X High Sierra** onwards.
 * If you would like to build and play around the code, you need Go V1.2 or higher.
 ## How to Build the code?
 1. Make sure you've Go SDK 1.2 or higher and Go configurations are set and working.
@@ -42,7 +42,7 @@ Command
     ./zwallet
 Response
 
-    zwallet  is to store, send and execute smart contract on 0Chain platform.
+    Use ZWallet to store, send tokens and execute smart contract on 0Chain platform.
     Complete documentation is available at https://0chain.net
 
     Usage:
@@ -50,7 +50,7 @@ Response
 
     Available Commands:
     faucet          Faucet smart contract
-    getbalance      get balance from sharders
+    getbalance      Get balance from sharders
     getlockedtokens Get locked tokens
     help            Help about any command
     lock            Lock tokens
@@ -133,7 +133,7 @@ Response
 There is 1 token deposited in the wallet as specified in wallet.txt. Same way you can use faucet any number of time whenever you need additional tokens.
 
 #### getbalance
-You can use getbalance command to create a named wallet too.
+You can also use getbalance command to create a new wallet.
 
 Command
 
@@ -215,5 +215,5 @@ Command
 
 ### Tips
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
-2.  Use cmdlog.log to check possible reasons for failure of transactions.
+2. Use cmdlog.log to check possible reasons for failure of transactions.
 3. zwalletcmd also comes with a Makefile which simplifies a lot of these zwallet commands.  
