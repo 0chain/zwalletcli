@@ -60,8 +60,8 @@ var recoverwalletcmd = &cobra.Command{
 
 var getbalancecmd = &cobra.Command{
 	Use:   "getbalance",
-	Short: "get balance from sharders",
-	Long:  `get balance from sharders`,
+	Short: "Get balance from sharders",
+	Long:  `Get balance from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		wg := &sync.WaitGroup{}

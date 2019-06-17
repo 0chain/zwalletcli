@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -15,6 +15,7 @@ import (
 
 var cfgFile string
 var walletFile string
+var cDir string
 
 var sharders []string
 var miners []string
@@ -24,8 +25,8 @@ var signScheme string
 
 var rootCmd = &cobra.Command{
 	Use:   "zwallet",
-	Short: "zwallet  is to store, send and execute smart contract on 0Chain platform",
-	Long: `zwallet  is to store, send and execute smart contract on 0Chain platform.
+	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
+	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
 }
 
@@ -33,8 +34,10 @@ var clientWallet *zcncrypto.Wallet
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.zcn/nodes.yaml)")
-	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is $HOME/.zcn/wallet.txt)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is nodes.yaml)")
+	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.txt)")
+	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
+
 	fmt.Printf("%s", cfgFile)
 }
 
@@ -59,7 +62,12 @@ func getConfigDir() string {
 
 func initConfig() {
 	nodeConfig := viper.New()
-	configDir := getConfigDir()
+	var configDir string
+	if cDir != "" {
+		configDir = cDir
+	} else {
+		configDir = getConfigDir()
+	}
 	nodeConfig.AddConfigPath(configDir)
 	if &cfgFile != nil && len(cfgFile) > 0 {
 		nodeConfig.SetConfigName(cfgFile)

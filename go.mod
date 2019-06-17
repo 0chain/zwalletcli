@@ -10,6 +10,6 @@ require (
 
 replace github.com/0chain/zwalletcmd => ../zwalletcmd
 
-replace github.com/0chain/gosdk => /Volumes/work/0CHAIN/codebox/work/gosdk
+replace github.com/0chain/gosdk => ../gosdk
 
 go 1.12
