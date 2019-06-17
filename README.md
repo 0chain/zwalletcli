@@ -1,5 +1,5 @@
 # ZWallet Command-line Interface for 0Chain Blockchain
-ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.2
+ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.12
 ## Features
 ZWallet Command-line utility supports following features:
 1. Create Wallets
@@ -15,9 +15,9 @@ There are two ways of getting ZWallet.
 2. If you've extended or added a new feature to 0Chain's ClientSDK code, you can extend ZWallet Command-line utility to test/demo the new feauture. [Here](https://github.com/0chain/zwalletcmd) is the link to ZWallet Repository
 ## Pre-requisites
 * ZWallet Command-line Utility application runs on Mac **OS X High Sierra** onwards.
-* If you would like to build and play around the code, you need Go V1.2 or higher.
+* If you would like to build and play around the code, you need Go V1.12 or higher.
 ## How to Build the code?
-1. Make sure you've Go SDK 1.2 or higher and Go configurations are set and working.
+1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working.
 2. Clone [zwalletcmd](https://github.com/0chain/zwalletcmd)
 3. Go to the root directory of the local repo
 4. Run the following command:
@@ -133,7 +133,7 @@ Response
 There is 1 token deposited in the wallet as specified in wallet.txt. Same way you can use faucet any number of time whenever you need additional tokens.
 
 #### getbalance
-You can also use getbalance command to create a new wallet.
+You can also use getbalance command to create a new wallet with a desired file name. In order to use that in any of the commands, you need to use the flag --wallet [ wallet_file_name ]
 
 Command
 
