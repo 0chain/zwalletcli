@@ -50,9 +50,9 @@ getbalance:
 FAUCET_LOOP?=10
 
 faucet-loop:
-	$(MAKE) getbalance
-	for i in `seq $(FAUCET_LOOP)`; do $(MAKE) faucet; done
-	$(MAKE) getbalance
+	$(MAKE) -s getbalance
+	for i in `seq $(FAUCET_LOOP)`; do $(MAKE) -s faucet; done
+	$(MAKE) -s getbalance
 
 faucet:
 	@echo ">>> Add money receiver=$(from)"

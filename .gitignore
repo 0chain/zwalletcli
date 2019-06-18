@@ -10,3 +10,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+sample/cmdlog.log
+sample/config/alice.json
+sample/config/mary.json
+sample/zwallet
+zwallet
