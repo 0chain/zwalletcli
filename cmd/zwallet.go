@@ -17,12 +17,12 @@ var recoverwalletcmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
 		if fflags.Changed("mnemonic") == false {
-			fmt.Println("\nError: Mnemonic not provided\n")
+			fmt.Println("Error: Mnemonic not provided")
 			return
 		}
 		mnemonic := cmd.Flag("mnemonic").Value.String()
 		if zcncore.IsMnemonicValid(mnemonic) == false {
-			fmt.Println("\nError: Invalid mnemonic\n")
+			fmt.Println("Error: Invalid mnemonic")
 			return
 		}
 		wg := &sync.WaitGroup{}
@@ -53,7 +53,7 @@ var recoverwalletcmd = &cobra.Command{
 		}
 		defer file.Close()
 		fmt.Fprintf(file, clientConfig)
-		fmt.Println("\nWallet recovered!!\n")
+		fmt.Println("Wallet recovered!!")
 		return
 	},
 }
@@ -75,7 +75,7 @@ var getbalancecmd = &cobra.Command{
 			os.Exit(1)
 		}
 		if statusBar.success {
-			fmt.Println("\nBalance:", zcncore.ConvertToToken(statusBar.balance), "\n")
+			fmt.Printf("\nBalance: %v\n", zcncore.ConvertToToken(statusBar.balance))
 		} else {
 			fmt.Println("\nGet balance failed. " + statusBar.errMsg + "\n")
 		}
@@ -132,7 +132,7 @@ var sendcmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if statusBar.success {
-				fmt.Println("\nSend token success\n")
+				fmt.Println("Send token success")
 				return
 			}
 		}
@@ -186,7 +186,7 @@ var faucetcmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if statusBar.success {
-				fmt.Println("\nExecute faucet smart contract success\n")
+				fmt.Println("Execute faucet smart contract success")
 				return
 			}
 		}
