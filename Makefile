@@ -1,51 +1,47 @@
-PATH  := $(PATH):$(PWD)
-SHELL := env PATH=$(PATH) /bin/bash
+ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-#SCHEME?=ed25519
-SCHEME?=bls0chain
+SAMPLE_DIR:=$(ROOT_DIR)/sample
 
-include $(SCHEME).mk
+ZWALLET=zwallet
 
-CONFIG:=--config $(cluster)
-FROM_WALLET:=--wallet $(from)
-TO_WALLET:=--wallet $(to)
+.PHONY: $(ZWALLET)
 
-ZCMD=zwallet $(CONFIG)
+zwallet-test:
+	go test -v -tags bn256 ./...
 
-FAUCET:=faucet --methodName pour --input "Generous PayDay"
+$(ZWALLET):
+	go build -v -tags bn256 -o $@
+	cp $(ZWALLET) $(SAMPLE_DIR)/zwallet
 
-TO_CLIENT_ID:=$(shell jq -r '.client_id' $(HOME)/.zcn/$(to))
-FROM_CLIENT_ID:=$(shell jq -r '.client_id' $(HOME)/.zcn/$(from))
+gomod-download:
+	go mod download -json
 
-init: clean
-	@echo "Creating New Wallets"
-	$(ZCMD) getbalance $(FROM_WALLET)
-	$(ZCMD) getbalance $(TO_WALLET)
+gomod-clean:
+	go clean -i -r -x -modcache  ./...
 
-show:
+install: zwallet | zwallet-test
 
-send:
-	$(ZCMD) $(FROM_WALLET) send --desc "Give loan - Make Happy" --toclientID $(TO_CLIENT_ID) --token 1.5
+clean: gomod-clean
+	@rm -rf $(ROOT_DIR)/$(ZWALLET)
 
-pay-chain: getbalance0 | send getbalance1 repay getbalance2
+help:
+	@echo "Environment: "
+	@echo "\tGOPATH=$(GOPATH)"
+	@echo "\tGOROOT=$(GOROOT)"
+	@echo ""
+	@echo "Supported commands:"
+	@echo "\tmake help              - display environment and make targets"
+	@echo ""
+	@echo "Install"
+	@echo "\tmake install           - build, test and install the wallet cli"
+	@echo "\tmake zwallet           - installs the wallet cli"
+	@echo "\tmake zwallet-test      - run zwallet test"
+	@echo ""
+	@echo "Clean:"
+	@echo "\tmake clean             - deletes all build output files"
+	@echo "\tmake gomod-download    - download the go modules"
+	@echo "\tmake gomod-clean       - clean the go modules"
 
-repay:
-	$(ZCMD) $(TO_WALLET) send --desc "Return loan - Feel sad" --toclientID $(FROM_CLIENT_ID) --token 1.5
 
-getbalance0 getbalance1 getbalance2 getbalance:
-	$(ZCMD) getbalance $(FROM_WALLET)
-	$(ZCMD) getbalance $(TO_WALLET)
-
-getrich:
-	for i in `seq 10`; do make faucet; done
-
-faucet:
-	@echo "Add money receiver=$(from)"
-	$(ZCMD) $(FAUCET) $(FROM_WALLET)
-	@echo "Add money receiver=$(to)"
-	$(ZCMD) $(FAUCET) $(TO_WALLET)
-
-clean:
-	cd $(HOME)/.zcn;  rm $(from) $(to) || true
 
 

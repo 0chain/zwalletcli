@@ -11075,3 +11075,478 @@
 
 ][0m
 0chain-core-sdk [DEBUG]  2019/06/13 23:23:58.862002 transaction.go:292: [http://vira.devb.testnet-0chain.net:7171/v1/transaction/get/confirmation?hash=afaf477b514450b483ff95d3ec397fca3bc12056cc384a99eda0861cade7ad21 200 OK]
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.179052 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.179586 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.183125 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7074
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.183158 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7072
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.183176 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:43:42.183184 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7073
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:42.308243 transaction.go:133: http://ohio.devi.testnet-0chain.net:7074submit transaction error. Post http://ohio.devi.testnet-0chain.net:7074/v1/transaction/put: dial tcp 18.188.53.180:7074: connect: connection refused[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:42.308355 transaction.go:148: [0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:42.403128 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:0e14b0f4e5fc5cbdd5e384bf2d7f444c62e86d5a7a3e96a209b6348315f23578"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.407911 transaction.go:273: Verify transaction hash541102d522cb79d37062cfb75dac9061b9f171d2db6df5f04b454b3f56b86526fromhttp://ohio.devi.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:45.578773 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 541102d522cb79d37062cfb75dac9061b9f171d2db6df5f04b454b3f56b86526"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.606395 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.606514 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.609116 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7074
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.609185 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7073
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.609219 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7072
+0chain-core-sdk [INFO]   2019/06/17 17:43:45.609222 transaction.go:125: Submittingsmart contracttransaction tohttp://ohio.devi.testnet-0chain.net:7071
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:45.698085 transaction.go:133: http://ohio.devi.testnet-0chain.net:7074submit transaction error. Post http://ohio.devi.testnet-0chain.net:7074/v1/transaction/put: dial tcp 18.188.53.180:7074: connect: connection refused[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:45.698198 transaction.go:148: [0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:45.778288 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:314ae0f242c0b1d12d014ba23cb2ba1f2e95b860cb93d43ba5748ee990fb720d"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:43:48.787121 transaction.go:273: Verify transaction hash4831187bba352e791a1b55a65607dc6b0b842fb7050408dbdf97b232caceca80fromhttp://ohio.devi.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:43:48.955250 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 4831187bba352e791a1b55a65607dc6b0b842fb7050408dbdf97b232caceca80"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.886476 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.886601 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.887100 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.887175 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.887194 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:13.887329 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.109367 transaction.go:273: Verify transaction hash23adc2925b4c7ea5af586d8a689e8fb4417562f274d55ea254008489cdafa9d7fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.109443 transaction.go:273: Verify transaction hash23adc2925b4c7ea5af586d8a689e8fb4417562f274d55ea254008489cdafa9d7fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.145120 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 23adc2925b4c7ea5af586d8a689e8fb4417562f274d55ea254008489cdafa9d7"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.294339 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 23adc2925b4c7ea5af586d8a689e8fb4417562f274d55ea254008489cdafa9d7"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.321409 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.321571 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.322002 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.322043 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.322186 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:44:17.322070 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.355294 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.355398 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.499867 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:17.499972 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:44:46.039044 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:46.039166 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:46.248613 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:44:46.248737 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:46.427525 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:46.427617 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:44:46.427656 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.077490 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.077600 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.077981 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.078044 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.078057 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:23.078196 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.275044 transaction.go:273: Verify transaction hash81dc750884b17f52a90c316062ceb5d8e6971097a167cba5d2a6de37f21ef048fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.275060 transaction.go:273: Verify transaction hash81dc750884b17f52a90c316062ceb5d8e6971097a167cba5d2a6de37f21ef048fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.298072 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 81dc750884b17f52a90c316062ceb5d8e6971097a167cba5d2a6de37f21ef048"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.452939 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 81dc750884b17f52a90c316062ceb5d8e6971097a167cba5d2a6de37f21ef048"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480181 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480291 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480700 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480739 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480755 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:26.480736 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.505038 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.505128 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.661072 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:26.661132 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.622459 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.622570 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.622983 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.622987 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.623013 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:44.623149 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:47.807595 transaction.go:273: Verify transaction hashc26cff50d544e26fb61dce324ea8d01da2d3761fe8e9b5f6283efd5dbe34369cfromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:45:47.807680 transaction.go:273: Verify transaction hashc26cff50d544e26fb61dce324ea8d01da2d3761fe8e9b5f6283efd5dbe34369cfromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:47.830599 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = c26cff50d544e26fb61dce324ea8d01da2d3761fe8e9b5f6283efd5dbe34369c"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:47.986405 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = c26cff50d544e26fb61dce324ea8d01da2d3761fe8e9b5f6283efd5dbe34369c"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.013576 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.013693 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.014103 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.014144 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.014170 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:45:48.014180 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:48.040664 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:48.040750 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:48.196724 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:48.196776 transaction.go:148: {"code":"entity_not_found","error":"entity_not_found: client not found with id = client:2f67c8736fbe8d5ea2aba7780da035481660f3f715e50db545b8d750f1147fe3"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:45:54.283675 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:54.283785 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:54.489247 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:45:54.489402 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:54.662163 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:54.678492 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:45:54.678544 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:46:55.865993 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:46:55.866104 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:46:56.094645 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:46:56.094757 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:46:56.279858 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:46:56.279920 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:46:56.279945 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:47:04.098679 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:04.098784 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:04.304583 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:04.304696 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:04.484268 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:04.484408 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:04.484521 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:47:29.105705 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:29.105848 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:29.311103 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:47:29.311225 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:29.491142 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:29.491429 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:47:29.491548 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:48:27.619512 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:27.619620 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:27.849177 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:27.849312 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:28.028086 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:28.028182 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:28.028216 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:48:37.495185 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:37.495290 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:37.704399 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:37.704508 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:37.882507 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:37.888770 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:37.888875 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:48:39.249279 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:39.249391 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:39.455795 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:39.455909 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:39.627704 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:39.627890 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:39.627933 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:48:54.889000 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:54.889105 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:55.094290 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:48:55.094400 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:55.270869 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:55.271049 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:48:55.271095 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.270346 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.270458 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.273720 wallet.go:199: http://virb.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.273786 wallet.go:199: http://vira.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.273875 wallet.go:199: http://peda.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:54.273808 wallet.go:199: http://pedb.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:49:57.655595 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:49:57.655709 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:49:57.655751 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.678675 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.678781 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.682296 wallet.go:199: http://virb.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.682362 wallet.go:199: http://vira.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.682374 wallet.go:199: http://pedb.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [INFO]   2019/06/17 17:49:57.682420 wallet.go:199: http://peda.devb.testnet-0chain.net:7071/v1/client/put
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:01.039888 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:01.039954 wallet.go:309: {"error":"value not present"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:01.039981 wallet.go:272: get balance failed. consensus not reached[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.733963 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.734073 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.734462 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.734502 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.734527 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:04.734679 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:07.923599 transaction.go:273: Verify transaction hash036f4df04fec8d4fa57127c60b18210d76c762fb032d382a16c3e0f2b29c842dfromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:07.923583 transaction.go:273: Verify transaction hash036f4df04fec8d4fa57127c60b18210d76c762fb032d382a16c3e0f2b29c842dfromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:07.953753 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 036f4df04fec8d4fa57127c60b18210d76c762fb032d382a16c3e0f2b29c842d"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:08.102938 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 036f4df04fec8d4fa57127c60b18210d76c762fb032d382a16c3e0f2b29c842d"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130080 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130192 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130583 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130712 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130622 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:08.130625 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:11.322152 transaction.go:273: Verify transaction hash258a5e9350bd9f96a082544ad829ee77c7fab4759c62d4b3f1b2cdcdd091a245fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:11.322222 transaction.go:273: Verify transaction hash258a5e9350bd9f96a082544ad829ee77c7fab4759c62d4b3f1b2cdcdd091a245fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:11.348025 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 258a5e9350bd9f96a082544ad829ee77c7fab4759c62d4b3f1b2cdcdd091a245"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:11.498013 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 258a5e9350bd9f96a082544ad829ee77c7fab4759c62d4b3f1b2cdcdd091a245"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.517531 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.517640 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.518041 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.518081 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.518077 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:14.518174 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.714698 transaction.go:273: Verify transaction hashddbf5b95df1400e6451093be1b1ebc7d3508b0787a49ece82e9bff2d45f0b508fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.714734 transaction.go:273: Verify transaction hashddbf5b95df1400e6451093be1b1ebc7d3508b0787a49ece82e9bff2d45f0b508fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:17.734498 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = ddbf5b95df1400e6451093be1b1ebc7d3508b0787a49ece82e9bff2d45f0b508"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:17.881695 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = ddbf5b95df1400e6451093be1b1ebc7d3508b0787a49ece82e9bff2d45f0b508"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908292 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908406 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908821 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908825 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908850 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:17.908975 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:21.094345 transaction.go:273: Verify transaction hashbab96029dbce5c776f323f2cd9c15ba6e550a200ecb01bc4b611e03b39ecc970fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:21.094375 transaction.go:273: Verify transaction hashbab96029dbce5c776f323f2cd9c15ba6e550a200ecb01bc4b611e03b39ecc970fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:21.116045 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = bab96029dbce5c776f323f2cd9c15ba6e550a200ecb01bc4b611e03b39ecc970"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:21.275424 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = bab96029dbce5c776f323f2cd9c15ba6e550a200ecb01bc4b611e03b39ecc970"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831153 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831364 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831822 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831862 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831860 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:23.831878 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.014799 transaction.go:273: Verify transaction hashb6f2aae47f184d6db3760d7ed37f628b0bb2103d40df2d0361d2d39ee1d62a9dfromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.014850 transaction.go:273: Verify transaction hashb6f2aae47f184d6db3760d7ed37f628b0bb2103d40df2d0361d2d39ee1d62a9dfromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:27.039614 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = b6f2aae47f184d6db3760d7ed37f628b0bb2103d40df2d0361d2d39ee1d62a9d"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:27.198708 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = b6f2aae47f184d6db3760d7ed37f628b0bb2103d40df2d0361d2d39ee1d62a9d"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.224896 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.225010 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.225385 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.225423 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.225461 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:27.225572 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:30.415041 transaction.go:273: Verify transaction hash2b13b74692cc858d4e4ca70a6c5b6abf67c2861648742b921715f5d7d63101a8fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:30.415112 transaction.go:273: Verify transaction hash2b13b74692cc858d4e4ca70a6c5b6abf67c2861648742b921715f5d7d63101a8fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:30.437693 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 2b13b74692cc858d4e4ca70a6c5b6abf67c2861648742b921715f5d7d63101a8"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:30.588401 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 2b13b74692cc858d4e4ca70a6c5b6abf67c2861648742b921715f5d7d63101a8"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:34.597129 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:34.597261 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:34.820617 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:34.820726 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.136492 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.136607 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.137003 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.137030 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.137027 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:39.137038 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.348411 transaction.go:273: Verify transaction hasha828d2dd0b1c95e3b89038a3e1b5d9edd65740fdd0709608d5dc7ecdc1e779d8fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.348504 transaction.go:273: Verify transaction hasha828d2dd0b1c95e3b89038a3e1b5d9edd65740fdd0709608d5dc7ecdc1e779d8fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:42.370838 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = a828d2dd0b1c95e3b89038a3e1b5d9edd65740fdd0709608d5dc7ecdc1e779d8"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:42.523983 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = a828d2dd0b1c95e3b89038a3e1b5d9edd65740fdd0709608d5dc7ecdc1e779d8"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.550301 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.550415 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.550869 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.550938 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.550945 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:42.551031 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:45.732343 transaction.go:273: Verify transaction hash260007d26633e6067f33e950ecadfd4d9c0420509b3b399350284d0e1e8e9e6efromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:45.732415 transaction.go:273: Verify transaction hash260007d26633e6067f33e950ecadfd4d9c0420509b3b399350284d0e1e8e9e6efromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:45.762873 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 260007d26633e6067f33e950ecadfd4d9c0420509b3b399350284d0e1e8e9e6e"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:45.910189 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 260007d26633e6067f33e950ecadfd4d9c0420509b3b399350284d0e1e8e9e6e"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:47.141935 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:47.142043 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:47.341961 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:47.342074 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.107783 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.107890 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.108310 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.108335 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.108424 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:55.108342 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.291431 transaction.go:273: Verify transaction hash7584db4d29e36808b88dd5ddc3c7eb16686ab9e2b3b34dfd187610c66c09ea87fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.291478 transaction.go:273: Verify transaction hash7584db4d29e36808b88dd5ddc3c7eb16686ab9e2b3b34dfd187610c66c09ea87fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:58.472586 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 7584db4d29e36808b88dd5ddc3c7eb16686ab9e2b3b34dfd187610c66c09ea87"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:50:58.952802 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 7584db4d29e36808b88dd5ddc3c7eb16686ab9e2b3b34dfd187610c66c09ea87"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.980979 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.981095 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.981502 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.981540 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.981549 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:50:58.981557 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:02.172414 transaction.go:273: Verify transaction hash161803d06945a5bd1128e5fb7060f763c41e010f5c31229211995c575984eceefromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:51:02.172437 transaction.go:273: Verify transaction hash161803d06945a5bd1128e5fb7060f763c41e010f5c31229211995c575984eceefromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:02.195543 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 161803d06945a5bd1128e5fb7060f763c41e010f5c31229211995c575984ecee"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:02.351535 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 161803d06945a5bd1128e5fb7060f763c41e010f5c31229211995c575984ecee"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:51:04.084253 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:04.084362 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:04.284675 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:04.284788 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:20.350726 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:20.350836 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:20.585668 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:20.585783 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.548752 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.548863 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.549256 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.549271 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.549404 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:24.549286 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.757597 transaction.go:273: Verify transaction hash17573d22678462b9e031ed6102ffe1448beda7afca7b05577fb18509c806cddbfromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.757587 transaction.go:273: Verify transaction hash17573d22678462b9e031ed6102ffe1448beda7afca7b05577fb18509c806cddbfromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:27.783964 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 17573d22678462b9e031ed6102ffe1448beda7afca7b05577fb18509c806cddb"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:27.938464 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 17573d22678462b9e031ed6102ffe1448beda7afca7b05577fb18509c806cddb"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.965657 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.965771 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.966206 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.966241 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.966231 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:27.966233 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:51:31.164939 transaction.go:273: Verify transaction hash082fdb860126f56ac55c42b074ff41003c2afccb17d0744facfc894d4ac54137fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:51:31.164953 transaction.go:273: Verify transaction hash082fdb860126f56ac55c42b074ff41003c2afccb17d0744facfc894d4ac54137fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:31.337783 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 082fdb860126f56ac55c42b074ff41003c2afccb17d0744facfc894d4ac54137"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:51:31.786519 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = 082fdb860126f56ac55c42b074ff41003c2afccb17d0744facfc894d4ac54137"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:52:22.902102 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:22.902208 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:23.136766 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:23.136874 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:25.906305 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:25.906407 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:26.119425 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:26.119555 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:27.231538 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:27.231649 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:27.434356 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:27.434477 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923286 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923390 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923761 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923788 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923796 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:28.923804 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.132107 transaction.go:273: Verify transaction hashcb4b5e2afce0d151634727d8e54d37e22988e50150140023bbbe2dcd5d351bebfromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.132185 transaction.go:273: Verify transaction hashcb4b5e2afce0d151634727d8e54d37e22988e50150140023bbbe2dcd5d351bebfromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:52:32.155308 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = cb4b5e2afce0d151634727d8e54d37e22988e50150140023bbbe2dcd5d351beb"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:52:32.302975 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = cb4b5e2afce0d151634727d8e54d37e22988e50150140023bbbe2dcd5d351beb"}
+
+[0m
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.330338 wallet.go:113: ******* Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.330453 wallet.go:141: *******  Wallet SDK Version:1.0.4 *******
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.330899 transaction.go:125: Submittingsmart contracttransaction tohttp://virb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.330911 transaction.go:125: Submittingsmart contracttransaction tohttp://pedb.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.330940 transaction.go:125: Submittingsmart contracttransaction tohttp://peda.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:32.331103 transaction.go:125: Submittingsmart contracttransaction tohttp://vira.devb.testnet-0chain.net:7071
+0chain-core-sdk [INFO]   2019/06/17 17:52:35.510188 transaction.go:273: Verify transaction hasha4e31bdd852923c0a319bcb8419e87fe75c4dc9d90d02383fd46246eedd73993fromhttp://peda.devb.testnet-0chain.net:7171
+0chain-core-sdk [INFO]   2019/06/17 17:52:35.510184 transaction.go:273: Verify transaction hasha4e31bdd852923c0a319bcb8419e87fe75c4dc9d90d02383fd46246eedd73993fromhttp://vira.devb.testnet-0chain.net:7171
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:52:35.532526 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = a4e31bdd852923c0a319bcb8419e87fe75c4dc9d90d02383fd46246eedd73993"}
+
+[0m
+0chain-core-sdk [31m[ERROR]  2019/06/17 17:52:35.686819 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = a4e31bdd852923c0a319bcb8419e87fe75c4dc9d90d02383fd46246eedd73993"}
+
+[0m
