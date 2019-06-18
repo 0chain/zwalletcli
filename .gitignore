@@ -15,3 +15,6 @@ sample/config/alice.json
 sample/config/mary.json
 sample/zwallet
 zwallet
+*.log
+zwallet
+
