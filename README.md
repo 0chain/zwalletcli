@@ -12,16 +12,18 @@ ZWallet Command-line utility provides a self-explaining "help" option that lists
 ## How to get it?
 You can clone ZWallet Command-line utility from github repo [Here](https://github.com/0chain/zwalletcli)
 ## Pre-requisites
-* ZWallet Command-line utility needs Go V1.12 or higher. You need to clone the gosdk from [here](https://github.com/0chain/gosdk)
+* ZWallet Command-line utility needs Go V1.12 or higher. 
+* [gosdk](https://github.com/0chain/gosdk)
 ## How to Build the code?
 1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working on your system.
-2. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
-3. Go to the root directory of the local repo
-4. Run the following command:
+2.  Clone [gosdk](https://github.com/0chain/gosdk) and follow steps in Build and Installation section.
+3. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
+4. Go to the root directory of the local repo
+5. Run the following command:
 
         go build -tags bn256 -o zwallet
 
-5. zwallet application is built in the local folder. 
+6. zwallet application is built in the local folder. 
 ## Getting started with ZWallet
 ### Before you start
 Before you start playing with ZWallet, you need to know where the blockchain is running and what encryption scheme it is using. Both of that information is stored in a configuration files under clusters folder under repo. Choose the suitable one based on your needs.
