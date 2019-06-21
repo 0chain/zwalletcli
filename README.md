@@ -12,7 +12,7 @@ ZWallet Command-line utility provides a self-explaining "help" option that lists
 ## How to get it?
 You can clone ZWallet Command-line utility from github repo [Here](https://github.com/0chain/zwalletcli)
 ## Pre-requisites
-* ZWallet Command-line utility needs Go V1.12 or higher. You can download it from [here](https://golang.org/dl/)
+* ZWallet Command-line utility needs Go V1.12 or higher. You need to clone the gosdk from [here](https://github.com/0chain/gosdk)
 ## How to Build the code?
 1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working on your system.
 2. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
