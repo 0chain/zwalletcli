@@ -1,5 +1,5 @@
 # ZWallet Command-line Interface for 0Chain Blockchain
-ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.12. There are some cool videos on how to lock tokens. Check out [video](https://youtu.be/7kICaKnywco) on how to use the sample makefile for sending and receiving tokens to the 0Chain testnet. 
+ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.12. There are some cool videos on how to lock tokens. Check out [video](https://youtu.be/7kICaKnywco) on how to use the sample makefile for sending and receiving tokens to the 0Chain testnet, and another [video](https://youtu.be/A6lcGCeWWmY) on how to lock tokens and earn interest.
 ## Features
 ZWallet Command-line utility supports following features:
 1. Create Wallets
