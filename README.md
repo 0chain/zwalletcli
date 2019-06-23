@@ -1,5 +1,5 @@
 # ZWallet Command-line Interface for 0Chain Blockchain
-ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.12. There are some cool videos on how to lock tokens. Check out this [video](https://youtu.be/7kICaKnywco) on how to use the sample makefile for sending and receiving tokens to the 0Chain testnet, and another [video](https://youtu.be/A6lcGCeWWmY) on how to lock tokens and earn interest.
+ZWallet Command-line utility is useful to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's ClientSDK library written in Go V1.12. There are some cool videos on how to lock tokens. Check out this [video](https://drive.google.com/file/d/1q1EYJ7wgbg5xKRj9k2Usl2jyHFrEC8u1/view) on how to use the sample makefile for sending and receiving tokens to the 0Chain testnet, and another [video](https://drive.google.com/file/d/1l6U4Gq__dBkSfZirEUHkRWDJisUvTbua/view) on how to lock tokens and earn interest.
 ## Features
 ZWallet Command-line utility supports following features:
 1. Create Wallets
@@ -15,7 +15,7 @@ You can clone ZWallet Command-line utility from github repo [Here](https://githu
 * ZWallet Command-line utility needs Go V1.12 or higher. 
 * [gosdk](https://github.com/0chain/gosdk)
 ## How to Build the code?
-1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working on your system.
+1. Make sure you've Go SDK 1.12 or higher aA6lcGCeWWmYnd Go configurations are set and working on your system.
 2.  Clone [gosdk](https://github.com/0chain/gosdk) and follow steps in Build and Installation section.
 3. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
 4. Go to the root directory of the local repo
