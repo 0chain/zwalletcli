@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"sync"
-
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os"
+	"sync"
 )
 
 var recoverwalletcmd = &cobra.Command{
@@ -355,6 +355,62 @@ var getlockedtokenscmd = &cobra.Command{
 	},
 }
 
+var createmswalletcmd = &cobra.Command{
+	Use:   "createmswallet",
+	Short: "create multisig wallet",
+	Long:  `create multisig wallet`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err := zcncore.CreateMSWallet(statusBar)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		wg.Wait()
+		if statusBar.success {
+
+			err := registerMSWallets(statusBar.wallets)
+			if err != nil {
+				fmt.Printf("Error while registering ms sub wallets. The error is:\n %v\n", err)
+				return
+			}
+
+			err = registerMultiSig(statusBar.wallets[0], statusBar.walletString)
+			if err != nil {
+				fmt.Printf("Error while registering ms group wallet. The error is:\n %v\n", err)
+				return
+			}
+
+			var walletFilePath string
+			if &walletFile != nil && len(walletFile) > 0 {
+				walletFilePath = getConfigDir() + "/" + walletFile
+			} else {
+				walletFilePath = getConfigDir() + "/msgrpwallet.txt"
+			}
+			writeToaFile(walletFilePath, statusBar.walletString)
+			fmt.Printf("\nMS Wallet created and saved in:\n %s\n", walletFilePath)
+			fileName := getConfigDir() + "/msgroupwallet.txt"
+
+			writeToaFile(fileName, statusBar.wallets[0])
+			fmt.Printf("Created file:%v\n\n", fileName)
+			for i := 1; i < len(statusBar.wallets); i++ {
+				fileName := fmt.Sprintf("%s/mssubwallet%d.txt", getConfigDir(), i)
+				writeToaFile(fileName, statusBar.wallets[i])
+				fmt.Printf("Created file: %v\n\n", fileName)
+			}
+
+			return
+		}
+
+		fmt.Println("\nFailed to create MS Wallet." + statusBar.errMsg + "\n")
+		return
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(recoverwalletcmd)
 	rootCmd.AddCommand(getbalancecmd)
@@ -364,6 +420,7 @@ func init() {
 	rootCmd.AddCommand(unlockcmd)
 	rootCmd.AddCommand(lockconfigcmd)
 	rootCmd.AddCommand(getlockedtokenscmd)
+	rootCmd.AddCommand(createmswalletcmd)
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
 	recoverwalletcmd.MarkFlagRequired("mnemonic")
 	sendcmd.PersistentFlags().String("toclientID", "", "toclientID")
@@ -382,4 +439,97 @@ func init() {
 	lockcmd.MarkFlagRequired("token")
 	unlockcmd.PersistentFlags().String("poolid", "", "Poolid - hash of the locked transaction")
 	unlockcmd.MarkFlagRequired("poolid")
+}
+
+func readFile(fileName string) (string, error) {
+	w, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return string(w), nil
+}
+
+func registerMultiSig(grw string, msw string) error {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	txn, err := zcncore.NewMSTransaction(grw, statusBar)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	wg.Add(1)
+	err = txn.RegisterMultiSig(grw, msw)
+	if err == nil {
+		wg.Wait()
+	} else {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	if statusBar.success {
+		fmt.Printf("\nMultisig wallet SC registration requested. verifying status")
+		statusBar.success = false
+		wg.Add(1)
+		err := txn.Verify()
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println("error in verifying: ", err.Error())
+			os.Exit(1)
+		}
+		if statusBar.success {
+			fmt.Printf("\nMultisigSC success\n")
+			return nil
+		}
+	}
+	fmt.Println("\nFailed to register multisigsc. " + statusBar.errMsg + "\n")
+	return fmt.Errorf(statusBar.errMsg)
+
+}
+
+func registerAWallet(w string) error {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	wg.Add(1)
+	zcncore.RegisterWallet(w, statusBar)
+	wg.Wait()
+	if statusBar.success {
+		return nil
+	}
+	return fmt.Errorf(statusBar.errMsg)
+
+}
+
+func registerMSWallets(wallets []string) error {
+
+	fmt.Printf("\n registering %d wallets \n", len(wallets))
+	i := 0
+	for _, wallet := range wallets {
+
+		var walletName string
+		if i == 0 {
+			walletName = "group wallet"
+		} else {
+			walletName = fmt.Sprintf("sub wallet number %d \n", i)
+		}
+		err := registerAWallet(wallet)
+		if err != nil {
+			fmt.Printf("\nFailed ot register wallet number %s\nAborting...", walletName)
+			return err
+		}
+		fmt.Printf("\nSuccessfully registered %s\n", walletName)
+
+		i++
+	}
+	return nil
+}
+func writeToaFile(fileNameAndPath string, content string) error {
+
+	file, err := os.Create(fileNameAndPath)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	defer file.Close()
+	fmt.Fprintf(file, content)
+	return nil
 }

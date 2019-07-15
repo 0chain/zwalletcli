@@ -38,6 +38,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.txt)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 
+	initConfig()
 	fmt.Printf("%s", cfgFile)
 }
 
@@ -49,6 +50,9 @@ func Execute() {
 }
 
 func getConfigDir() string {
+	if cDir != "" {
+		return cDir
+	}
 	var configDir string
 	// Find home directory.
 	home, err := homedir.Dir()
