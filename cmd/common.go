@@ -18,6 +18,7 @@ type ZCNStatus struct {
 	errMsg       string
 	balance      int64
 	wallets      []string
+	clientID     string
 }
 
 func (zcn *ZCNStatus) OnBalanceAvailable(status int, value int64) {
@@ -75,17 +76,16 @@ func (zcn *ZCNStatus) OnInfoAvailable(Op int, status int, config string, err str
 	zcn.errMsg = config
 }
 
-func (zcn *ZCNStatus) OnMultiSigWalletCreated(status int, wallet string, wallets []string, err string) {
+//OnVoteComplete callback when a multisig vote is completed
+func (zcn *ZCNStatus) OnVoteComplete(status int, proposal string, err string) {
 	defer zcn.wg.Done()
 	if status != zcncore.StatusSuccess {
 		zcn.success = false
 		zcn.errMsg = err
-		zcn.wallets = nil
 		zcn.walletString = ""
 		return
 	}
 	zcn.success = true
 	zcn.errMsg = ""
-	zcn.walletString = wallet
-	zcn.wallets = wallets
+	zcn.walletString = proposal
 }

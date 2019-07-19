@@ -5,6 +5,7 @@ import (
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"sync"
 )
@@ -358,56 +359,81 @@ var getlockedtokenscmd = &cobra.Command{
 var createmswalletcmd = &cobra.Command{
 	Use:   "createmswallet",
 	Short: "create multisig wallet",
-	Long:  `create multisig wallet`,
-	Args:  cobra.MinimumNArgs(0),
+	Long: `create multisig wallet
+			<numsigners> <threshold> <testN>`,
+	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.CreateMSWallet(statusBar)
+		MaxSigners := 20 //This is the limitation from MultiSigSC
+		MinSigners := 2  //This is the limitation from MultiSigSC
+		fflags := cmd.Flags()
+		if fflags.Changed("numsigners") == false {
+			fmt.Println("Error: numsigners flag is missing")
+			return
+		}
+		numsigners, err := cmd.Flags().GetInt("numsigners")
+		if err != nil {
+			fmt.Println("Error: numsubkeys is not an integer")
+			return
+		}
+		if numsigners > MaxSigners {
+			fmt.Printf("Error: too many signers. Maximum numsigners allowed is %d\n", MaxSigners)
+			return
+		}
+
+		if numsigners < MinSigners {
+			fmt.Printf("Error: too few signers. Minimum numsigners required is %d\n", MinSigners)
+			return
+		}
+
+		if fflags.Changed("threshold") == false {
+			fmt.Println("Error: threshold flag is missing")
+			return
+		}
+		threshold, err := cmd.Flags().GetInt("threshold")
+		if err != nil {
+			fmt.Println("Error: threshold is not an integer")
+			return
+		}
+		if threshold > numsigners {
+			fmt.Printf("Error: given threshold (%d) is too high. Threshold has to be less than or equal to numsigners (%d)\n", threshold, numsigners)
+			return
+		}
+
+		testN, err := cmd.Flags().GetBool("testn")
+		if err != nil {
+			fmt.Println("testn is not used or not set to true. Setting it to false")
+		}
+
+		smsw, groupClientID, wallets, err := zcncore.CreateMSWallet(threshold, numsigners)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		wg.Wait()
-		if statusBar.success {
-
-			err := registerMSWallets(statusBar.wallets)
-			if err != nil {
-				fmt.Printf("Error while registering ms sub wallets. The error is:\n %v\n", err)
-				return
-			}
-
-			err = registerMultiSig(statusBar.wallets[0], statusBar.walletString)
-			if err != nil {
-				fmt.Printf("Error while registering ms group wallet. The error is:\n %v\n", err)
-				return
-			}
-
-			var walletFilePath string
-			if &walletFile != nil && len(walletFile) > 0 {
-				walletFilePath = getConfigDir() + "/" + walletFile
-			} else {
-				walletFilePath = getConfigDir() + "/msgrpwallet.txt"
-			}
-			writeToaFile(walletFilePath, statusBar.walletString)
-			fmt.Printf("\nMS Wallet created and saved in:\n %s\n", walletFilePath)
-			fileName := getConfigDir() + "/msgroupwallet.txt"
-
-			writeToaFile(fileName, statusBar.wallets[0])
-			fmt.Printf("Created file:%v\n\n", fileName)
-			for i := 1; i < len(statusBar.wallets); i++ {
-				fileName := fmt.Sprintf("%s/mssubwallet%d.txt", getConfigDir(), i)
-				writeToaFile(fileName, statusBar.wallets[i])
-				fmt.Printf("Created file: %v\n\n", fileName)
-			}
-
+		//register all wallets
+		err = registerMSWallets(wallets)
+		if err != nil {
+			fmt.Printf("Error while registering ms sub wallets. The error is:\n %v\n", err)
 			return
 		}
 
-		fmt.Println("\nFailed to create MS Wallet." + statusBar.errMsg + "\n")
+		groupWallet := wallets[0]
+		signerWallets := wallets[1:]
+
+		err = registerMultiSig(groupWallet, smsw)
+		if err != nil {
+			fmt.Printf("Error while registering ms group wallet. The error is:\n %v\n", err)
+			return
+		}
+
+		//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
+		if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
+			fmt.Printf("Failed to test voting\n")
+			return
+		}
+		fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
 		return
+
 	},
 }
 
@@ -421,6 +447,11 @@ func init() {
 	rootCmd.AddCommand(lockconfigcmd)
 	rootCmd.AddCommand(getlockedtokenscmd)
 	rootCmd.AddCommand(createmswalletcmd)
+	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
+	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
+	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
+	createmswalletcmd.MarkFlagRequired("threshold")
+	createmswalletcmd.MarkFlagRequired("numsigners")
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
 	recoverwalletcmd.MarkFlagRequired("mnemonic")
 	sendcmd.PersistentFlags().String("toclientID", "", "toclientID")
@@ -470,16 +501,19 @@ func registerMultiSig(grw string, msw string) error {
 		statusBar.success = false
 		wg.Add(1)
 		err := txn.Verify()
+		wg.Wait()
 		if err == nil {
-			wg.Wait()
-		} else {
-			fmt.Println("error in verifying: ", err.Error())
-			os.Exit(1)
-		}
-		if statusBar.success {
-			fmt.Printf("\nMultisigSC success\n")
+			if statusBar.success {
+				fmt.Printf("\nMultisigSC  wallet SC registration request success\n")
+				return nil
+			}
+			fmt.Printf("\nMultisigSC wallet SC registration request failed\n")
 			return nil
+
 		}
+		fmt.Println("error in verifying multisig wallet registration: ", err.Error())
+		os.Exit(1)
+
 	}
 	fmt.Println("\nFailed to register multisigsc. " + statusBar.errMsg + "\n")
 	return fmt.Errorf(statusBar.errMsg)
@@ -532,4 +566,229 @@ func writeToaFile(fileNameAndPath string, content string) error {
 	defer file.Close()
 	fmt.Fprintf(file, content)
 	return nil
+}
+
+func registerMSVote(signerWalletStr string, voteStr string) error {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	txn, err := zcncore.NewMSTransaction(signerWalletStr, statusBar)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	wg.Add(1)
+	err = txn.RegisterVote(signerWalletStr, voteStr)
+	if err == nil {
+		wg.Wait()
+	} else {
+		fmt.Println(err.Error())
+		return err
+	}
+	if statusBar.success {
+		fmt.Printf("\nMultisig Vote registration requested. verifying status")
+		statusBar.success = false
+		wg.Add(1)
+		err := txn.Verify()
+
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println("error in verifying: ", err.Error())
+			return err
+		}
+		if statusBar.success {
+			fmt.Printf("\nMultisig Voting success\n")
+			return nil
+		}
+	}
+	fmt.Println("\nFailed to register multisig vote. " + statusBar.errMsg + "\n")
+	return fmt.Errorf(statusBar.errMsg)
+
+}
+
+func createAWallet() string {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	wg.Add(1)
+	err := zcncore.CreateWallet(1, statusBar)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	wg.Wait()
+	if statusBar.success {
+		return statusBar.walletString
+	}
+	return ""
+
+}
+
+func checkBalance(wallet string) bool {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	wg.Add(1)
+	err := zcncore.GetBalanceWallet(wallet, statusBar)
+	if err == nil {
+		wg.Wait()
+	} else {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	if statusBar.success {
+		fmt.Printf("\nBalance: %v\n", zcncore.ConvertToToken(statusBar.balance))
+		if zcncore.ConvertToToken(statusBar.balance) > 0 {
+			return true
+		}
+		return false
+
+	}
+	fmt.Println("\nGet balance failed. " + statusBar.errMsg + "\n")
+	return false
+
+}
+
+func pourToWallet(wallet string) bool {
+	methodName := "pour"
+	input := "{fillwallet}"
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	txn, err := zcncore.NewMSTransaction(wallet, statusBar)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	wg.Add(1)
+	err = txn.ExecuteFaucetSCWallet(wallet, methodName, []byte(input))
+	if err == nil {
+		wg.Wait()
+	} else {
+		fmt.Println(err.Error())
+		return false
+	}
+	if statusBar.success {
+		statusBar.success = false
+		wg.Add(1)
+		err := txn.Verify()
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Printf("error in faucet transaction:\n%v\n", err.Error())
+			return false
+		}
+		if statusBar.success {
+			fmt.Printf("Pour request success\n")
+			b := checkBalance(wallet)
+			return b
+		}
+		fmt.Printf("Pour request failed\n")
+
+	}
+	return false
+}
+func testMSVoting(msw string, groupWallet string, groupClientID string, signerWallets []string, t int, testN bool) bool {
+	fmt.Printf("\n\ntesting vote")
+	anoWallet := createAWallet()
+
+	fmt.Printf("Recipient test wallet:\n%s\n", anoWallet)
+	fmt.Printf("\nActivating group wallet by pouring test tokens\n")
+	if !pourToWallet(groupWallet) {
+		fmt.Printf("pour failed, for group wallet...")
+		return false
+
+	}
+
+	for i, wallet := range signerWallets {
+		fmt.Printf("\nActivating signer wallet %d by pouring test tokens\n", i+1)
+		if !pourToWallet(wallet) {
+			fmt.Printf("pour failed for a signer wallet")
+			return false
+		}
+	}
+
+	fmt.Printf("Checking balance on group wallet with clientID %s before the vote", groupClientID)
+	checkBalance(groupWallet)
+
+	toClientID, err := zcncore.GetWalletClientID(anoWallet)
+	if err != nil {
+		fmt.Printf("Failed to get clientID from the wallet\n%v\nError is:%v\n", anoWallet, err)
+		return false
+	}
+
+	if !testN {
+		if !testMSVotingThreshold(msw, toClientID, groupClientID, signerWallets, t) {
+			fmt.Printf("/nFailed in MSVoting test for threshold\n")
+			return false
+		}
+	} else {
+		if !testMSVotingForAllN(msw, toClientID, groupClientID, signerWallets) {
+			fmt.Printf("/nFailed in MSVoting test for threshold\n")
+			return false
+		}
+	}
+
+	fmt.Printf("\n\nChecking balance on group wallet %s after the vote", groupClientID)
+	checkBalance(groupWallet)
+
+	fmt.Printf("\nChecking balance on recipient wallet after the vote")
+	checkBalance(anoWallet)
+	return true
+
+}
+
+func testMSVotingThreshold(msw string, toClientID string, grpClientID string, signerWallets []string, t int) bool {
+
+	proposal := "testing MSVoting"
+	tokenVal := zcncore.ConvertToValue(0.1)
+
+	cnt := 0
+
+	for _, idx := range rand.Perm(t) {
+		signer := signerWallets[idx]
+
+		//for _, signer := range signerWallets {
+		if cnt >= t {
+			break
+		}
+
+		vote, err := zcncore.CreateMSVote(proposal, grpClientID, signer, toClientID, tokenVal)
+		if err != nil {
+			fmt.Printf("Failed to create a vote. Error is:%v\n", err)
+			return false
+		}
+		fmt.Printf("\nCreated Vote#%d from signer #%d:\n%s\n", cnt+1, idx, vote)
+		err = registerMSVote(signer, vote)
+		if err != nil {
+			fmt.Printf("Failed to create a vote. Error is:%v\n", err)
+			return false
+		}
+		cnt++
+
+	}
+
+	return true
+}
+
+func testMSVotingForAllN(msw string, toClientID string, grpClientID string, signerWallets []string) bool {
+
+	proposal := "testing MSVoting"
+	tokenVal := zcncore.ConvertToValue(0.1)
+
+	cnt := 0
+	for _, signer := range signerWallets {
+		vote, err := zcncore.CreateMSVote(proposal, grpClientID, signer, toClientID, tokenVal)
+		if err != nil {
+			fmt.Printf("Failed to create a vote. Error is:%v\n", err)
+			return false
+		}
+		fmt.Printf("\nCreated Vote#%d:\n%s\n", cnt+1, vote)
+		err = registerMSVote(signer, vote)
+		if err != nil {
+			fmt.Printf("Failed to create a vote. Error is:%v\n", err)
+			return false
+		}
+		cnt++
+
+	}
+	return true
 }
