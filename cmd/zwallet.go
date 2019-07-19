@@ -501,8 +501,8 @@ func registerMultiSig(grw string, msw string) error {
 		statusBar.success = false
 		wg.Add(1)
 		err := txn.Verify()
-		wg.Wait()
 		if err == nil {
+			wg.Wait()
 			if statusBar.success {
 				fmt.Printf("\nMultisigSC  wallet SC registration request success\n")
 				return nil
@@ -543,7 +543,7 @@ func registerMSWallets(wallets []string) error {
 		if i == 0 {
 			walletName = "group wallet"
 		} else {
-			walletName = fmt.Sprintf("sub wallet number %d \n", i)
+			walletName = fmt.Sprintf("signer wallet number %d \n", i)
 		}
 		err := registerAWallet(wallet)
 		if err != nil {
