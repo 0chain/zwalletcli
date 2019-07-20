@@ -1,6 +1,6 @@
 SAMPLE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-SCHEME=ed25519
+SCHEME=bls0chain
 
 include $(SAMPLE_DIR)/scheme/$(SCHEME).mk
 
@@ -28,7 +28,7 @@ transfer:
 	$(MAKE) getbalance
 	@echo ""
 	@echo ">>> Starting transfer"
-	$(ZWALLET_CMD) $(FROM_WALLET) send --desc "Give loan - Make Happy" --toclientID $(TO_CLIENT_ID) --token 0.75
+	$(ZWALLET_CMD) $(FROM_WALLET) send --desc "Give loan - Make Happy" --to_client_id $(TO_CLIENT_ID) --token 0.75
 	@echo ""
 	@echo ">>> Balance after transfer"
 	$(MAKE) getbalance
@@ -38,7 +38,7 @@ repay:
 	$(MAKE) getbalance
 	@echo ""
 	@echo ">>> Starting transfer"
-	$(ZWALLET_CMD) $(TO_WALLET) send --desc "Return loan - Feel sad" --toclientID $(FROM_CLIENT_ID) --token 0.50
+	$(ZWALLET_CMD) $(TO_WALLET) send --desc "Return loan - Feel sad" --to_client_id $(FROM_CLIENT_ID) --token 0.50
 	@echo ""
 	@echo ">>> Balance after transfer"
 	$(MAKE) getbalance

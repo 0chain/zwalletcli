@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+	"sync"
 	"github.com/0chain/gosdk/zcncore"
 	"gopkg.in/cheggaaa/pb.v1"
-	"sync"
 )
 
 type StatusBar struct {
@@ -19,7 +20,7 @@ type ZCNStatus struct {
 	balance      int64
 }
 
-func (zcn *ZCNStatus) OnBalanceAvailable(status int, value int64) {
+func (zcn *ZCNStatus) OnBalanceAvailable(status int, value int64, info string) {
 	defer zcn.wg.Done()
 	if status == zcncore.StatusSuccess {
 		zcn.success = true
@@ -49,6 +50,9 @@ func (zcn *ZCNStatus) OnVerifyComplete(t *zcncore.Transaction, status int) {
 	// fmt.Println(t.GetVerifyOutput())
 }
 
+func (zcn *ZCNStatus) OnAuthComplete(t *zcncore.Transaction, status int) {
+	fmt.Println("Authorization complete on zauth.", status)
+}
 func (zcn *ZCNStatus) OnWalletCreateComplete(status int, wallet string, err string) {
 	defer zcn.wg.Done()
 	if status != zcncore.StatusSuccess {
@@ -72,4 +76,13 @@ func (zcn *ZCNStatus) OnInfoAvailable(Op int, status int, config string, err str
 	}
 	zcn.success = true
 	zcn.errMsg = config
+}
+func (zcn *ZCNStatus) OnSetupComplete(status int, err string) {
+	defer zcn.wg.Done()
+}
+func (zcn *ZCNStatus) OnAuthorizeSendComplete(status int, toClienID string, val int64, desc string, creationDate int64, signature string) {
+	defer zcn.wg.Done()
+	fmt.Println("Status:", status)
+	fmt.Println("Timestamp:", creationDate)
+	fmt.Println("Signature:", signature)
 }

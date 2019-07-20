@@ -3,14 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"sync"
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/ioutil"
-	"os"
-	"sync"
 )
 
 var cfgFile string
@@ -105,7 +105,7 @@ func initConfig() {
 		statusBar := &ZCNStatus{wg: wg}
 
 		wg.Add(1)
-		err = zcncore.CreateWallet(numKeys, statusBar)
+		err = zcncore.CreateWallet(statusBar)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -148,7 +148,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig)
+	err = zcncore.SetWalletInfo(clientConfig, false)
 	if err == nil {
 		wg.Wait()
 	} else {
