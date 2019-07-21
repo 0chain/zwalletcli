@@ -241,6 +241,25 @@ Command
 
     ./zwallet recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
 
+#### createmswallet
+
+use this command to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option. 
+
+Command
+
+    ./zwallet createmswallet --numsigners 3 --threshold 2 
+
+where
+
+1. numsigners is the number of accounts that can sign the vote.
+2. threshold is the minimum number of votes required for the transaction to pass.
+3. testn is an optional argument. set it to true to test sending votes from all signer accounts. By default votes from only threshold number of signer accounts is used.
+
+Response
+
+    Creating and testing a multisig wallet is successful!
+
+
 ### Tips
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
