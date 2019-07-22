@@ -243,7 +243,25 @@ Command
 
 #### createmswallet
 
-use this command to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option. 
+Before jumping on to command description a quick introduction to Multisignature Wallet.
+
+A Multisignature Wallet is a wallet for which any transaction from this wallet needs to be voted by T(N) associated signer wallets. To create a Multisignature Wallet,  you need to specify the number of signers (N) you want on that wallet and minimum number of votes (T) it needs for a transaction to be approved. 
+
+APIs 
+
+  * CreateMSWallet API will create the group wallet (MultiSignature Wallet) and corresponding number of Signer Wallets. All of these wallets have to be registered first on the Blockchain.
+
+  * RegisterMultiSig API registers the group wallet with MultiSig smartcontract.  
+
+  * CreateVote API creates a vote for a proposal. 
+
+  * RegisterVote API will vote for a proposal. Initially, if the proposal does not exist, MultiSig smartcontract will automatically create one as identified by the ProposalID parameter. Any vote bearing the same ProposalID, will be counted as a vote for the transaction. When the threshold number of votes are registered, transaction will be automatically processed. Any extra votes will be ignored.
+
+Note 1: All Proposals will have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
+
+Note 2: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated with one or more tokens. 
+
+Back to the command *createmswallet*. This command demonstrates how to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option. 
 
 Command
 
