@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"sync"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var recoverwalletcmd = &cobra.Command{
@@ -29,7 +30,7 @@ var recoverwalletcmd = &cobra.Command{
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
-		err := zcncore.RecoverWallet(mnemonic, numKeys, statusBar)
+		err := zcncore.RecoverWallet(mnemonic, statusBar)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -88,12 +89,12 @@ var sendcmd = &cobra.Command{
 	Use:   "send",
 	Short: "Send ZCN token to another wallet",
 	Long: `Send ZCN token to another wallet.
-	        <toclientID> <token> <description>`,
+	        <to_client_id> <token> <description> [transaction fee]`,
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
-		if fflags.Changed("toclientID") == false {
-			fmt.Println("Error: toclientID flag is missing")
+		if fflags.Changed("to_client_id") == false {
+			fmt.Println("Error: to_client_id flag is missing")
 			return
 		}
 		if fflags.Changed("token") == false {
@@ -104,18 +105,24 @@ var sendcmd = &cobra.Command{
 			fmt.Println("Error: Description flag is missing")
 			return
 		}
-		toclientID := cmd.Flag("toclientID").Value.String()
+		to_client_id := cmd.Flag("to_client_id").Value.String()
 		token, err := cmd.Flags().GetFloat64("token")
+		if err != nil {
+			fmt.Println("Error: invalid token.", err)
+			return
+		}
 		desc := cmd.Flag("desc").Value.String()
+		fee := float64(0)
+		fee, err = cmd.Flags().GetFloat64("fee")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		wg.Add(1)
-		err = txn.Send(toclientID, zcncore.ConvertToValue(token), desc)
+		err = txn.Send(to_client_id, zcncore.ConvertToValue(token), desc)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -163,13 +170,15 @@ var faucetcmd = &cobra.Command{
 		input := cmd.Flag("input").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar)
+		txn, err := zcncore.NewTransaction(statusBar, 0)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+		token := float64(0)
+		token, err = cmd.Flags().GetFloat64("token")
 		wg.Add(1)
-		err = txn.ExecuteFaucetSC(methodName, []byte(input))
+		err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress, methodName, input, zcncore.ConvertToValue(token))
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -200,7 +209,7 @@ var lockcmd = &cobra.Command{
 	Use:   "lock",
 	Short: "Lock tokens",
 	Long: `Lock tokens .
-	        <tokens> <[durationHr] [durationMin]>`,
+	        <tokens> <[durationHr] [durationMin]> [transaction fee]`,
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
@@ -225,9 +234,11 @@ var lockcmd = &cobra.Command{
 		if (durationHr < 1) && (durationMin < 1) {
 			fmt.Println("Error: invalid duration")
 		}
+		fee := float64(0)
+		fee, err = cmd.Flags().GetFloat64("fee")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -264,24 +275,26 @@ var unlockcmd = &cobra.Command{
 	Use:   "unlock",
 	Short: "Unlock tokens",
 	Long: `Unlock previously locked tokens .
-	        <poolid>`,
+	        <pool_id> [transaction fee]`,
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
-		if fflags.Changed("poolid") == false {
-			fmt.Println("Error: poolid flag is missing")
+		if fflags.Changed("pool_id") == false {
+			fmt.Println("Error: pool_id flag is missing")
 			return
 		}
-		poolid := cmd.Flag("poolid").Value.String()
+		pool_id := cmd.Flag("pool_id").Value.String()
+		fee := float64(0)
+		fee, err := cmd.Flags().GetFloat64("fee")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		wg.Add(1)
-		err = txn.UnlockTokens(poolid)
+		err = txn.UnlockTokens(pool_id)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -304,6 +317,45 @@ var unlockcmd = &cobra.Command{
 			}
 		}
 		fmt.Println("\nFailed to unlock tokens. " + statusBar.errMsg + "\n")
+		return
+	},
+}
+
+var verifycmd = &cobra.Command{
+	Use:   "verify",
+	Short: "verify transaction",
+	Long: `verify transaction.
+	        <hash>`,
+	Args: cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		fflags := cmd.Flags()
+		if fflags.Changed("hash") == false {
+			fmt.Println("Error: hash flag is missing")
+			return
+		}
+		hash := cmd.Flag("hash").Value.String()
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		txn, err := zcncore.NewTransaction(statusBar, 0)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		txn.SetTransactionHash(hash)
+		wg.Add(1)
+		err = txn.Verify()
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		if statusBar.success {
+			statusBar.success = false
+			fmt.Printf("\nTransaction verification success\n")
+			return
+		}
+		fmt.Println("\nVerification failed." + statusBar.errMsg + "\n")
 		return
 	},
 }
@@ -437,6 +489,205 @@ var createmswalletcmd = &cobra.Command{
 	},
 }
 
+var getidcmd = &cobra.Command{
+	Use:   "getid",
+	Short: "Get Miner or Sharder ID from its URL",
+	Long:  `Get Miner or Sharder ID from its URL`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		fflags := cmd.Flags()
+		if fflags.Changed("url") == false {
+			fmt.Println("Error: url flag is missing")
+			return
+		}
+		url := cmd.Flag("url").Value.String()
+
+		id := zcncore.GetIdForUrl(url)
+		if id == "" {
+			fmt.Println("Error: ID not found")
+			os.Exit(1)
+		}
+		fmt.Printf("\nURL: %v \nID: %v\n", url, id)
+		return
+	},
+}
+
+var stakecmd = &cobra.Command{
+	Use:   "stake",
+	Short: "Stake Miners or Sharders",
+	Long: `Stake Miners or Sharders using their client ID.
+			<client_id> <tokens>`,
+	Args: cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		fflags := cmd.Flags()
+		if fflags.Changed("client_id") == false {
+			fmt.Println("Error: client_id flag is missing")
+			return
+		}
+		if fflags.Changed("token") == false {
+			fmt.Println("Error: token flag is missing")
+			return
+		}
+		clientID := cmd.Flag("client_id").Value.String()
+		token, err := cmd.Flags().GetFloat64("token")
+		if err != nil {
+			fmt.Println("Error: invalid number of tokens")
+			return
+		}
+		fee := float64(0)
+		fee, err = cmd.Flags().GetFloat64("fee")
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		wg.Add(1)
+		err = txn.Stake(clientID, zcncore.ConvertToValue(token))
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		if statusBar.success {
+			statusBar.success = false
+			wg.Add(1)
+			err := txn.Verify()
+			if err == nil {
+				wg.Wait()
+			} else {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+			if statusBar.success {
+				fmt.Println("\nStake success\n")
+				return
+			}
+		}
+		fmt.Println("Stake failed. " + statusBar.errMsg)
+
+	},
+}
+
+var deletestakecmd = &cobra.Command{
+	Use:   "deletestake",
+	Short: "Delete Stake from user pool",
+	Long: `Delete Stake from user pool client_id and pool_id.
+			<client_id> <pool_id>`,
+	Args: cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		fflags := cmd.Flags()
+		if fflags.Changed("client_id") == false {
+			fmt.Println("Error: client_id flag is missing")
+			return
+		}
+		if fflags.Changed("pool_id") == false {
+			fmt.Println("Error: pool_id flag is missing")
+			return
+		}
+		clientID := cmd.Flag("client_id").Value.String()
+		poolID := cmd.Flag("pool_id").Value.String()
+		fee := float64(0)
+		var err error
+		fee, err = cmd.Flags().GetFloat64("fee")
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		wg.Add(1)
+		err = txn.DeleteStake(clientID, poolID)
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		if statusBar.success {
+			statusBar.success = false
+			wg.Add(1)
+			err := txn.Verify()
+			if err == nil {
+				wg.Wait()
+			} else {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+			if statusBar.success {
+				fmt.Println("\nDelete stake success\n")
+				return
+			}
+		}
+		fmt.Println("Delete stake failed. " + statusBar.errMsg)
+
+	},
+}
+
+var getuserpoolscmd = &cobra.Command{
+	Use:   "getuserpools",
+	Short: "Get user pools from sharders",
+	Long:  `Get user pools from sharders`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err := zcncore.GetUserPools(statusBar)
+		if err == nil {
+			wg.Wait()
+		} else {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		if statusBar.success {
+			fmt.Printf("\nUser pools: %v\n", statusBar.errMsg)
+		} else {
+			fmt.Println("\nERROR: Get user pool failed. " + statusBar.errMsg + "\n")
+		}
+		return
+	},
+}
+
+var getuserpooldetailscmd = &cobra.Command{
+	Use:   "getuserpooldetails",
+	Short: "Get user pool details",
+	Long: `Get user pool details for client_id and pool_id.
+			<client_id> <pool_id>`,
+	Args: cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		fflags := cmd.Flags()
+		if fflags.Changed("client_id") == false {
+			fmt.Println("Error: client_id flag is missing")
+			return
+		}
+		if fflags.Changed("pool_id") == false {
+			fmt.Println("Error: pool_id flag is missing")
+			return
+		}
+		clientID := cmd.Flag("client_id").Value.String()
+		poolID := cmd.Flag("pool_id").Value.String()
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err := zcncore.GetUserPoolDetails(clientID, poolID, statusBar)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		wg.Wait()
+		if statusBar.success {
+			fmt.Printf("\nUser pool details: %v\n", statusBar.errMsg)
+		} else {
+			fmt.Println("\nERROR: Get user pool details failed. " + statusBar.errMsg + "\n")
+		}
+
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(recoverwalletcmd)
 	rootCmd.AddCommand(getbalancecmd)
@@ -446,6 +697,12 @@ func init() {
 	rootCmd.AddCommand(unlockcmd)
 	rootCmd.AddCommand(lockconfigcmd)
 	rootCmd.AddCommand(getlockedtokenscmd)
+	rootCmd.AddCommand(verifycmd)
+	rootCmd.AddCommand(getidcmd)
+	rootCmd.AddCommand(stakecmd)
+	rootCmd.AddCommand(getuserpoolscmd)
+	rootCmd.AddCommand(deletestakecmd)
+	rootCmd.AddCommand(getuserpooldetailscmd)
 	rootCmd.AddCommand(createmswalletcmd)
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
@@ -454,22 +711,44 @@ func init() {
 	createmswalletcmd.MarkFlagRequired("numsigners")
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
 	recoverwalletcmd.MarkFlagRequired("mnemonic")
-	sendcmd.PersistentFlags().String("toclientID", "", "toclientID")
+	sendcmd.PersistentFlags().String("to_client_id", "", "to_client_id")
 	sendcmd.PersistentFlags().Float64("token", 0, "Token to send")
 	sendcmd.PersistentFlags().String("desc", "", "Description")
-	sendcmd.MarkFlagRequired("toclientID")
+	sendcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
+	sendcmd.MarkFlagRequired("to_client_id")
 	sendcmd.MarkFlagRequired("token")
 	sendcmd.MarkFlagRequired("desc")
 	faucetcmd.PersistentFlags().String("methodName", "", "methodName")
 	faucetcmd.PersistentFlags().String("input", "", "input")
+	faucetcmd.PersistentFlags().Float64("token", 0, "Token request")
 	faucetcmd.MarkFlagRequired("methodName")
 	faucetcmd.MarkFlagRequired("input")
 	lockcmd.PersistentFlags().Float64("token", 0, "Number to tokens to lock")
 	lockcmd.PersistentFlags().Int64("durationHr", 0, "Duration Hours to lock")
 	lockcmd.PersistentFlags().Int("durationMin", 0, "Duration Mins to lock")
+	lockcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
 	lockcmd.MarkFlagRequired("token")
-	unlockcmd.PersistentFlags().String("poolid", "", "Poolid - hash of the locked transaction")
-	unlockcmd.MarkFlagRequired("poolid")
+	unlockcmd.PersistentFlags().String("pool_id", "", "Poolid - hash of the locked transaction")
+	unlockcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
+	unlockcmd.MarkFlagRequired("pool_id")
+	verifycmd.PersistentFlags().String("hash", "", "hash of the transaction")
+	verifycmd.MarkFlagRequired("hash")
+	getidcmd.PersistentFlags().String("url", "", "URL to get the ID")
+	getidcmd.MarkFlagRequired("url")
+	stakecmd.PersistentFlags().String("client_id", "", "Miner or Sharder client id")
+	stakecmd.PersistentFlags().Float64("token", 0, "Token to send")
+	stakecmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
+	stakecmd.MarkFlagRequired("client_id")
+	stakecmd.MarkFlagRequired("token")
+	deletestakecmd.PersistentFlags().String("client_id", "", "Miner or Sharder client id")
+	deletestakecmd.PersistentFlags().String("pool_id", "", "Pool ID from user pool matching miner or sharder id")
+	deletestakecmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
+	deletestakecmd.MarkFlagRequired("client_id")
+	deletestakecmd.MarkFlagRequired("pool_id")
+	getuserpooldetailscmd.PersistentFlags().String("client_id", "", "Miner or Sharder client id")
+	getuserpooldetailscmd.PersistentFlags().String("pool_id", "", "Pool ID from user pool matching miner or sharder id")
+	getuserpooldetailscmd.MarkFlagRequired("client_id")
+	getuserpooldetailscmd.MarkFlagRequired("pool_id")
 }
 
 func readFile(fileName string) (string, error) {
@@ -610,7 +889,7 @@ func createAWallet() string {
 	wg := &sync.WaitGroup{}
 	statusBar := &ZCNStatus{wg: wg}
 	wg.Add(1)
-	err := zcncore.CreateWallet(1, statusBar)
+	err := zcncore.CreateWallet(statusBar)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

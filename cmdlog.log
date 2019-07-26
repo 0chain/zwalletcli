@@ -11550,3 +11550,5 @@
 0chain-core-sdk [31m[ERROR]  2019/06/17 17:52:35.686819 transaction.go:311: {"code":"entity_not_found","error":"entity_not_found: txn_summary not found with id = a4e31bdd852923c0a319bcb8419e87fe75c4dc9d90d02383fd46246eedd73993"}
 
 [0m
+0chain-core-sdk [INFO]   2019/07/23 00:17:33.330406 wallet.go:117: ******* Wallet SDK Version:1.0.9 *******
+0chain-core-sdk [INFO]   2019/07/23 00:17:33.330843 wallet.go:145: *******  Wallet SDK Version:1.0.9 *******
