@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+const (
+	MaxExpiryTime = 60 * 60 * 24 * 7 * 30 // Max expiry time is 30 days.
+	MinExpiryTime = 1                     // Min expiry time is 1 second.
+
+)
+
 var recoverwalletcmd = &cobra.Command{
 	Use:   "recoverwallet",
 	Short: "Recover wallet",
@@ -425,6 +431,11 @@ var createmswalletcmd = &cobra.Command{
 			return
 		}
 
+		if expiry > MaxExpiryTime {
+			fmt.Printf("Error: expiry %d is invalid. Max expiry time allowed is 18144000.\n", expiry)
+			return
+		}
+
 		testN, err := cmd.Flags().GetBool("testn")
 		if err != nil {
 			fmt.Println("testn is not used or not set to true. Setting it to false")
@@ -466,7 +477,7 @@ var createmswalletcmd = &cobra.Command{
 				fmt.Printf("Failed to test voting\n")
 				return
 			}
-			fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
+			fmt.Printf("Creating and testing a multisig wallet is successful!\n\n")
 			return
 		}
 
@@ -495,7 +506,7 @@ func init() {
 	rootCmd.AddCommand(createmswalletcmd)
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
-	createmswalletcmd.PersistentFlags().Int64("expiry", 0, "Expiration time in seconds proposals will expire if not executed")
+	createmswalletcmd.PersistentFlags().Int64("expiry", 0, "Expiration time for proposals in seconds. Min 1 and Max 1814400 (30 days)")
 	createmswalletcmd.PersistentFlags().Int("delay", 0, "Delay time in seconds before proposals")
 	createmswalletcmd.PersistentFlags().Int("stress", 1, "Stress test Multisig with wallets")
 	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
@@ -767,12 +778,12 @@ func testMSVoting(msw string, groupWallet string, groupClientID string, signerWa
 
 	if !testN {
 		if !testMSVotingThreshold(msw, toClientID, groupClientID, signerWallets, t, delay) {
-			fmt.Printf("/nFailed in MSVoting test for threshold\n")
+			fmt.Printf("\n Failed in MSVoting test for threshold\n")
 			return false
 		}
 	} else {
 		if !testMSVotingForAllN(msw, toClientID, groupClientID, signerWallets) {
-			fmt.Printf("/nFailed in MSVoting test for threshold\n")
+			fmt.Printf("\n Failed in MSVoting test for threshold\n")
 			return false
 		}
 	}

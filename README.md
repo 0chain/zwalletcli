@@ -271,7 +271,10 @@ where
 
 1. numsigners is the number of accounts that can sign the vote.
 2. threshold is the minimum number of votes required for the transaction to pass.
-3. testn is an optional argument. set it to true to test sending votes from all signer accounts. By default votes from only threshold number of signer accounts is used.
+3. expiry is time in seconds before a proposal will expire. Minimum is 1 second and maximum is 18144000 seconds (30 days).
+4. testn is an optional argument. set it to true to test sending votes from all signer accounts. By default votes from only threshold number of signer accounts is used.
+5. stress is an optional argument for stress testing multisig feature. Default once.
+6. delay is an optional argument to test expiration of proposals. Default is no delay.
 
 Response
 
