@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"sync"
+	"time"
 )
 
 var recoverwalletcmd = &cobra.Command{
@@ -357,6 +358,7 @@ var getlockedtokenscmd = &cobra.Command{
 }
 
 var createmswalletcmd = &cobra.Command{
+
 	Use:   "createmswallet",
 	Short: "create multisig wallet",
 	Long: `create multisig wallet
@@ -399,40 +401,84 @@ var createmswalletcmd = &cobra.Command{
 			return
 		}
 
+		delay, err := cmd.Flags().GetInt("delay")
+		if err != nil {
+			fmt.Println("Error: delay is not an integer")
+			return
+		}
+		if delay < 0 {
+			delay = 0
+		}
+
+		if fflags.Changed("expiry") == false {
+			fmt.Println("Error: expiry flag is missing")
+			return
+		}
+		expiry, err := cmd.Flags().GetInt64("expiry")
+		if err != nil {
+			fmt.Printf("Error: expiry is not an integer.\n%v\n", err)
+			return
+		}
+
+		if expiry < 1 {
+			fmt.Printf("Error: expiry %d is invalid. It needs to be at least 1 second.\n", expiry)
+			return
+		}
+
 		testN, err := cmd.Flags().GetBool("testn")
 		if err != nil {
 			fmt.Println("testn is not used or not set to true. Setting it to false")
 		}
 
-		smsw, groupClientID, wallets, err := zcncore.CreateMSWallet(threshold, numsigners)
+		stress, err := cmd.Flags().GetInt("stress")
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			fmt.Println("stress is not used or not set to true. Setting it to 1")
 		}
 
-		//register all wallets
-		err = registerMSWallets(wallets)
-		if err != nil {
-			fmt.Printf("Error while registering ms sub wallets. The error is:\n %v\n", err)
+		wg := &sync.WaitGroup{}
+
+		runner := func() {
+			defer wg.Done()
+			smsw, groupClientID, wallets, err := zcncore.CreateMSWallet(threshold, numsigners, expiry)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			//register all wallets
+			err = registerMSWallets(wallets)
+			if err != nil {
+				fmt.Printf("Error while registering ms sub wallets. The error is:\n %v\n", err)
+				return
+			}
+
+			groupWallet := wallets[0]
+			signerWallets := wallets[1:]
+
+			err = registerMultiSig(groupWallet, smsw)
+			if err != nil {
+				fmt.Printf("Error while registering ms group wallet. The error is:\n %v\n", err)
+				return
+			}
+
+			//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
+			if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, delay, testN) {
+				fmt.Printf("Failed to test voting\n")
+				return
+			}
+			fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
 			return
 		}
 
-		groupWallet := wallets[0]
-		signerWallets := wallets[1:]
+		fmt.Printf("running tests for %d\n", stress)
 
-		err = registerMultiSig(groupWallet, smsw)
-		if err != nil {
-			fmt.Printf("Error while registering ms group wallet. The error is:\n %v\n", err)
-			return
+		for i := 1; i < stress+1; i++ {
+			fmt.Printf("Launching test#%d\n", i)
+			go runner()
+			wg.Add(1)
+			time.Sleep(1 * time.Second)
 		}
-
-		//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
-		if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
-			fmt.Printf("Failed to test voting\n")
-			return
-		}
-		fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
-		return
+		wg.Wait()
 
 	},
 }
@@ -449,7 +495,11 @@ func init() {
 	rootCmd.AddCommand(createmswalletcmd)
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
+	createmswalletcmd.PersistentFlags().Int64("expiry", 0, "Expiration time in seconds proposals will expire if not executed")
+	createmswalletcmd.PersistentFlags().Int("delay", 0, "Delay time in seconds before proposals")
+	createmswalletcmd.PersistentFlags().Int("stress", 1, "Stress test Multisig with wallets")
 	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
+	createmswalletcmd.MarkFlagRequired("expiry")
 	createmswalletcmd.MarkFlagRequired("threshold")
 	createmswalletcmd.MarkFlagRequired("numsigners")
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
@@ -507,7 +557,7 @@ func registerMultiSig(grw string, msw string) error {
 				fmt.Printf("\nMultisigSC  wallet SC registration request success\n")
 				return nil
 			}
-			fmt.Printf("\nMultisigSC wallet SC registration request failed\n")
+			fmt.Printf("\nMultisigSC wallet SC registration request failed\n%s", statusBar.errMsg)
 			return nil
 
 		}
@@ -686,7 +736,7 @@ func pourToWallet(wallet string) bool {
 	}
 	return false
 }
-func testMSVoting(msw string, groupWallet string, groupClientID string, signerWallets []string, t int, testN bool) bool {
+func testMSVoting(msw string, groupWallet string, groupClientID string, signerWallets []string, t int, delay int, testN bool) bool {
 	fmt.Printf("\n\ntesting vote")
 	anoWallet := createAWallet()
 
@@ -716,7 +766,7 @@ func testMSVoting(msw string, groupWallet string, groupClientID string, signerWa
 	}
 
 	if !testN {
-		if !testMSVotingThreshold(msw, toClientID, groupClientID, signerWallets, t) {
+		if !testMSVotingThreshold(msw, toClientID, groupClientID, signerWallets, t, delay) {
 			fmt.Printf("/nFailed in MSVoting test for threshold\n")
 			return false
 		}
@@ -736,7 +786,7 @@ func testMSVoting(msw string, groupWallet string, groupClientID string, signerWa
 
 }
 
-func testMSVotingThreshold(msw string, toClientID string, grpClientID string, signerWallets []string, t int) bool {
+func testMSVotingThreshold(msw string, toClientID string, grpClientID string, signerWallets []string, t int, delay int) bool {
 
 	proposal := "testing MSVoting"
 	tokenVal := zcncore.ConvertToValue(0.1)
@@ -763,7 +813,8 @@ func testMSVotingThreshold(msw string, toClientID string, grpClientID string, si
 			return false
 		}
 		cnt++
-
+		fmt.Printf("sleeping for %d seconds...", delay)
+		time.Sleep(time.Duration(delay) * time.Second)
 	}
 
 	return true
