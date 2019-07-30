@@ -562,7 +562,7 @@ var stakecmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if statusBar.success {
-				fmt.Println("\nStake success\n")
+				fmt.Println("Stake success")
 				return
 			}
 		}
@@ -618,7 +618,7 @@ var deletestakecmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if statusBar.success {
-				fmt.Println("\nDelete stake success\n")
+				fmt.Println("Delete stake success")
 				return
 			}
 		}

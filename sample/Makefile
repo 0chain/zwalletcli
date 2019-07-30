@@ -1,6 +1,7 @@
 SAMPLE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SCHEME=ed25519
+SCHEME=local_bls0chain
 
 include $(SAMPLE_DIR)/scheme/$(SCHEME).mk
 
@@ -12,6 +13,7 @@ ZWALLET_CMD:=$(ZWALLET) $(CONFIG)
 
 FROM_WALLET:=--wallet $(from)
 TO_WALLET:=--wallet $(to)
+MSWALLET:=--wallet $(mswallet)
 
 FAUCET:=faucet --methodName pour --input "Generous PayDay"
 
@@ -60,6 +62,11 @@ faucet:
 	@echo ">>> Add money receiver=$(to)"
 	$(ZWALLET_CMD) $(FAUCET) $(TO_WALLET)
 
+createmswalletcmd:
+	@echo ">>> Start - Test MultiSig Wallet"
+	$(ZWALLET_CMD) createmswallet $(MSWALLET) --numsigners 8 --threshold 4 --testn true
+	@echo ">>> Done - Test MultiSig Wallet"
+
 clean:
 	cd $(CONFIG_DIR);  rm -rf $(from) $(to)
 
@@ -90,6 +97,9 @@ help:
 	@echo ""
 	@echo "Check Balance"
 	@echo "\tmake getbalance     : Getbalance on all clients"
+	@echo ""
+	@echo "MultiSig Wallet"
+	@echo "\tmake createmswalletcmd : Create MultiSigWallet and test it"
 	@echo ""
 	@echo "Clean up"
 	@echo "\tmake clean          : Clean the wallets files"
