@@ -3,19 +3,21 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"sync"
+
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/ioutil"
-	"os"
-	"sync"
 )
 
 var cfgFile string
 var walletFile string
 var cDir string
+var bVerbose bool
 
 var sharders []string
 var miners []string
@@ -37,7 +39,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is nodes.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.txt)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
-
+	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stdio (default false)")
 	initConfig()
 	fmt.Printf("%s", cfgFile)
 }
@@ -96,7 +98,7 @@ func initConfig() {
 		walletFilePath = configDir + "/wallet.txt"
 	}
 	//set the log file
-	zcncore.SetLogFile("cmdlog.log", false)
+	zcncore.SetLogFile("cmdlog.log", bVerbose)
 	err := zcncore.InitZCNSDK(miners, sharders, signScheme)
 	if err != nil {
 		fmt.Println(err.Error())
