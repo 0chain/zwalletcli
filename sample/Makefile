@@ -1,6 +1,7 @@
 SAMPLE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SCHEME=ed25519
+#SCHEME=local_ed25519
 #SCHEME=local_bls0chain
 #SCHEME=bls0chain
 
