@@ -229,7 +229,7 @@ Use this command to unlock the locked tokens. Unless you unlock, the tokens are 
 
 Command
 
-    ./zwallet unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
+    ./zwallet unlock --pool_id 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
 Response
 
     Unlock token success
