@@ -81,8 +81,7 @@ func initConfig() {
 		nodeConfig.SetConfigName("nodes")
 	}
 	if err := nodeConfig.ReadInConfig(); err != nil {
-		fmt.Println("Can't read config:", err)
-		os.Exit(1)
+		ExitWithError("Can't read config:", err)
 	}
 	sharders = nodeConfig.GetStringSlice("sharders")
 	miners = nodeConfig.GetStringSlice("miners")
@@ -101,8 +100,7 @@ func initConfig() {
 	zcncore.SetLogFile("cmdlog.log", bVerbose)
 	err := zcncore.InitZCNSDK(miners, sharders, signScheme)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		ExitWithError(err.Error())
 	}
 
 	if _, err := os.Stat(walletFilePath); os.IsNotExist(err) {
@@ -115,33 +113,28 @@ func initConfig() {
 		if err == nil {
 			wg.Wait()
 		} else {
-			fmt.Println(err.Error())
-			os.Exit(1)
+			ExitWithError(err.Error())
 		}
 
 		if len(statusBar.walletString) == 0 || !statusBar.success {
-			fmt.Println("Error creating the wallet." + statusBar.errMsg)
-			os.Exit(1)
+			ExitWithError("Error creating the wallet." + statusBar.errMsg)
 		}
 		fmt.Println("ZCN wallet created!!")
 		clientConfig = string(statusBar.walletString)
 		file, err := os.Create(walletFilePath)
 		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
+			ExitWithError(err.Error())
 		}
 		defer file.Close()
 		fmt.Fprintf(file, clientConfig)
 	} else {
 		f, err := os.Open(walletFilePath)
 		if err != nil {
-			fmt.Println("Error opening the wallet", err)
-			os.Exit(1)
+			ExitWithError("Error opening the wallet", err)
 		}
 		clientBytes, err := ioutil.ReadAll(f)
 		if err != nil {
-			fmt.Println("Error reading the wallet", err)
-			os.Exit(1)
+			ExitWithError("Error reading the wallet", err)
 		}
 		clientConfig = string(clientBytes)
 	}
@@ -150,15 +143,13 @@ func initConfig() {
 	err = json.Unmarshal([]byte(clientConfig), wallet)
 	clientWallet = wallet
 	if err != nil {
-		fmt.Println("Invalid wallet at path:" + walletFilePath)
-		os.Exit(1)
+		ExitWithError("Invalid wallet at path:" + walletFilePath)
 	}
 	wg := &sync.WaitGroup{}
 	err = zcncore.SetWalletInfo(clientConfig, false)
 	if err == nil {
 		wg.Wait()
 	} else {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		ExitWithError(err.Error())
 	}
 }

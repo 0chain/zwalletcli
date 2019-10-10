@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -105,4 +106,9 @@ func (zcn *ZCNStatus) OnVoteComplete(status int, proposal string, err string) {
 	zcn.success = true
 	zcn.errMsg = ""
 	zcn.walletString = proposal
+}
+
+func ExitWithError(v ...interface{}) {
+	fmt.Fprintln(os.Stderr, v...)
+	os.Exit(1)
 }
