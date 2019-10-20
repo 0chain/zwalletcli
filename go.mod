@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcmd
 
 require (
-	github.com/0chain/gosdk v1.0.20-0.20191010065656-19e94b7d3e7f
+	github.com/0chain/gosdk v1.0.21
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/gosuri/uilive v0.0.0-20170323041506-ac356e6e42cd // indirect
 	github.com/gosuri/uiprogress v0.0.0-20170224063937-d0567a9d84a1 // indirect
