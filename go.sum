@@ -23,6 +23,8 @@ github.com/0chain/gosdk v1.0.24 h1:Rvg+pHvuy+5NLOmeaXDx1cr8HFhEkN7KinTirSWJhmU=
 github.com/0chain/gosdk v1.0.24/go.mod h1:CS/YkXqSXlfKD19Y0ZGdmEIZUX1DMu1n2cilcdH3L2E=
 github.com/0chain/gosdk v1.0.25-0.20191103004053-7e259a9d3663 h1:sZUE1niZ5SBtXpCGFK8UxtPk+pPUKthtCzXN5uZ6AeE=
 github.com/0chain/gosdk v1.0.25-0.20191103004053-7e259a9d3663/go.mod h1:CS/YkXqSXlfKD19Y0ZGdmEIZUX1DMu1n2cilcdH3L2E=
+github.com/0chain/gosdk v1.0.25-0.20191103013224-a0fc946194ef h1:e+k5ch54UQhIc3z5/IKs1NrOcEOibCCfcxeq7cEdiGA=
+github.com/0chain/gosdk v1.0.25-0.20191103013224-a0fc946194ef/go.mod h1:QL+AwKttimAxya3g7/yK/1jmdHUcrtMwL8cuaZKJ3qw=
 github.com/0chain/zwalletcli v0.0.0-20190731230655-0394f0f206b4 h1:CMbm33zogvWivVlBoUVXbtyuW5B5LQhR/Bof9KCWDgo=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -77,6 +79,8 @@ github.com/herumi/bls v0.0.0-20190618074831-058f18ee12f6 h1:mOxyBz45OFF4OXdGpkuj
 github.com/herumi/bls v0.0.0-20190618074831-058f18ee12f6/go.mod h1:i4wRNUUFF1nNmYFHM9UDl13MGoxEQkMVCLAd82qZz4s=
 github.com/herumi/bls v0.0.0-20190831013515-802c12dffb92 h1:c4pJNqA4BebcLQaCjY3At62vQ0U8OyOIqk29VlHfptg=
 github.com/herumi/bls v0.0.0-20190831013515-802c12dffb92/go.mod h1:i4wRNUUFF1nNmYFHM9UDl13MGoxEQkMVCLAd82qZz4s=
+github.com/herumi/bls-go-binary v0.0.0-20191031124629-1459f17b88d4 h1:1ctVDJgq9on+JUb4eNVqUcEKs9K3fNDLz1/wdICnWAI=
+github.com/herumi/bls-go-binary v0.0.0-20191031124629-1459f17b88d4/go.mod h1:uTBfU/n3h1aOYIl5nNTbLn5dUfNkF1P97JTaz3bdvro=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
