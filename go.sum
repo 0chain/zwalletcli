@@ -21,6 +21,8 @@ github.com/0chain/gosdk v1.0.22-0.20191024150824-f2ceb69cefd2 h1:EVGYC8Q5QPF+3K2
 github.com/0chain/gosdk v1.0.22-0.20191024150824-f2ceb69cefd2/go.mod h1:CS/YkXqSXlfKD19Y0ZGdmEIZUX1DMu1n2cilcdH3L2E=
 github.com/0chain/gosdk v1.0.24 h1:Rvg+pHvuy+5NLOmeaXDx1cr8HFhEkN7KinTirSWJhmU=
 github.com/0chain/gosdk v1.0.24/go.mod h1:CS/YkXqSXlfKD19Y0ZGdmEIZUX1DMu1n2cilcdH3L2E=
+github.com/0chain/gosdk v1.0.25-0.20191103004053-7e259a9d3663 h1:sZUE1niZ5SBtXpCGFK8UxtPk+pPUKthtCzXN5uZ6AeE=
+github.com/0chain/gosdk v1.0.25-0.20191103004053-7e259a9d3663/go.mod h1:CS/YkXqSXlfKD19Y0ZGdmEIZUX1DMu1n2cilcdH3L2E=
 github.com/0chain/zwalletcli v0.0.0-20190731230655-0394f0f206b4 h1:CMbm33zogvWivVlBoUVXbtyuW5B5LQhR/Bof9KCWDgo=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
