@@ -12,7 +12,7 @@ ZWallet Command-line utility provides a self-explaining "help" option that lists
 ## How to get it?
 You can clone ZWallet Command-line utility from github repo [Here](https://github.com/0chain/zwalletcli)
 ## Pre-requisites
-* ZWallet Command-line utility needs Go V1.12 or higher. 
+* ZWallet Command-line utility needs Go V1.12 or higher.
 * [gosdk](https://github.com/0chain/gosdk)
 ## How to Build the code?
 1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working on your system.
@@ -23,7 +23,7 @@ You can clone ZWallet Command-line utility from github repo [Here](https://githu
 
         go build -tags bn256 -o zwallet
 
-6. zwallet application is built in the local folder. 
+6. zwallet application is built in the local folder.
 ## Getting started with ZWallet
 ### Before you start
 Before you start playing with ZWallet, you need to know where the blockchain is running and what encryption scheme it is using. Both of that information is stored in a configuration files under clusters folder under repo. Choose the suitable one based on your needs.
@@ -43,39 +43,50 @@ When you run zwallet with no arguments, it will list all the supported commands.
 
 Command
 
-    ./zwallet
+    ./zwalletclicli
+
 Response
 
-   Use Zwallet to store, send and execute smart contract on 0Chain platform.
-			Complete documentation is available at https://0chain.net
+   Use zwalletcli to store, send and execute smart contract on 0Chain platform.
+                        Complete documentation is available at https://0chain.net
 
     Usage:
-        zwallet [command]
+    zwalletcli [command]
 
     Available Commands:
-        faucet          Faucet smart contract
-        getbalance      Get balance from sharders
-        getlockedtokens Get locked tokens
-        help            Help about any command
-        lock            Lock tokens
-        lockconfig      Get lock configuration
-        recoverwallet   Recover wallet
-        send            Send ZCN token to another wallet
-        unlock          Unlock tokens
+    createmswallet     create multisig wallet
+    deletestake        Delete Stake from user pool
+    faucet             Faucet smart contract
+    getbalance         Get balance from sharders
+    getblobbers        Get registered blobbers from sharders
+    getid              Get Miner or Sharder ID from its URL
+    getlockedtokens    Get locked tokens
+    getuserpooldetails Get user pool details
+    getuserpools       Get user pools from sharders
+    help               Help about any command
+    lock               Lock tokens
+    lockconfig         Get lock configuration
+    recoverwallet      Recover wallet
+    send               Send ZCN token to another wallet
+    stake              Stake Miners or Sharders
+    unlock             Unlock tokens
+    verify             verify transaction
+    version            Prints version information
 
     Flags:
         --config string      config file (default is nodes.yaml)
         --configDir string   configuration directory (default is $HOME/.zcn)
-    -h, --help               help for zwallet
+    -h, --help               help for zwalletcli
+        --verbose            prints sdk log in stdio (default false)
         --wallet string      wallet file (default is wallet.txt)
 
-    Use "zwallet [command] --help" for more information about a command.
+    Use "zwalletcli [command] --help" for more information about a command.
 
 ### help
 To get the list of required arguments for a command use help flag
 Command
 
-    ./zwallet faucet --help
+    ./zwalletcli faucet --help
 
 Response
 
@@ -83,48 +94,50 @@ Response
                 <methodName> <input>
 
     Usage:
-        zwallet faucet [flags]
+    zwalletcli faucet [flags]
 
     Flags:
     -h, --help                help for faucet
         --input string        input
         --methodName string   methodName
+        --token float         Token request
 
     Global Flags:
         --config string      config file (default is nodes.yaml)
         --configDir string   configuration directory (default is $HOME/.zcn)
+        --verbose            prints sdk log in stdio (default false)
         --wallet string      wallet file (default is wallet.txt)
 
 
 #### getbalance
-getbalance helps in two ways 
+getbalance helps in two ways
 
 1. to get balance of an existing wallet
 2. to create a wallet if there is none
 
 Command
 
-    ./zwallet getbalance
+    ./zwalletcli getbalance
 Response
 
     No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
     ZCN wallet created!!
 
-    Get balance failed. 
+    Get balance failed.
 If you open the wallet.txt file, you will see the wallet details.
 
     {"client_id":"44347b5640ef3f5313e5efe3c6ab0e0c83efd625ed2bf00e912479aa8813cb1d","client_key":"1e400854be8bc1a787f4528da60984f22aee9e1fa47d3aa3aef27c40e8b087077283596084a9329e82d9f4f1eaf4319415648dd47795c5ed1156c2363dbe1280","keys":[{"public_key":"1e400854be8bc1a787f4528da60984f22aee9e1fa47d3aa3aef27c40e8b087077283596084a9329e82d9f4f1eaf4319415648dd47795c5ed1156c2363dbe1280","private_key":"b4ec0f105417a833d38213f2c246bd5c37a242e251009088e1e8f7204f112f0a"}],"mnemonics":"portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome","version":"1.0","date_created":"2019-06-16 16:22:15.406946 -0700 PDT m=+0.007561539"}
 Out of these, the client_id and menmonics fields will be useful later.
 
 #### customized set up
-Let's have a customized set up with 
+Let's have a customized set up with
 1. the configuration folder - create a folder "playground" under the root folder of repo.
 2. the configuration file - copy the nodes.yaml file as devi.yaml and place it under the playground folder.
 
 With this set up lets run "getbalance" again
 
 Command
-    ./zwallet --configDir ./playground --config devi getbalance
+    ./zwalletcli --configDir ./playground --config devi getbalance
 
 Response
 
@@ -132,13 +145,13 @@ Response
 
     ZCN wallet created!!
 
-    Get balance failed. 
+    Get balance failed.
 #### faucet
 faucet command is useful to get test tokens into your wallet for transactional purposes.
 
 Command
 
-     ./zwallet faucet --methodName pour --input "{Pay day}"
+     ./zwalletcli faucet --methodName pour --input "{Pay day}"
 
 Response
 
@@ -148,11 +161,11 @@ Response
 Let's use getbalance again to check the balance.
 Command
 
-    ./zwallet getbalance
+    ./zwalletcli getbalance
 
 Response
 
-    Balance: 1 
+    Balance: 1
 
 There is 1 token deposited in the wallet as specified in wallet.txt. Same way you can use faucet any number of time whenever you need additional tokens.
 
@@ -161,19 +174,19 @@ You can also use getbalance command to create a new wallet with a desired file n
 
 Command
 
-     ./zwallet getbalance --wallet from
+     ./zwalletcli getbalance --wallet from
 
 Response
 
     No wallet in path  /Users/jay_at_0chain/.zcn/from found. Creating wallet...
     ZCN wallet created!!
 
-    Get balance failed. 
+    Get balance failed.
 
 Check the new wallet file "from" created under your $Home/.zcn
 
 #### send
-Use send command to send a transaction from one wallet to the other. Send commands take four parameters. 
+Use send command to send a transaction from one wallet to the other. Send commands take four parameters.
 1. From wallet -- default is the account in wallet.txt
 2. to_client_id -- address of the wallet receiving the funds
 3. desc -- description for the transaction
@@ -181,7 +194,7 @@ Use send command to send a transaction from one wallet to the other. Send comman
 
 Command
 
-     ./zwallet send --wallet from --desc "testing" --toclientID "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --token 0.5
+     ./zwalletcli send --wallet from --desc "testing" --toclientID "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --token 0.5
 
 Response
 
@@ -193,7 +206,7 @@ When you run a getbalance on both the wallets you see the difference
 0Chain has a great way of earning additional tokens by locking tokens. When you lock tokens for a period of time, you will earn interest. The terms of lock can be obtained by lockconfig command.
 Command
 
-    ./zwallet lockconfig
+    ./zwalletcli lockconfig
 
 Response
 
@@ -204,7 +217,7 @@ Response
 #### lock
 Command
 
-./zwallet lock --wallet from --durationHr 0 --durationMin 5 --token 10.0
+./zwalletcli lock --wallet from --durationHr 0 --durationMin 5 --token 10.0
 
 Response
 
@@ -215,7 +228,7 @@ If you run the getbalance, you see that interest would have been already paid. T
 Use getlockedtokens command to get informatiion about locked tokens
 
 Command
-    ./zwallet getlockedtokens --wallet from
+    ./zwalletcli getlockedtokens --wallet from
 
 Response
 
@@ -229,7 +242,7 @@ Use this command to unlock the locked tokens. Unless you unlock, the tokens are 
 
 Command
 
-    ./zwallet unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
+    ./zwalletcli unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
 Response
 
     Unlock token success
@@ -239,33 +252,33 @@ use this command to recover wallet from a different computer. You need to provid
 
 Command
 
-    ./zwallet recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
+    ./zwalletcli recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
 
 #### createmswallet
 
 Before jumping on to command description a quick introduction to Multisignature Wallet.
 
-A Multisignature Wallet is a wallet for which any transaction from this wallet needs to be voted by T(N) associated signer wallets. To create a Multisignature Wallet,  you need to specify the number of signers (N) you want on that wallet and minimum number of votes (T) it needs for a transaction to be approved. 
+A Multisignature Wallet is a wallet for which any transaction from this wallet needs to be voted by T(N) associated signer wallets. To create a Multisignature Wallet,  you need to specify the number of signers (N) you want on that wallet and minimum number of votes (T) it needs for a transaction to be approved.
 
-APIs 
+APIs
 
   * CreateMSWallet API will create the group wallet (MultiSignature Wallet) and corresponding number of Signer Wallets. All of these wallets have to be registered first on the Blockchain.
 
-  * RegisterMultiSig API registers the group wallet with MultiSig smartcontract.  
+  * RegisterMultiSig API registers the group wallet with MultiSig smartcontract.
 
-  * CreateVote API creates a vote for a proposal. 
+  * CreateVote API creates a vote for a proposal.
 
   * RegisterVote API will vote for a proposal. Initially, if the proposal does not exist, MultiSig smartcontract will automatically create one as identified by the ProposalID parameter. Any vote bearing the same ProposalID, will be counted as a vote for the transaction. When the threshold number of votes are registered, transaction will be automatically processed. Any extra votes will be ignored.
 
 Note 1: All Proposals will have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
 
-Note 2: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated with one or more tokens. 
+Note 2: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated with one or more tokens.
 
-Back to the command *createmswallet*. This command demonstrates how to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option. 
+Back to the command *createmswallet*. This command demonstrates how to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option.
 
 Command
 
-    ./zwallet createmswallet --numsigners 3 --threshold 2 
+    ./zwalletcli createmswallet --numsigners 3 --threshold 2
 
 where
 
@@ -281,4 +294,4 @@ Response
 ### Tips
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
-3. zwalletcmd also comes with a Makefile which simplifies a lot of these zwallet commands.  
+3. zwalletcli also comes with a Makefile which simplifies a lot of these zwalletcli commands.

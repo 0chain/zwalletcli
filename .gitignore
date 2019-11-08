@@ -14,8 +14,7 @@ sample/cmdlog.log
 sample/config/alice.json
 sample/config/mary.json
 sample/config/mswallet.json
-sample/zwallet
-zwallet
+sample/zwalletcli
+zwalletcli
 *.log
-zwallet
 
