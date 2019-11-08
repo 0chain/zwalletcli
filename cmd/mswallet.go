@@ -43,7 +43,7 @@ var createmswalletcmd = &cobra.Command{
 			ExitWithError("Error: threshold is not an integer")
 		}
 		if threshold > numsigners {
-			ExitWithError("Error: given threshold (%d) is too high. Threshold has to be less than or equal to numsigners (%d)\n", threshold, numsigners)
+			ExitWithError(fmt.Sprintf("Error: given threshold (%d) is too high. Threshold has to be less than or equal to numsigners (%d)\n", threshold, numsigners))
 		}
 
 		testN, err := cmd.Flags().GetBool("testn")

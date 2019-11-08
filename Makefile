@@ -2,7 +2,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SAMPLE_DIR:=$(ROOT_DIR)/sample
 
-ZWALLET=zwallet
+ZWALLET=zwalletcli
 
 .PHONY: $(ZWALLET)
 
@@ -10,8 +10,9 @@ zwallet-test:
 	go test -v -tags bn256 ./...
 
 $(ZWALLET):
-	go build -v -tags bn256 -o $@
-	cp $(ZWALLET) $(SAMPLE_DIR)/zwallet
+	$(eval VERSION=$(shell git describe --tags --dirty --always))
+	go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $@
+	cp $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLET)
 
 gomod-download:
 	go mod download -json
@@ -19,7 +20,7 @@ gomod-download:
 gomod-clean:
 	go clean -i -r -x -modcache  ./...
 
-install: zwallet | zwallet-test
+install: $(ZWALLET) | zwallet-test
 
 clean: gomod-clean
 	@rm -rf $(ROOT_DIR)/$(ZWALLET)
@@ -34,7 +35,7 @@ help:
 	@echo ""
 	@echo "Install"
 	@echo "\tmake install           - build, test and install the wallet cli"
-	@echo "\tmake zwallet           - installs the wallet cli"
+	@echo "\tmake zwalletcli        - installs the wallet cli"
 	@echo "\tmake zwallet-test      - run zwallet test"
 	@echo ""
 	@echo "Clean:"
