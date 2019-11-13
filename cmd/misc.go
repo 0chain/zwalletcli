@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
-	"github.com/0chain/zwalletcmd/util"
+	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
 

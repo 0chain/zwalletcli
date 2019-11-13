@@ -1,4 +1,4 @@
-module github.com/0chain/zwalletcmd
+module github.com/0chain/zwalletcli
 
 require (
 	github.com/0chain/gosdk v1.0.27

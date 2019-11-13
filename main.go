@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/0chain/zwalletcmd/cmd"
+	"github.com/0chain/zwalletcli/cmd"
 )
 
 var VersionStr string

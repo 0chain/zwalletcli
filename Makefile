@@ -2,17 +2,19 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SAMPLE_DIR:=$(ROOT_DIR)/sample
 
-ZWALLET=zwalletcli
+ZWALLET=zwallet
+ZWALLETCLI=zwalletcli
 
 .PHONY: $(ZWALLET)
 
-zwalletcli-test:
+default: help
+
+zwallet-test:
 	go test -v -tags bn256 ./...
 
 $(ZWALLET):
 	$(eval VERSION=$(shell git describe --tags --dirty --always))
 	go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $@
-	cp $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLET)
 
 gomod-download:
 	go mod download -json
@@ -20,7 +22,12 @@ gomod-download:
 gomod-clean:
 	go clean -i -r -x -modcache  ./...
 
-install: $(ZWALLET) | zwalletcli-test
+install: $(ZWALLET) | zwallet-test
+	@echo ""
+	@cp -f $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLET)
+	@cp -f $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLETCLI)
+	@echo "Installed binaries to $(SAMPLE_DIR)/..."
+	@echo ""
 
 clean: gomod-clean
 	@rm -rf $(ROOT_DIR)/$(ZWALLET)
@@ -35,8 +42,8 @@ help:
 	@echo ""
 	@echo "Install"
 	@echo "\tmake install           - build, test and install the wallet cli"
-	@echo "\tmake zwalletcli        - installs the wallet cli"
-	@echo "\tmake zwalletcli-test   - run zwallet test"
+	@echo "\tmake zwallet           - build wallet cli"
+	@echo "\tmake zwallet-test      - run zwallet test"
 	@echo ""
 	@echo "Clean:"
 	@echo "\tmake clean             - deletes all build output files"

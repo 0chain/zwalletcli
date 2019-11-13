@@ -15,8 +15,8 @@ var versionCmd = &cobra.Command{
 	Long:  `Prints version information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Version info:")
-		fmt.Println("\tzwalletcli..: ", VersionStr)
-		fmt.Println("\tgosdk.......: ", zcncore.GetVersion())
+		fmt.Println("\tzwallet...: ", VersionStr)
+		fmt.Println("\tgosdk.....: ", zcncore.GetVersion())
 		return
 	},
 }

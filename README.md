@@ -16,14 +16,16 @@ You can clone ZWallet Command-line utility from github repo [Here](https://githu
 * [gosdk](https://github.com/0chain/gosdk)
 ## How to Build the code?
 1. Make sure you've Go SDK 1.12 or higher and Go configurations are set and working on your system.
-2.  Clone [gosdk](https://github.com/0chain/gosdk) and follow steps in Build and Installation section.
-3. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
-4. Go to the root directory of the local repo
-5. Run the following command:
+2. Clone [zwalletcli](https://github.com/0chain/zwalletcli)
+3. Go to the root directory of the local repo
+4. Run the following command:
 
-        go build -tags bn256 -o zwallet
+        make install
 
-6. zwallet application is built in the local folder.
+5. zwallet application will be under
+
+        <cloned dir>/sample
+
 ## Getting started with ZWallet
 ### Before you start
 Before you start playing with ZWallet, you need to know where the blockchain is running and what encryption scheme it is using. Both of that information is stored in a configuration files under clusters folder under repo. Choose the suitable one based on your needs.
@@ -43,15 +45,15 @@ When you run zwallet with no arguments, it will list all the supported commands.
 
 Command
 
-    ./zwalletclicli
+    ./zwallet
 
 Response
 
-   Use zwalletcli to store, send and execute smart contract on 0Chain platform.
+   Use zwallet to store, send and execute smart contract on 0Chain platform.
                         Complete documentation is available at https://0chain.net
 
     Usage:
-    zwalletcli [command]
+    zwallet [command]
 
     Available Commands:
     createmswallet     create multisig wallet
@@ -80,13 +82,13 @@ Response
         --verbose            prints sdk log in stdio (default false)
         --wallet string      wallet file (default is wallet.txt)
 
-    Use "zwalletcli [command] --help" for more information about a command.
+    Use "zwallet [command] --help" for more information about a command.
 
 ### help
 To get the list of required arguments for a command use help flag
 Command
 
-    ./zwalletcli faucet --help
+    ./zwallet faucet --help
 
 Response
 
@@ -94,7 +96,7 @@ Response
                 <methodName> <input>
 
     Usage:
-    zwalletcli faucet [flags]
+    zwallet faucet [flags]
 
     Flags:
     -h, --help                help for faucet
@@ -117,7 +119,7 @@ getbalance helps in two ways
 
 Command
 
-    ./zwalletcli getbalance
+    ./zwallet getbalance
 Response
 
     No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
@@ -137,7 +139,7 @@ Let's have a customized set up with
 With this set up lets run "getbalance" again
 
 Command
-    ./zwalletcli --configDir ./playground --config devi getbalance
+    ./zwallet --configDir ./playground --config devi getbalance
 
 Response
 
@@ -151,7 +153,7 @@ faucet command is useful to get test tokens into your wallet for transactional p
 
 Command
 
-     ./zwalletcli faucet --methodName pour --input "{Pay day}"
+     ./zwallet faucet --methodName pour --input "{Pay day}"
 
 Response
 
@@ -161,7 +163,7 @@ Response
 Let's use getbalance again to check the balance.
 Command
 
-    ./zwalletcli getbalance
+    ./zwallet getbalance
 
 Response
 
@@ -174,7 +176,7 @@ You can also use getbalance command to create a new wallet with a desired file n
 
 Command
 
-     ./zwalletcli getbalance --wallet from
+     ./zwallet getbalance --wallet from
 
 Response
 
@@ -194,7 +196,7 @@ Use send command to send a transaction from one wallet to the other. Send comman
 
 Command
 
-     ./zwalletcli send --wallet from --desc "testing" --toclientID "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --token 0.5
+     ./zwallet send --wallet from --desc "testing" --toclientID "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --token 0.5
 
 Response
 
@@ -206,7 +208,7 @@ When you run a getbalance on both the wallets you see the difference
 0Chain has a great way of earning additional tokens by locking tokens. When you lock tokens for a period of time, you will earn interest. The terms of lock can be obtained by lockconfig command.
 Command
 
-    ./zwalletcli lockconfig
+    ./zwallet lockconfig
 
 Response
 
@@ -217,7 +219,7 @@ Response
 #### lock
 Command
 
-./zwalletcli lock --wallet from --durationHr 0 --durationMin 5 --token 10.0
+./zwallet lock --wallet from --durationHr 0 --durationMin 5 --token 10.0
 
 Response
 
@@ -228,7 +230,7 @@ If you run the getbalance, you see that interest would have been already paid. T
 Use getlockedtokens command to get informatiion about locked tokens
 
 Command
-    ./zwalletcli getlockedtokens --wallet from
+    ./zwallet getlockedtokens --wallet from
 
 Response
 
@@ -242,7 +244,7 @@ Use this command to unlock the locked tokens. Unless you unlock, the tokens are 
 
 Command
 
-    ./zwalletcli unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
+    ./zwallet unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
 Response
 
     Unlock token success
@@ -252,7 +254,7 @@ use this command to recover wallet from a different computer. You need to provid
 
 Command
 
-    ./zwalletcli recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
+    ./zwallet recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
 
 #### createmswallet
 
@@ -278,7 +280,7 @@ Back to the command *createmswallet*. This command demonstrates how to create a 
 
 Command
 
-    ./zwalletcli createmswallet --numsigners 3 --threshold 2
+    ./zwallet createmswallet --numsigners 3 --threshold 2
 
 where
 
@@ -294,4 +296,4 @@ Response
 ### Tips
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
-3. zwalletcli also comes with a Makefile which simplifies a lot of these zwalletcli commands.
+3. zwallet also comes with a Makefile which simplifies a lot of these zwalletcli commands.

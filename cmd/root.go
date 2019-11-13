@@ -26,9 +26,9 @@ var numKeys int
 var signScheme string
 
 var rootCmd = &cobra.Command{
-	Use:   "zwalletcli",
-	Short: "Use zwalletcli to store, send and execute smart contract on 0Chain platform",
-	Long: `Use zwalletcli to store, send and execute smart contract on 0Chain platform.
+	Use:   "zwallet",
+	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
+	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
 }
 
