@@ -22,8 +22,9 @@ var bVerbose bool
 var sharders []string
 var miners []string
 var clientConfig string
-var numKeys int
-var signScheme string
+var minSubmit int
+var minCfm int
+var CfmChainLength int
 
 var rootCmd = &cobra.Command{
 	Use:   "zwallet",
@@ -36,10 +37,10 @@ var clientWallet *zcncrypto.Wallet
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is nodes.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.txt)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
-	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stdio (default false)")
+	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stderr (default false)")
 	initConfig()
 	fmt.Printf("%s", cfgFile)
 }
@@ -78,15 +79,18 @@ func initConfig() {
 	if &cfgFile != nil && len(cfgFile) > 0 {
 		nodeConfig.SetConfigName(cfgFile)
 	} else {
-		nodeConfig.SetConfigName("nodes")
+		nodeConfig.SetConfigName("config")
 	}
 	if err := nodeConfig.ReadInConfig(); err != nil {
 		ExitWithError("Can't read config:", err)
 	}
 	sharders = nodeConfig.GetStringSlice("sharders")
 	miners = nodeConfig.GetStringSlice("miners")
-	signScheme = nodeConfig.GetString("signature_scheme")
-	numKeys = nodeConfig.GetInt("num_of_keys")
+	signScheme := nodeConfig.GetString("signature_scheme")
+	chainID := nodeConfig.GetString("chain_id")
+	minSubmit = nodeConfig.GetInt("min_submit")
+	minCfm = nodeConfig.GetInt("min_confirmation")
+	CfmChainLength = nodeConfig.GetInt("confirmation_chain_length")
 	//chainID := nodeConfig.GetString("chain_id")
 
 	//TODO: move the private key storage to the keychain or secure storage
@@ -98,7 +102,11 @@ func initConfig() {
 	}
 	//set the log file
 	zcncore.SetLogFile("cmdlog.log", bVerbose)
-	err := zcncore.InitZCNSDK(miners, sharders, signScheme)
+	err := zcncore.InitZCNSDK(miners, sharders, signScheme,
+		zcncore.WithChainID(chainID),
+		zcncore.WithMinSubmit(minSubmit),
+		zcncore.WithMinConfirmation(minCfm),
+		zcncore.WithConfirmationChainLength(CfmChainLength))
 	if err != nil {
 		ExitWithError(err.Error())
 	}

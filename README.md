@@ -31,7 +31,22 @@ You can clone ZWallet Command-line utility from github repo [Here](https://githu
 Before you start playing with ZWallet, you need to know where the blockchain is running and what encryption scheme it is using. Both of that information is stored in a configuration files under clusters folder under repo. Choose the suitable one based on your needs.
 
 ### Setup
-ZWallet Command-line Utility needs to know the configuration at runtime. By default, configuration files are assumed to be under $Home/.zcn folder. So, create $Home/.zcn folder and store the chosen yml files from clusters folder as nodes.yaml file there.
+ZWallet Command-line Utility needs to know the configuration at runtime. By default, configuration files are assumed to be under $Home/.zcn folder. So, create $Home/.zcn folder and store the chosen yml files from clusters folder as config.yaml file there.
+
+Sample config.yaml
+
+      miners:
+      - http://virb.devb.testnet-0chain.net:7071
+      - http://vira.devb.testnet-0chain.net:7071
+      - http://cala.devb.testnet-0chain.net:7071
+      - http://calb.devb.testnet-0chain.net:7071
+      sharders:
+      - http://cala.devb.testnet-0chain.net:7171
+      - http://vira.devb.testnet-0chain.net:7171
+      signature_scheme: bls0chain
+      min_submit: 50 # in percentage
+      min_confirmation: 50 # in percentage
+      confirmation_chain_length: 6
 
 ZWallet can read configuration file from any customized folder and finlename too. You need to specify the customized folder with *--configDir* flag and/or the customized filename with *--config* flag in all the commands.
 
