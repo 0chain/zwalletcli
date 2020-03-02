@@ -39,7 +39,7 @@ var recoverwalletcmd = &cobra.Command{
 		if &walletFile != nil && len(walletFile) > 0 {
 			walletFilePath = getConfigDir() + "/" + walletFile
 		} else {
-			walletFilePath = getConfigDir() + "/wallet.txt"
+			walletFilePath = getConfigDir() + "/wallet.json"
 		}
 		clientConfig = string(statusBar.walletString)
 		file, err := os.Create(walletFilePath)
