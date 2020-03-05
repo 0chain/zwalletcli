@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"sync"
 
@@ -111,6 +112,9 @@ func initConfig() {
 		ExitWithError(err.Error())
 	}
 
+	// is freshly created wallet?
+	var fresh bool
+
 	if _, err := os.Stat(walletFilePath); os.IsNotExist(err) {
 		fmt.Println("No wallet in path ", walletFilePath, "found. Creating wallet...")
 		wg := &sync.WaitGroup{}
@@ -136,11 +140,7 @@ func initConfig() {
 		defer file.Close()
 		fmt.Fprintf(file, clientConfig)
 
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err = createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
-		}
-		log.Printf("Read pool created successfully")
+		fresh = true
 
 	} else {
 		f, err := os.Open(walletFilePath)
@@ -167,4 +167,13 @@ func initConfig() {
 	} else {
 		ExitWithError(err.Error())
 	}
+
+	if fresh {
+		log.Print("Creating related read pool for storage smart-contract...")
+		if err = createReadPool(); err != nil {
+			log.Fatalf("Failed to create read pool: %v", err)
+		}
+		log.Printf("Read pool created successfully")
+	}
+
 }

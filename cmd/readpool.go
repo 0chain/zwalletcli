@@ -27,10 +27,10 @@ var readPoolConfigCmd = &cobra.Command{
 		}
 		wg.Wait()
 		if statusBar.success {
-			log.Printf("\nRead pool locked tokens:\n %s\n", statusBar.errMsg)
+			log.Printf("\nRead pool configurations:\n %s\n", statusBar.errMsg)
 			return
 		}
-		log.Fatalf("\nFailed to get locked tokens. %s\n", statusBar.errMsg)
+		log.Fatalf("\nFailed to get configurations. %s\n", statusBar.errMsg)
 	},
 }
 

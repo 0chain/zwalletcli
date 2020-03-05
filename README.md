@@ -86,6 +86,7 @@ Response
     lock                Lock tokens
     lockconfig          Get lock configuration
     readlock            Lock tokens in read pool
+    readpoolconfig      Get read pool configurations
     readunlock          Unlock tokens in read pool
     recoverwallet       Recover wallet
     send                Send ZCN token to another wallet
@@ -335,14 +336,15 @@ Response, for example,
 
 #### readlock
 
-Lock tokens in read pool. Required arguments are
+Lock tokens in read pool. Arguments are
 
-1. `--t` -- float number -- tokens to lock
-2. `--d` -- duration to lock in [golang duration string](https://pkg.go.dev/time?tab=doc#ParseDuration) format (1h, 1h30m, 20m)
+1. `--tokens` -- float number -- tokens to lock, required.
+2. `--duration` -- duration to lock in [golang duration string](https://pkg.go.dev/time?tab=doc#ParseDuration) format (1h, 1h30m, 20m), required
+3. `--fee` - -float number, transaction's fee, default is 0
 
 For example, lock 0.8 tokens for a minute.
 
-    ./zwallet readlock --t 0.8 --d 1m --verbose
+    ./zwallet readlock --tokens 0.8 --duration 20m --verbose
 
 Response, for example
 
@@ -350,18 +352,33 @@ Response, for example
 
 #### readunlock
 
-Unlock tokens in read pool that expired. For example:
+Unlock tokens in read pool that expired. Arguments are
 
-    ./zwallet readunlock --p 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 --verbose
+1. `--pool_id` -- pool_id from getreadlockedtokens response. Make sure token of
+the pool aren't locked anymore. Required.
+2. `--fee` - -float number, transaction's fee, default is 0
 
-Where the `--p` is pool_id from getreadlockedtokens response. Make sure token of
-the pool aren't locked anymore.
+
+For example:
+
+    ./zwallet readunlock --pool_id 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 --verbose
 
 Response, for example
 
     Tokens of 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 unlocked successfully
 
+
+#### readpoolconfig
+
+Get current read pool configurations.
+
+Response, for example:
+
+    Read pool configurations:
+     {"min_lock":10,"min_lock_period":7884000000000000,"max_lock_period":31536000000000000}
+
 ### Tips
+
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
 3. zwallet also comes with a Makefile which simplifies a lot of these zwalletcli commands.
