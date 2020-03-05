@@ -71,24 +71,29 @@ Response
     zwallet [command]
 
     Available Commands:
-    createmswallet     create multisig wallet
-    deletestake        Delete Stake from user pool
-    faucet             Faucet smart contract
-    getbalance         Get balance from sharders
-    getblobbers        Get registered blobbers from sharders
-    getid              Get Miner or Sharder ID from its URL
-    getlockedtokens    Get locked tokens
-    getuserpooldetails Get user pool details
-    getuserpools       Get user pools from sharders
-    help               Help about any command
-    lock               Lock tokens
-    lockconfig         Get lock configuration
-    recoverwallet      Recover wallet
-    send               Send ZCN token to another wallet
-    stake              Stake Miners or Sharders
-    unlock             Unlock tokens
-    verify             verify transaction
-    version            Prints version information
+    createmswallet      create multisig wallet
+    createreadpool      Create read pool
+    deletestake         Delete Stake from user pool
+    faucet              Faucet smart contract
+    getbalance          Get balance from sharders
+    getblobbers         Get registered blobbers from sharders
+    getid               Get Miner or Sharder ID from its URL
+    getlockedtokens     Get locked tokens
+    getreadlockedtokens Get locked tokens of read pool
+    getuserpooldetails  Get user pool details
+    getuserpools        Get user pools from sharders
+    help                Help about any command
+    lock                Lock tokens
+    lockconfig          Get lock configuration
+    readlock            Lock tokens in read pool
+    readunlock          Unlock tokens in read pool
+    recoverwallet       Recover wallet
+    send                Send ZCN token to another wallet
+    stake               Stake Miners or Sharders
+    unlock              Unlock tokens
+    verify              verify transaction
+    version             Prints version information
+
 
     Flags:
         --config string      config file (default is nodes.yaml)
@@ -307,6 +312,54 @@ Response
 
     Creating and testing a multisig wallet is successful!
 
+
+#### createreadpool
+
+Create read pool if missing. The read pool used for payments for read requests
+for blobbers.
+
+    ./zwallet createreadpool
+
+
+
+#### getreadlockedtokens
+
+Get locked tokens of read pool. No arguments required.
+
+    ./zwallet getreadlockedtokens
+
+Response, for example,
+
+    Read pool locked tokens:
+    {"stats":[{"pool_id":"8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84","start_time":1583335855,"duration":1200000000000,"time_left":868741734871,"locked":true,"balance":8000000000}]}
+
+#### readlock
+
+Lock tokens in read pool. Required arguments are
+
+1. `--t` -- float number -- tokens to lock
+2. `--d` -- duration to lock in [golang duration string](https://pkg.go.dev/time?tab=doc#ParseDuration) format (1h, 1h30m, 20m)
+
+For example, lock 0.8 tokens for a minute.
+
+    ./zwallet readlock --t 0.8 --d 1m --verbose
+
+Response, for example
+
+    Tokens (0.800000) locked successfully
+
+#### readunlock
+
+Unlock tokens in read pool that expired. For example:
+
+    ./zwallet readunlock --p 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 --verbose
+
+Where the `--p` is pool_id from getreadlockedtokens response. Make sure token of
+the pool aren't locked anymore.
+
+Response, for example
+
+    Tokens of 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 unlocked successfully
 
 ### Tips
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
