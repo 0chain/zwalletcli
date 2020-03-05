@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"log"
 	"os"
 	"sync"
@@ -10,45 +11,74 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var readPoolConfigCmd = &cobra.Command{
+	Use:   "readpoolconfig",
+	Short: "Get read pool configurations",
+	Long:  `Get current read pool configurations`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			wg        sync.WaitGroup
+			statusBar = &ZCNStatus{wg: &wg}
+		)
+		wg.Add(1)
+		if err := zcncore.GetReadPoolsConfig(statusBar); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+		if statusBar.success {
+			log.Printf("\nRead pool locked tokens:\n %s\n", statusBar.errMsg)
+			return
+		}
+		log.Fatalf("\nFailed to get locked tokens. %s\n", statusBar.errMsg)
+	},
+}
+
+func createReadPool() (err error) {
+	var (
+		txn       zcncore.TransactionScheme
+		wg        sync.WaitGroup
+		statusBar = &ZCNStatus{wg: &wg}
+	)
+
+	if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
+		return
+	}
+
+	wg.Add(1)
+	if err = txn.CreateReadPool(); err != nil {
+		return
+	}
+	wg.Wait()
+
+	if statusBar.success {
+		statusBar.success = false
+
+		wg.Add(1)
+		if err = txn.Verify(); err != nil {
+			return
+		}
+		wg.Wait()
+
+		if statusBar.success {
+			return // nil
+		}
+	}
+
+	return errors.New(statusBar.errMsg)
+}
+
 var createReadPoolCmd = &cobra.Command{
 	Use:   "createreadpool",
 	Short: "Create read pool",
 	Long:  "Create read pool for blobbers reading if the pool is missing",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-			txn, err  = zcncore.NewTransaction(statusBar, 0)
-		)
-
+		var err = createReadPool()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("\nFailed to create read pool: %v\n", err)
 		}
-
-		wg.Add(1)
-		if err = txn.CreateReadPool(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			statusBar.success = false
-
-			wg.Add(1)
-			if err = txn.Verify(); err != nil {
-				log.Fatal(err)
-			}
-			wg.Wait()
-
-			if statusBar.success {
-				log.Printf("\nRead pool created successfully\n")
-				return
-			}
-		}
-
-		log.Fatalf("\nFailed to create read pool: %s\n", statusBar.errMsg)
+		log.Printf("\nRead pool created successfully\n")
 	},
 }
 
@@ -83,22 +113,27 @@ var readPoolLockCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var flags = cmd.Flags()
-		if flags.Changed("t") == false {
-			log.Fatal("error: token flag is missing")
+		if flags.Changed("tokens") == false {
+			log.Fatal("error: tokens flag is missing")
 		}
 
-		if flags.Changed("d") == false {
+		if flags.Changed("duration") == false {
 			log.Fatal("error: duration is missing")
 		}
 
-		var toks, err = flags.GetFloat64("t")
+		var toks, err = flags.GetFloat64("tokens")
 		if err != nil {
 			log.Fatal("error: invalid number of tokens:", err)
 		}
 
 		var dur time.Duration
-		if dur, err = flags.GetDuration("d"); err != nil {
+		if dur, err = flags.GetDuration("duration"); err != nil {
 			log.Fatal("error: invalid duration:", err)
+		}
+
+		var fee float64
+		if fee, err = flags.GetFloat64("fee"); err != nil {
+			log.Fatal("error: invalid fee value:", err)
 		}
 
 		var (
@@ -107,7 +142,9 @@ var readPoolLockCmd = &cobra.Command{
 		)
 
 		var txn zcncore.TransactionScheme
-		if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
+		txn, err = zcncore.NewTransaction(statusBar,
+			zcncore.ConvertToValue(fee))
+		if err != nil {
 			log.Fatal(err)
 		}
 
@@ -145,13 +182,18 @@ var readPoolUnlockCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var flags = cmd.Flags()
-		if flags.Changed("p") == false {
+		if flags.Changed("pool_id") == false {
 			log.Fatal("error: pool id flag is missing")
 		}
 
-		var poolID, err = flags.GetString("p")
+		var poolID, err = flags.GetString("pool_id")
 		if err != nil {
 			log.Fatal("error: invalid pool id:", err)
+		}
+
+		var fee float64
+		if fee, err = flags.GetFloat64("fee"); err != nil {
+			log.Fatal("error: invalid fee value:", err)
 		}
 
 		var (
@@ -160,7 +202,9 @@ var readPoolUnlockCmd = &cobra.Command{
 		)
 
 		var txn zcncore.TransactionScheme
-		if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
+		txn, err = zcncore.NewTransaction(statusBar,
+			zcncore.ConvertToValue(fee))
+		if err != nil {
 			log.Fatal(err)
 		}
 
@@ -195,14 +239,17 @@ func init() {
 
 	rootCmd.AddCommand(createReadPoolCmd)
 	rootCmd.AddCommand(getReadPoolsStatsCmd)
+	rootCmd.AddCommand(readPoolConfigCmd)
 	rootCmd.AddCommand(readPoolLockCmd)
 	rootCmd.AddCommand(readPoolUnlockCmd)
 
-	readPoolLockCmd.PersistentFlags().Float64("t", 0, "number of tokens to lock")
-	readPoolLockCmd.PersistentFlags().Duration("d", 0, "duration")
-	readPoolLockCmd.MarkFlagRequired("t")
-	readPoolLockCmd.MarkFlagRequired("d")
+	readPoolLockCmd.PersistentFlags().Float64("tokens", 0, "number of tokens to lock")
+	readPoolLockCmd.PersistentFlags().Duration("duration", 0, "duration")
+	readPoolLockCmd.PersistentFlags().Float64("fee", 0, "transaction fee")
+	readPoolLockCmd.MarkFlagRequired("tokens")
+	readPoolLockCmd.MarkFlagRequired("duration")
 
-	readPoolUnlockCmd.PersistentFlags().String("p", "", "pool identifier")
-	readPoolUnlockCmd.MarkFlagRequired("p")
+	readPoolUnlockCmd.PersistentFlags().String("pool_id", "", "pool identifier")
+	readPoolUnlockCmd.PersistentFlags().Float64("fee", 0, "transaction fee")
+	readPoolUnlockCmd.MarkFlagRequired("pool_id")
 }

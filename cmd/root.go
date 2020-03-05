@@ -135,6 +135,13 @@ func initConfig() {
 		}
 		defer file.Close()
 		fmt.Fprintf(file, clientConfig)
+
+		log.Print("Creating related read pool for storage smart-contract...")
+		if err = createReadPool(); err != nil {
+			log.Fatalf("Failed to create read pool: %v", err)
+		}
+		log.Printf("Read pool created successfully")
+
 	} else {
 		f, err := os.Open(walletFilePath)
 		if err != nil {
