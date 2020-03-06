@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
@@ -90,21 +91,56 @@ var getuserpooldetailscmd = &cobra.Command{
 	},
 }
 
+type Terms struct {
+	ReadPrice               int64         `json:"read_price"`
+	WritePrice              int64         `json:"write_price"`
+	MinLockDemand           float64       `json:"min_lock_demand"`
+	MaxOfferDuration        time.Duration `json:"max_offer_duration"`
+	ChallengeCompletionTime time.Duration `json:"challenge_completion_time"`
+}
+
 type BlobberInfo struct {
-	Id  string `json:"id"`
-	Url string `json:"url"`
+	Id       string `json:"id"`
+	Url      string `json:"url"`
+	Terms    Terms  `json:"terms"`
+	Capacity int64  `json:"capacity"`
+	CapUsed  int64  `json:"cap_used"`
 }
 
 type BlobberNodes struct {
 	Nodes []BlobberInfo `json:"Nodes"`
 }
 
+func byteCountIEC(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
 func printBlobberList(nodes BlobberNodes) {
 	fmt.Println("Blobbers:")
-	header := []string{"URL", "ID"}
+	header := []string{
+		"URL", "ID", "CAP", "R / W PRICE", "DEMAND",
+	}
 	data := make([][]string, len(nodes.Nodes))
 	for idx, child := range nodes.Nodes {
-		data[idx] = []string{child.Url, child.Id}
+		data[idx] = []string{
+			child.Url,
+			child.Id,
+			fmt.Sprintf("%s / %s",
+				byteCountIEC(child.CapUsed), byteCountIEC(child.Capacity)),
+			fmt.Sprintf("%f / %f",
+				zcncore.ConvertToToken(child.Terms.ReadPrice),
+				zcncore.ConvertToToken(child.Terms.WritePrice)),
+			fmt.Sprint(child.Terms.MinLockDemand),
+		}
 	}
 	util.WriteTable(os.Stdout, header, []string{}, data)
 	fmt.Println("")

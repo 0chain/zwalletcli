@@ -80,24 +80,34 @@ Response
       zwallet [command]
 
     Available Commands:
-      createmswallet     create multisig wallet
-      deletestake        Delete Stake from user pool
-      faucet             Faucet smart contract
-      getbalance         Get balance from sharders
-      getblobbers        Get registered blobbers from sharders
-      getid              Get Miner or Sharder ID from its URL
-      getlockedtokens    Get locked tokens
-      getuserpooldetails Get user pool details
-      getuserpools       Get user pools from sharders
-      help               Help about any command
-      lock               Lock tokens
-      lockconfig         Get lock configuration
-      recoverwallet      Recover wallet
-      send               Send ZCN token to another wallet
-      stake              Stake Miners or Sharders
-      unlock             Unlock tokens
-      verify             verify transaction
-      version            Prints version information
+
+      createmswallet       create multisig wallet
+      createreadpool       Create read pool
+      deletestake          Delete Stake from user pool
+      faucet               Faucet smart contract
+      getbalance           Get balance from sharders
+      getblobbers          Get registered blobbers from sharders
+      getid                Get Miner or Sharder ID from its URL
+      getlockedtokens      Get locked tokens
+      getreadlockedtokens  Get locked tokens of read pool
+      getuserpooldetails   Get user pool details
+      getuserpools         Get user pools from sharders
+      getwritelockedtokens Get locked tokens of write pool
+      help                 Help about any command
+      lock                 Lock tokens
+      lockconfig           Get lock configuration
+      readlock             Lock tokens in read pool
+      readunlock           Unlock tokens in read pool
+      recoverwallet        Recover wallet
+      send                 Send ZCN token to another wallet
+      stake                Stake Miners or Sharders
+      storageconfig        Get storage SC configurations
+      unlock               Unlock tokens
+      verify               verify transaction
+      version              Prints version information
+      writelock            Lock tokens in write pool
+      writeunlock          Unlock tokens in write pool
+
 
     Flags:
           --config string      config file (default is config.yaml)
@@ -338,8 +348,123 @@ Command
 Response
 
     Transaction status.
-    
-## Tips
+    Creating and testing a multisig wallet is successful!
+
+
+#### createreadpool
+
+Create read pool if missing. The read pool used for payments for read requests
+for blobbers.
+
+    ./zwallet createreadpool
+
+
+
+#### getreadlockedtokens
+
+Get locked tokens of read pool. No arguments required.
+
+    ./zwallet getreadlockedtokens
+
+Response, for example,
+
+    Read pool locked tokens:
+    {"stats":[{"pool_id":"8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84","start_time":1583335855,"duration":1200000000000,"time_left":868741734871,"locked":true,"balance":8000000000}]}
+
+#### readlock
+
+Lock tokens in read pool. Arguments are
+
+1. `--tokens` -- float number -- tokens to lock, required.
+2. `--duration` -- duration to lock in [golang duration string](https://pkg.go.dev/time?tab=doc#ParseDuration) format (1h, 1h30m, 20m), required
+3. `--fee` - -float number, transaction's fee, default is 0
+
+For example, lock 0.8 tokens for a minute.
+
+    ./zwallet readlock --tokens 0.8 --duration 20m --verbose
+
+Response, for example
+
+    Tokens (0.800000) locked successfully
+
+#### readunlock
+
+Unlock tokens in read pool that expired. Arguments are
+
+1. `--pool_id` -- pool_id from getreadlockedtokens response. Make sure token of
+the pool aren't locked anymore. Required.
+2. `--fee` - -float number, transaction's fee, default is 0
+
+
+For example:
+
+    ./zwallet readunlock --pool_id 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 --verbose
+
+Response, for example
+
+    Tokens of 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 unlocked successfully
+
+
+#### getwritelockedtokens
+
+Get information about locked tokens of a write pool of an allocation.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+
+Example
+
+    ./zwallet getwritelockedtokens --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
+
+Response, for example
+
+    Write pool locked tokens:
+     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:writepool:6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399","start_time":1583483345,"duration":9223372036854775807,"time_left":9223367927516441225,"locked":true,"balance":50000000000}
+
+#### writelock
+
+Add locked tokens to a write pool of an allocation.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+2. `--tokens` -- float, number of tokens to add to the pool, required
+3. `--fee` -- float, transaction fee, default is 0
+
+Example
+
+    ./zwallet writelock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 --tokens 1.2
+
+Response, for example
+
+    Tokens (1.200000) locked successfully
+
+#### writeunlock
+
+Unlock tokens of an expired write pool of an allocation. When an allocation
+(offer) expires, user can unlock tokens of related write pool and get them
+back. This command is used.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+2. `--fee` -- float, transaction fee, default is 0
+
+Example:
+
+    ./zwallet writeunlock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
+
+Response, for example
+
+    Tokens of adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 unlocked successfully
+
+#### storageconfig
+
+Get storage SC configurations, including configurations of read and write pools.
+
+### Tips
+
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
 3. zwallet also comes with a Makefile which simplifies a lot of these zwalletcli commands.

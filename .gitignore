@@ -15,7 +15,9 @@ sample/config/alice.json
 sample/config/mary.json
 sample/config/mswallet.json
 sample/zwallet
+sample/zwalletcli
 zwallet
 *.log
 zwallet
+
 
