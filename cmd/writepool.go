@@ -9,29 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var writePoolConfigCmd = &cobra.Command{
-	Use:   "writepoolconfig",
-	Short: "Get write pool configurations",
-	Long:  `Get current write pool configurations`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		if err := zcncore.GetWritePoolConfig(statusBar); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-		if statusBar.success {
-			log.Printf("\nWrite pool configurations:\n %s\n", statusBar.errMsg)
-			return
-		}
-		log.Fatalf("\nFailed to get configurations. %s\n", statusBar.errMsg)
-	},
-}
-
 var getWritePoolStatCmd = &cobra.Command{
 	Use:   "getwritelockedtokens",
 	Short: "Get locked tokens of write pool",
@@ -199,7 +176,6 @@ func init() {
 	log.SetFlags(0)
 
 	rootCmd.AddCommand(getWritePoolStatCmd)
-	rootCmd.AddCommand(writePoolConfigCmd)
 	rootCmd.AddCommand(writePoolLockCmd)
 	rootCmd.AddCommand(writePoolUnlockCmd)
 

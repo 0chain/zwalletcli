@@ -11,29 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var readPoolConfigCmd = &cobra.Command{
-	Use:   "readpoolconfig",
-	Short: "Get read pool configurations",
-	Long:  `Get current read pool configurations`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		if err := zcncore.GetReadPoolsConfig(statusBar); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-		if statusBar.success {
-			log.Printf("\nRead pool configurations:\n %s\n", statusBar.errMsg)
-			return
-		}
-		log.Fatalf("\nFailed to get configurations. %s\n", statusBar.errMsg)
-	},
-}
-
 func createReadPool() (err error) {
 	var (
 		txn       zcncore.TransactionScheme
@@ -239,7 +216,6 @@ func init() {
 
 	rootCmd.AddCommand(createReadPoolCmd)
 	rootCmd.AddCommand(getReadPoolsStatsCmd)
-	rootCmd.AddCommand(readPoolConfigCmd)
 	rootCmd.AddCommand(readPoolLockCmd)
 	rootCmd.AddCommand(readPoolUnlockCmd)
 

@@ -87,17 +87,17 @@ Response
       lock                 Lock tokens
       lockconfig           Get lock configuration
       readlock             Lock tokens in read pool
-      readpoolconfig       Get read pool configurations
       readunlock           Unlock tokens in read pool
       recoverwallet        Recover wallet
       send                 Send ZCN token to another wallet
       stake                Stake Miners or Sharders
+      storageconfig        Get storage SC configurations
       unlock               Unlock tokens
       verify               verify transaction
       version              Prints version information
       writelock            Lock tokens in write pool
-      writepoolconfig      Get write pool configurations
       writeunlock          Unlock tokens in write pool
+
 
 
     Flags:
@@ -372,15 +372,6 @@ Response, for example
     Tokens of 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 unlocked successfully
 
 
-#### readpoolconfig
-
-Get current read pool configurations.
-
-Response, for example:
-
-    Read pool configurations:
-     {"min_lock":10,"min_lock_period":7884000000000000,"max_lock_period":31536000000000000}
-
 #### getwritelockedtokens
 
 Get information about locked tokens of a write pool of an allocation.
@@ -416,10 +407,6 @@ Response, for example
 
     Tokens (1.200000) locked successfully
 
-#### writepoolconfig
-
-Get write pool configurations.
-
 #### writeunlock
 
 Unlock tokens of an expired write pool of an allocation. When an allocation
@@ -438,6 +425,10 @@ Example:
 Response, for example
 
     Tokens of adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 unlocked successfully
+
+#### storageconfig
+
+Get storage SC configurations, including configurations of read and write pools.
 
 ### Tips
 
