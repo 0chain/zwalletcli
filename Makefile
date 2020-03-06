@@ -23,11 +23,6 @@ gomod-clean:
 	go clean -i -r -x -modcache  ./...
 
 install: $(ZWALLET) | zwallet-test
-	@echo ""
-	@cp -f $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLET)
-	@cp -f $(ZWALLET) $(SAMPLE_DIR)/$(ZWALLETCLI)
-	@echo "Installed binaries to $(SAMPLE_DIR)/..."
-	@echo ""
 
 clean: gomod-clean
 	@rm -rf $(ROOT_DIR)/$(ZWALLET)
