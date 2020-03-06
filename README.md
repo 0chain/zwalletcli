@@ -190,6 +190,7 @@ Use this command to unlock the locked tokens. Unless you unlock, the tokens are 
 Command
 
     ./zwallet unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
+    
 Response
 
     Unlock token success
@@ -234,6 +235,7 @@ getbalance helps in two ways
 Command
 
     ./zwallet getbalance
+
 Response
 
     No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
@@ -267,6 +269,7 @@ Response
 Use getlockedtokens command to get informatiion about locked tokens
 
 Command
+
     ./zwallet getlockedtokens
 
 Response
@@ -280,6 +283,7 @@ In the above response, make a note of pool_id. You need this when you want to un
 Use this command to get ID of a miner or sharder.
 
 Command
+
     ./zwallet getid --url http://localhost:7071
 
 Response
@@ -290,6 +294,7 @@ Response
 ### Get blobbers
 Use this command to get list of blobbers.
 Command
+
     ./zwallet getblobbers
 
 Response
@@ -305,6 +310,7 @@ Response
 ### Get user pools
 Use this command to get list of user pools.
 Command
+
     ./zwallet getuserpools
 
 Response
@@ -314,6 +320,7 @@ Response
 ### Get user pool details
 Use this command to get details for a particular pool.
 Command
+
     ./zwallet getuserpooldetails --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --pool_id 2f051ca6447d8712a020213672bece683dbd0d23a81fdf93ff273043a0764d18
 
 Response
@@ -323,6 +330,7 @@ Response
 ### Verify
 Use this command to verify a transaction.
 Command
+
     ./zwallet verify --hash f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
 
 Response
