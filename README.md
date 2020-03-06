@@ -71,29 +71,33 @@ Response
     zwallet [command]
 
     Available Commands:
-    createmswallet      create multisig wallet
-    createreadpool      Create read pool
-    deletestake         Delete Stake from user pool
-    faucet              Faucet smart contract
-    getbalance          Get balance from sharders
-    getblobbers         Get registered blobbers from sharders
-    getid               Get Miner or Sharder ID from its URL
-    getlockedtokens     Get locked tokens
-    getreadlockedtokens Get locked tokens of read pool
-    getuserpooldetails  Get user pool details
-    getuserpools        Get user pools from sharders
-    help                Help about any command
-    lock                Lock tokens
-    lockconfig          Get lock configuration
-    readlock            Lock tokens in read pool
-    readpoolconfig      Get read pool configurations
-    readunlock          Unlock tokens in read pool
-    recoverwallet       Recover wallet
-    send                Send ZCN token to another wallet
-    stake               Stake Miners or Sharders
-    unlock              Unlock tokens
-    verify              verify transaction
-    version             Prints version information
+    createmswallet       create multisig wallet
+    createreadpool       Create read pool
+    deletestake          Delete Stake from user pool
+    faucet               Faucet smart contract
+    getbalance           Get balance from sharders
+    getblobbers          Get registered blobbers from sharders
+    getid                Get Miner or Sharder ID from its URL
+    getlockedtokens      Get locked tokens
+    getreadlockedtokens  Get locked tokens of read pool
+    getuserpooldetails   Get user pool details
+    getuserpools         Get user pools from sharders
+    getwritelockedtokens Get locked tokens of write pool
+    help                 Help about any command
+    lock                 Lock tokens
+    lockconfig           Get lock configuration
+    readlock             Lock tokens in read pool
+    readpoolconfig       Get read pool configurations
+    readunlock           Unlock tokens in read pool
+    recoverwallet        Recover wallet
+    send                 Send ZCN token to another wallet
+    stake                Stake Miners or Sharders
+    unlock               Unlock tokens
+    verify               verify transaction
+    version              Prints version information
+    writelock            Lock tokens in write pool
+    writepoolconfig      Get write pool configurations
+    writeunlock          Unlock tokens in write pool
 
 
     Flags:
@@ -376,6 +380,64 @@ Response, for example:
 
     Read pool configurations:
      {"min_lock":10,"min_lock_period":7884000000000000,"max_lock_period":31536000000000000}
+
+#### getwritelockedtokens
+
+Get information about locked tokens of a write pool of an allocation.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+
+Example
+
+    ./zwallet getwritelockedtokens --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
+
+Response, for example
+
+    Write pool locked tokens:
+     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:writepool:6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399","start_time":1583483345,"duration":9223372036854775807,"time_left":9223367927516441225,"locked":true,"balance":50000000000}
+
+#### writelock
+
+Add locked tokens to a write pool of an allocation.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+2. `--tokens` -- float, number of tokens to add to the pool, required
+3. `--fee` -- float, transaction fee, default is 0
+
+Example
+
+    ./zwallet writelock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 --tokens 1.2
+
+Response, for example
+
+    Tokens (1.200000) locked successfully
+
+#### writepoolconfig
+
+Get write pool configurations.
+
+#### writeunlock
+
+Unlock tokens of an expired write pool of an allocation. When an allocation
+(offer) expires, user can unlock tokens of related write pool and get them
+back. This command is used.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+2. `--fee` -- float, transaction fee, default is 0
+
+Example:
+
+    ./zwallet writeunlock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
+
+Response, for example
+
+    Tokens of adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 unlocked successfully
 
 ### Tips
 
