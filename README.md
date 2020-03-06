@@ -71,33 +71,33 @@ Response
     zwallet [command]
 
     Available Commands:
-    createmswallet       create multisig wallet
-    createreadpool       Create read pool
-    deletestake          Delete Stake from user pool
-    faucet               Faucet smart contract
-    getbalance           Get balance from sharders
-    getblobbers          Get registered blobbers from sharders
-    getid                Get Miner or Sharder ID from its URL
-    getlockedtokens      Get locked tokens
-    getreadlockedtokens  Get locked tokens of read pool
-    getuserpooldetails   Get user pool details
-    getuserpools         Get user pools from sharders
-    getwritelockedtokens Get locked tokens of write pool
-    help                 Help about any command
-    lock                 Lock tokens
-    lockconfig           Get lock configuration
-    readlock             Lock tokens in read pool
-    readpoolconfig       Get read pool configurations
-    readunlock           Unlock tokens in read pool
-    recoverwallet        Recover wallet
-    send                 Send ZCN token to another wallet
-    stake                Stake Miners or Sharders
-    unlock               Unlock tokens
-    verify               verify transaction
-    version              Prints version information
-    writelock            Lock tokens in write pool
-    writepoolconfig      Get write pool configurations
-    writeunlock          Unlock tokens in write pool
+      createmswallet       create multisig wallet
+      createreadpool       Create read pool
+      deletestake          Delete Stake from user pool
+      faucet               Faucet smart contract
+      getbalance           Get balance from sharders
+      getblobbers          Get registered blobbers from sharders
+      getid                Get Miner or Sharder ID from its URL
+      getlockedtokens      Get locked tokens
+      getreadlockedtokens  Get locked tokens of read pool
+      getuserpooldetails   Get user pool details
+      getuserpools         Get user pools from sharders
+      getwritelockedtokens Get locked tokens of write pool
+      help                 Help about any command
+      lock                 Lock tokens
+      lockconfig           Get lock configuration
+      readlock             Lock tokens in read pool
+      readpoolconfig       Get read pool configurations
+      readunlock           Unlock tokens in read pool
+      recoverwallet        Recover wallet
+      send                 Send ZCN token to another wallet
+      stake                Stake Miners or Sharders
+      unlock               Unlock tokens
+      verify               verify transaction
+      version              Prints version information
+      writelock            Lock tokens in write pool
+      writepoolconfig      Get write pool configurations
+      writeunlock          Unlock tokens in write pool
 
 
     Flags:
