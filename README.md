@@ -459,7 +459,48 @@ Response, for example
 
     Tokens of adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 unlocked successfully
 
-#### storageconfig
+#### getstakelockedtokens
+
+Get stake pool statistic of a blobber.
+
+Arguments:
+
+1. `--blobber_id` -- string, blobber identifier, required
+2. `--fee` -- float, transaction fee, default is 0
+
+Example:
+
+    ./zwallet getstakelockedtokens --blobber_id f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
+
+Response, for example
+
+    Stake pool locked tokens:
+     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:stakepool:f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25","locked":1464843750,"unlocked":0,"offers":[{"lock":1464843750,"expire":1587073460,"allocation_id":"46ec6678df10e1808616375b4eb51317689700ecec7333ebd606fb0935081135"}],"offers_total":1464843750}
+
+#### stakeunlock
+
+Unlock released tokens of a stake pool, where a blobber reduces its capacity.
+Only blobber owner can unlock the tokens.
+
+Arguments:
+
+1. `--fee` -- float, transaction fee, default is 0
+
+Example:
+
+    ./zwallet --wallet blobber1.json stakeunlock
+
+Where the blobber1.json is file `~/.zcn/blobber1.json` contains blobber owner
+wallet.
+
+Response, for example
+
+    Tokens of stake pool unlocked successfully
+
+The response is the same, even if no tokens unlocked, in case where nothing
+to unlock in the stake pool.
+
+#### Storage SC configurations
 
 Get storage SC configurations, including configurations of read and write pools.
 
