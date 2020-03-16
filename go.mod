@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.0.34
+	github.com/0chain/gosdk v1.0.36
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-runewidth v0.0.6 // indirect
@@ -14,5 +14,4 @@ require (
 
 go 1.13
 
-// TEMP: development
-replace github.com/0chain/gosdk => ../gosdk
+// replace github.com/0chain/gosdk => ../gosdk
