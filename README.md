@@ -81,32 +81,34 @@ Response
 
     Available Commands:
 
-      createmswallet       create multisig wallet
-      createreadpool       Create read pool
-      deletestake          Delete Stake from user pool
-      faucet               Faucet smart contract
-      getbalance           Get balance from sharders
-      getblobbers          Get registered blobbers from sharders
-      getid                Get Miner or Sharder ID from its URL
-      getlockedtokens      Get locked tokens
-      getreadlockedtokens  Get locked tokens of read pool
-      getuserpooldetails   Get user pool details
-      getuserpools         Get user pools from sharders
-      getwritelockedtokens Get locked tokens of write pool
-      help                 Help about any command
-      lock                 Lock tokens
-      lockconfig           Get lock configuration
-      readlock             Lock tokens in read pool
-      readunlock           Unlock tokens in read pool
-      recoverwallet        Recover wallet
-      send                 Send ZCN token to another wallet
-      stake                Stake Miners or Sharders
-      storageconfig        Get storage SC configurations
-      unlock               Unlock tokens
-      verify               verify transaction
-      version              Prints version information
-      writelock            Lock tokens in write pool
-      writeunlock          Unlock tokens in write pool
+      createmswallet           create multisig wallet
+      createreadpool           Create read pool
+      deletestake              Delete Stake from user pool
+      faucet                   Faucet smart contract
+      getbalance               Get balance from sharders
+      getblobbers              Get registered blobbers from sharders
+      getchallengelockedtokens Get info about a challenge pool
+      getid                    Get Miner or Sharder ID from its URL
+      getlockedtokens          Get locked tokens
+      getreadlockedtokens      Get locked tokens of read pool
+      getstakelockedtokens     Get locked tokens of stake pool
+      getuserpooldetails       Get user pool details
+      getuserpools             Get user pools from sharders
+      getwritelockedtokens     Get locked tokens of write pool
+      help                     Help about any command
+      lock                     Lock tokens
+      lockconfig               Get lock configuration
+      readlock                 Lock tokens in read pool
+      readunlock               Unlock tokens in read pool
+      recoverwallet            Recover wallet
+      send                     Send ZCN token to another wallet
+      stake                    Stake Miners or Sharders
+      stakeunlock              Unlock tokens in stake pool
+      storageconfig            Get storage SC configurations
+      unlock                   Unlock tokens
+      verify                   verify transaction
+      version                  Prints version information
+      writelock                Lock tokens in write pool
 
 
     Flags:
@@ -440,25 +442,6 @@ Response, for example
 
     Tokens (1.200000) locked successfully
 
-#### writeunlock
-
-Unlock tokens of an expired write pool of an allocation. When an allocation
-(offer) expires, user can unlock tokens of related write pool and get them
-back. This command is used.
-
-Arguments:
-
-1. `--allocation_id` -- string, allocation identifier, required
-2. `--fee` -- float, transaction fee, default is 0
-
-Example:
-
-    ./zwallet writeunlock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
-
-Response, for example
-
-    Tokens of adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 unlocked successfully
-
 #### getstakelockedtokens
 
 Get stake pool statistic of a blobber.
@@ -499,6 +482,24 @@ Response, for example
 
 The response is the same, even if no tokens unlocked, in case where nothing
 to unlock in the stake pool.
+
+#### getchallengelockedtokens
+
+Get challenge pool statistic of an allocation.
+
+Arguments:
+
+1. `--allocation_id` -- string, allocation identifier, required
+2. `--fee` -- float, transaction fee, default is 0
+
+Example:
+
+    ./zwallet getchallengelockedtokens --allocaiton_id f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
+
+Response, for example
+
+    Challenge pool info:
+     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:challengepool:6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d70f13cc3ada7e9e780f79f87794d13d467e0ab97cd7cb6db9c6c774e02c61a731","start_time":1584985351,"duration":173700000000000,"time_left":173660225272746,"locked":true,"balance":0}
 
 #### Storage SC configurations
 
