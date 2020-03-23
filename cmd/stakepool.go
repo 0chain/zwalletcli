@@ -23,7 +23,7 @@ var getStakePoolStatCmd = &cobra.Command{
 
 		var blobberID, err = flags.GetString("blobber_id")
 		if err != nil {
-			log.Fatal("error: invalid allocation id:", err)
+			log.Fatal("error: invalid blobber id:", err)
 		}
 
 		var (
@@ -103,7 +103,7 @@ func init() {
 	rootCmd.AddCommand(stakePoolUnlockCmd)
 
 	getStakePoolStatCmd.PersistentFlags().String("blobber_id", "",
-		"allocation identifier")
+		"blobber identifier")
 	getStakePoolStatCmd.MarkFlagRequired("blobber_id")
 
 	stakePoolUnlockCmd.PersistentFlags().Float64("fee", 0, "transaction fee")
