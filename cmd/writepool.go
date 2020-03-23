@@ -112,72 +112,12 @@ var writePoolLockCmd = &cobra.Command{
 	},
 }
 
-var writePoolUnlockCmd = &cobra.Command{
-	Use:   "writeunlock",
-	Short: "Unlock tokens in write pool",
-	Long:  `Unlock expired tokens in write pool.`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		var flags = cmd.Flags()
-		if flags.Changed("allocation_id") == false {
-			log.Fatal("error: allocation_id flag is missing")
-		}
-
-		var allocID, err = flags.GetString("allocation_id")
-		if err != nil {
-			log.Fatal("error: invalid allocation id:", err)
-		}
-
-		var fee float64
-		if fee, err = flags.GetFloat64("fee"); err != nil {
-			log.Fatal("error: invalid fee value:", err)
-		}
-
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-
-		var txn zcncore.TransactionScheme
-		txn, err = zcncore.NewTransaction(statusBar,
-			zcncore.ConvertToValue(fee))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		wg.Add(1)
-		if err = txn.WritePoolUnlock(allocID); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			statusBar.success = false
-
-			wg.Add(1)
-			if err = txn.Verify(); err != nil {
-				log.Fatal(err)
-			}
-			wg.Wait()
-
-			if statusBar.success {
-				log.Printf("\nTokens of %s unlocked successfully\n", allocID)
-				return
-			}
-		}
-
-		log.Fatalf("\nFailed to unlock tokens. %s\n", statusBar.errMsg)
-	},
-}
-
 func init() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)
 
 	rootCmd.AddCommand(getWritePoolStatCmd)
 	rootCmd.AddCommand(writePoolLockCmd)
-	rootCmd.AddCommand(writePoolUnlockCmd)
 
 	getWritePoolStatCmd.PersistentFlags().String("allocation_id", "",
 		"allocation identifier")
@@ -190,9 +130,4 @@ func init() {
 	writePoolLockCmd.PersistentFlags().Float64("fee", 0, "transaction fee")
 	writePoolLockCmd.MarkFlagRequired("tokens")
 	writePoolLockCmd.MarkFlagRequired("allocation_id")
-
-	writePoolUnlockCmd.PersistentFlags().String("allocation_id", "",
-		"allocation identifier")
-	writePoolUnlockCmd.PersistentFlags().Float64("fee", 0, "transaction fee")
-	writePoolUnlockCmd.MarkFlagRequired("allocation_id")
 }
