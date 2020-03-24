@@ -104,7 +104,7 @@ type BlobberInfo struct {
 	Url      string `json:"url"`
 	Terms    Terms  `json:"terms"`
 	Capacity int64  `json:"capacity"`
-	CapUsed  int64  `json:"cap_used"`
+	Used     int64  `json:"used"`
 }
 
 type BlobberNodes struct {
@@ -135,7 +135,7 @@ func printBlobberList(nodes BlobberNodes) {
 			child.Url,
 			child.Id,
 			fmt.Sprintf("%s / %s",
-				byteCountIEC(child.CapUsed), byteCountIEC(child.Capacity)),
+				byteCountIEC(child.Used), byteCountIEC(child.Capacity)),
 			fmt.Sprintf("%f / %f",
 				zcncore.ConvertToToken(child.Terms.ReadPrice),
 				zcncore.ConvertToToken(child.Terms.WritePrice)),
