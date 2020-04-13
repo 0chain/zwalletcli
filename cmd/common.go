@@ -24,6 +24,13 @@ type ZCNStatus struct {
 	clientID     string
 }
 
+func NewZCNStatus() (zcns *ZCNStatus) {
+	return &ZCNStatus{wg: new(sync.WaitGroup)}
+}
+
+func (zcns *ZCNStatus) Begin() { zcns.wg.Add(1) }
+func (zcns *ZCNStatus) Wait()  { zcns.wg.Wait() }
+
 func (zcn *ZCNStatus) OnBalanceAvailable(status int, value int64, info string) {
 	defer zcn.wg.Done()
 	if status == zcncore.StatusSuccess {
