@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -20,7 +21,18 @@ var getVestingPoolConfigCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("CONFIG:", conf)
+
+		fmt.Println("triggers:")
+		for _, tr := range conf.Triggers {
+			fmt.Println("  -", tr)
+		}
+		fmt.Println("min_lock:", conf.MinLock)
+		fmt.Println("min_duration:", conf.MinDuration)
+		fmt.Println("max_duration:", conf.MaxDuration)
+		fmt.Println("min_friquency:", conf.MinFriquency)
+		fmt.Println("max_friquency:", conf.MaxFriquency)
+		fmt.Println("max_destinations:", conf.MaxDestinations)
+		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
 	},
 }
 
@@ -42,7 +54,20 @@ var getVestingPoolInfoCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("INFO:", info)
+
+		fmt.Println("pool_id:     ", info.ID)
+		fmt.Println("balance:     ", info.Balance)
+		fmt.Println("description: ", info.Description)
+		fmt.Println("start_time:  ", info.StartTime.ToTime())
+		fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
+		fmt.Println("friquency:   ", info.Friquency)
+		fmt.Println("destinations:")
+		for _, d := range info.Destinations {
+			fmt.Println("  -", d)
+		}
+		fmt.Println("amount:      ", info.Amount)
+		fmt.Println("client_id:   ", info.ClientID)
+		fmt.Println("last:        ", info.Last.ToTime())
 	},
 }
 
@@ -55,7 +80,7 @@ var getVestingClientPoolsCmd = &cobra.Command{
 		var (
 			flags    = cmd.Flags()
 			clientID string
-			list     []common.Key
+			list     *zcncore.VestingClientList
 			err      error
 		)
 		if flags.Changed("client_id") {
@@ -67,7 +92,13 @@ var getVestingClientPoolsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("LIST:", list)
+		if len(list.Pools) == 0 {
+			log.Println("no vesting pools")
+			return
+		}
+		for _, pool := range list.Pools {
+			log.Println("- ", pool)
+		}
 	},
 }
 
@@ -605,6 +636,16 @@ func init() {
 
 	getVestingClientPoolsCmd.PersistentFlags().String("client_id", "",
 		"client_id, default is current client")
+
+	var udpFlags = vestingPoolUpdateConfigCmd.PersistentFlags()
+	udpFlags.StringSlice("t", nil, "list of valid triggers")
+	udpFlags.Float64("min_lock", 0.0, "min lock allowed")
+	udpFlags.Duration("min_duration", 0, "min duration allowed")
+	udpFlags.Duration("max_duration", 0, "max duration allowed")
+	udpFlags.Duration("min_friquency", 0, "min friquency allowed")
+	udpFlags.Duration("max_friquency", 0, "max friquency allowed")
+	udpFlags.Int("max_dests", 0, "max destinations allowed")
+	udpFlags.Int("max_descr", 0, "max description length allowed")
 
 	var addFlags = vestingPoolAddCmd.PersistentFlags()
 	addFlags.String("description", "", "pool description, optional")
