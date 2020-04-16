@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/0chain/gosdk/core/common"
@@ -22,19 +24,11 @@ var getVestingPoolConfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		fmt.Println("allow_any:", conf.AllowAny)
-		fmt.Println("triggers:")
-		for _, tr := range conf.Triggers {
-			fmt.Println("  -", tr)
-		}
 		fmt.Println("min_lock:", conf.MinLock)
 		fmt.Println("min_duration:", conf.MinDuration)
 		fmt.Println("max_duration:", conf.MaxDuration)
-		fmt.Println("min_friquency:", conf.MinFriquency)
-		fmt.Println("max_friquency:", conf.MaxFriquency)
 		fmt.Println("max_destinations:", conf.MaxDestinations)
 		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
-		fmt.Println("expiration:", conf.Expiration)
 	},
 }
 
@@ -59,17 +53,18 @@ var getVestingPoolInfoCmd = &cobra.Command{
 
 		fmt.Println("pool_id:     ", info.ID)
 		fmt.Println("balance:     ", info.Balance)
+		fmt.Println("can unlock:  ", info.Left)
 		fmt.Println("description: ", info.Description)
 		fmt.Println("start_time:  ", info.StartTime.ToTime())
 		fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
-		fmt.Println("friquency:   ", info.Friquency)
 		fmt.Println("destinations:")
 		for _, d := range info.Destinations {
-			fmt.Println("  -", d)
+			fmt.Println("  - id:         ", d.ID)
+			fmt.Println("    vesting:    ", d.Wanted)
+			fmt.Println("    can unlock: ", d.Earned)
+			fmt.Println("    last unlock:", d.Last.ToTime())
 		}
-		fmt.Println("amount:      ", info.Amount)
 		fmt.Println("client_id:   ", info.ClientID)
-		fmt.Println("last:        ", info.Last.ToTime())
 	},
 }
 
@@ -112,153 +107,31 @@ func toKeys(ss []string) (keys []common.Key) {
 	return
 }
 
-var vestingPoolUpdateConfigCmd = &cobra.Command{
-	Use:   "vp-update-config",
-	Short: "Update vesting pool config",
-	Long:  "Update vesting pool config by SC owner.",
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		var conf, err = zcncore.GetVestingSCConfig()
-		if err != nil {
-			log.Fatal(err)
+func vestingDests(dd []string) (vds []*zcncore.VestingDest, err error) {
+	vds = make([]*zcncore.VestingDest, 0, len(dd))
+	for _, d := range dd {
+		var ss = strings.Split(d, ":")
+		if len(ss) != 2 {
+			return nil, fmt.Errorf("invalid destination: %q", d)
 		}
-		var (
-			flags   = cmd.Flags()
-			changed bool
-		)
-		if flags.Changed("allow_any") {
-			var allowAny bool
-			if allowAny, err = flags.GetBool("allow_any"); err != nil {
-				log.Fatalf("parsing 'allow_any' flag: %v", err)
-			}
-			conf.AllowAny, changed = allowAny, true
+		var id, amounts = ss[0], ss[1]
+		if len(id) != 64 {
+			return nil, fmt.Errorf("invalid destination id: %q", id)
 		}
-		if flags.Changed("t") {
-			var triggers []string
-			if triggers, err = flags.GetStringSlice("t"); err != nil {
-				log.Fatalf("parsing 't' flag: %v", err)
-			}
-			if len(triggers) == 0 {
-				log.Fatal("empty triggers list")
-			}
-			conf.Triggers, changed = toKeys(triggers), true
+		var amount float64
+		if amount, err = strconv.ParseFloat(amounts, 64); err != nil {
+			return nil, fmt.Errorf("invalid destination amount %q: %v",
+				amounts, err)
 		}
-		if flags.Changed("min_lock") {
-			var minLock float64
-			if minLock, err = flags.GetFloat64("min_lock"); err != nil {
-				log.Fatalf("parsing 'min_lock' flag: %v", err)
-			}
-			if minLock < 0 {
-				log.Fatal("negative 'min_lock' value")
-			}
-			conf.MinLock = common.Balance(zcncore.ConvertToValue(minLock))
-			changed = true
+		if amount < 0 {
+			return nil, fmt.Errorf("negative amount: %f", amount)
 		}
-		if flags.Changed("min_duration") {
-			var minDur time.Duration
-			if minDur, err = flags.GetDuration("min_duration"); err != nil {
-				log.Fatalf("parsing 'min_duration' flag: %v", err)
-			}
-			if minDur < 0 {
-				log.Fatal("negative 'min_duration'")
-			}
-			conf.MinDuration, changed = minDur, true
-		}
-		if flags.Changed("max_duration") {
-			var maxDur time.Duration
-			if maxDur, err = flags.GetDuration("max_duration"); err != nil {
-				log.Fatalf("parsing 'max_duration' flag: %v", err)
-			}
-			if maxDur < conf.MinDuration {
-				log.Fatal("max_duration less then min_duaration")
-			}
-			conf.MaxDuration, changed = maxDur, true
-		}
-		if flags.Changed("min_friquency") {
-			var minFriq time.Duration
-			if minFriq, err = flags.GetDuration("min_friquency"); err != nil {
-				log.Fatalf("parsing 'min_friquency' flag: %v", err)
-			}
-			if minFriq < 0 {
-				log.Fatal("negative 'min_friquency'")
-			}
-			conf.MinFriquency, changed = minFriq, true
-		}
-		if flags.Changed("max_friquency") {
-			var maxFriq time.Duration
-			if maxFriq, err = flags.GetDuration("max_friquency"); err != nil {
-				log.Fatalf("parsing 'max_friquency' flag: %v", err)
-			}
-			if maxFriq < conf.MinFriquency {
-				log.Fatal("max_friquency less then min_friquency")
-			}
-			conf.MaxFriquency, changed = maxFriq, true
-		}
-		if flags.Changed("max_dests") {
-			var maxDests int
-			if maxDests, err = flags.GetInt("max_dests"); err != nil {
-				log.Fatalf("parsing 'max_dests' flag: %v", err)
-			}
-			if maxDests <= 0 {
-				log.Fatal("max_dests is negative or zero")
-			}
-			conf.MaxDestinations, changed = maxDests, true
-		}
-		if flags.Changed("max_descr") {
-			var maxDescr int
-			if maxDescr, err = flags.GetInt("max_descr"); err != nil {
-				log.Fatalf("parsing 'max_descr' flag: %v", err)
-			}
-			if maxDescr < 0 {
-				log.Fatal("max_descr is negative")
-			}
-			conf.MaxDescriptionLength, changed = maxDescr, true
-		}
-		if flags.Changed("expiration") {
-			var expiration time.Duration
-			if expiration, err = flags.GetDuration("expiration"); err != nil {
-				log.Fatalf("parsing 'expiration' flag: %v", err)
-			}
-			if expiration < 1 {
-				log.Fatal("expiration less then 1")
-			}
-			conf.Expiration, changed = expiration, true
-		}
-		if !changed {
-			log.Fatal("no changes")
-		}
-
-		var (
-			statusBar = NewZCNStatus()
-			txn       zcncore.TransactionScheme
-		)
-		if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
-			log.Fatal(err)
-		}
-
-		statusBar.Begin()
-		if err = txn.VestingUpdateConfig(conf); err != nil {
-			log.Fatal(err)
-		}
-		statusBar.Wait()
-
-		if statusBar.success {
-			statusBar.success = false
-
-			statusBar.Begin()
-			if err = txn.Verify(); err != nil {
-				log.Fatal(err)
-			}
-			statusBar.Wait()
-
-			if statusBar.success {
-				log.Println("\nConfigurations updated successfully")
-				return
-			}
-		}
-
-		log.Fatalf("\nFailed to update configurations. %s\n", statusBar.errMsg)
-	},
+		vds = append(vds, &zcncore.VestingDest{
+			ID:     common.Key(id),
+			Amount: common.Balance(zcncore.ConvertToValue(amount)),
+		})
+	}
+	return
 }
 
 var vestingPoolAddCmd = &cobra.Command{
@@ -306,18 +179,6 @@ var vestingPoolAddCmd = &cobra.Command{
 		}
 		add.Duration = duration
 
-		// friquency
-
-		if !flags.Changed("friquency") {
-			log.Fatal("missing required 'friquency' flag")
-		}
-
-		var friquency time.Duration
-		if friquency, err = flags.GetDuration("friquency"); err != nil {
-			log.Fatalf("parsing 'friquency' flag: %v", err)
-		}
-		add.Friquency = friquency
-
 		// destinations
 
 		if !flags.Changed("d") {
@@ -329,19 +190,9 @@ var vestingPoolAddCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("parsing 'destinations' flags: %v", err)
 		}
-		add.Destinations = toKeys(destinations)
-
-		// amount
-
-		if !flags.Changed("amount") {
-			log.Fatal("missing required 'amount' flag")
+		if add.Destinations, err = vestingDests(destinations); err != nil {
+			log.Fatalf("parsing destinations: %v", err)
 		}
-
-		var amount float64
-		if amount, err = flags.GetFloat64("amount"); err != nil {
-			log.Fatalf("parsing 'amount' flag: %v", err)
-		}
-		add.Amount = common.Balance(zcncore.ConvertToValue(amount))
 
 		// fee
 		var fee int64
@@ -581,10 +432,8 @@ var vestingPoolUnlockCmd = &cobra.Command{
 var vestingPoolTriggerCmd = &cobra.Command{
 	Use:   "vp-trigger",
 	Short: "Trigger a vesting pool work.",
-	Long: `Developers command that performs vesting of a vesting pool. 
-This transaction used by a Vesting server. It can be used by
-a configured trigger for development and debugging.`,
-	Args: cobra.MinimumNArgs(0),
+	Long:  `Move current vested tokens to destinations`,
+	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
@@ -642,7 +491,6 @@ func init() {
 	rootCmd.AddCommand(getVestingPoolConfigCmd)
 	rootCmd.AddCommand(getVestingPoolInfoCmd)
 	rootCmd.AddCommand(getVestingClientPoolsCmd)
-	rootCmd.AddCommand(vestingPoolUpdateConfigCmd)
 	rootCmd.AddCommand(vestingPoolAddCmd)
 	rootCmd.AddCommand(vestingPoolDeleteCmd)
 	rootCmd.AddCommand(vestingPoolLockCmd)
@@ -656,26 +504,12 @@ func init() {
 	getVestingClientPoolsCmd.PersistentFlags().String("client_id", "",
 		"client_id, default is current client")
 
-	var udpFlags = vestingPoolUpdateConfigCmd.PersistentFlags()
-	udpFlags.Bool("allow_any", false, "allow any client to be triggerer")
-	udpFlags.StringSlice("t", nil, "list of valid triggerers")
-	udpFlags.Float64("min_lock", 0.0, "min lock allowed")
-	udpFlags.Duration("min_duration", 0, "min duration allowed")
-	udpFlags.Duration("max_duration", 0, "max duration allowed")
-	udpFlags.Duration("min_friquency", 0, "min friquency allowed")
-	udpFlags.Duration("max_friquency", 0, "max friquency allowed")
-	udpFlags.Int("max_dests", 0, "max destinations allowed")
-	udpFlags.Int("max_descr", 0, "max description length allowed")
-	udpFlags.Duration("expiration", 0, "expiration timeout when pool expired")
-
 	var addFlags = vestingPoolAddCmd.PersistentFlags()
 	addFlags.String("description", "", "pool description, optional")
 	addFlags.Int64("start_time", 0, "start_time, Unix seconds, default is now")
 	addFlags.Duration("duration", 0, "vesting duration till end, required")
-	addFlags.Duration("friquency", 0, "vesting friquency, required")
-	addFlags.StringSlice("d", nil, "list of destinations, at list one required")
-	addFlags.Float64("amount", 0.0,
-		"amount of tokens to vest at once per destination, required")
+	addFlags.StringSlice("d", nil, `list of colon separated 'destination:amount' values,
+use -d flag many times to provide few destinations, for example 'dst:1.2'`)
 	addFlags.Float64("fee", 0.0, "transaction fee, optional")
 	addFlags.Float64("lock", 0.0, "lock tokens for the pool, optional")
 
