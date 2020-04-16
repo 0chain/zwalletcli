@@ -22,6 +22,7 @@ var getVestingPoolConfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		fmt.Println("allow_any:", conf.AllowAny)
 		fmt.Println("triggers:")
 		for _, tr := range conf.Triggers {
 			fmt.Println("  -", tr)
@@ -33,6 +34,7 @@ var getVestingPoolConfigCmd = &cobra.Command{
 		fmt.Println("max_friquency:", conf.MaxFriquency)
 		fmt.Println("max_destinations:", conf.MaxDestinations)
 		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
+		fmt.Println("expiration:", conf.Expiration)
 	},
 }
 
@@ -124,6 +126,13 @@ var vestingPoolUpdateConfigCmd = &cobra.Command{
 			flags   = cmd.Flags()
 			changed bool
 		)
+		if flags.Changed("allow_any") {
+			var allowAny bool
+			if allowAny, err = flags.GetBool("allow_any"); err != nil {
+				log.Fatalf("parsing 'allow_any' flag: %v", err)
+			}
+			conf.AllowAny, changed = allowAny, true
+		}
 		if flags.Changed("t") {
 			var triggers []string
 			if triggers, err = flags.GetStringSlice("t"); err != nil {
@@ -204,6 +213,16 @@ var vestingPoolUpdateConfigCmd = &cobra.Command{
 				log.Fatal("max_descr is negative")
 			}
 			conf.MaxDescriptionLength, changed = maxDescr, true
+		}
+		if flags.Changed("expiration") {
+			var expiration time.Duration
+			if expiration, err = flags.GetDuration("expiration"); err != nil {
+				log.Fatalf("parsing 'expiration' flag: %v", err)
+			}
+			if expiration < 1 {
+				log.Fatal("expiration less then 1")
+			}
+			conf.Expiration, changed = expiration, true
 		}
 		if !changed {
 			log.Fatal("no changes")
@@ -638,7 +657,8 @@ func init() {
 		"client_id, default is current client")
 
 	var udpFlags = vestingPoolUpdateConfigCmd.PersistentFlags()
-	udpFlags.StringSlice("t", nil, "list of valid triggers")
+	udpFlags.Bool("allow_any", false, "allow any client to be triggerer")
+	udpFlags.StringSlice("t", nil, "list of valid triggerers")
 	udpFlags.Float64("min_lock", 0.0, "min lock allowed")
 	udpFlags.Duration("min_duration", 0, "min duration allowed")
 	udpFlags.Duration("max_duration", 0, "max duration allowed")
@@ -646,6 +666,7 @@ func init() {
 	udpFlags.Duration("max_friquency", 0, "max friquency allowed")
 	udpFlags.Int("max_dests", 0, "max destinations allowed")
 	udpFlags.Int("max_descr", 0, "max description length allowed")
+	udpFlags.Duration("expiration", 0, "expiration timeout when pool expired")
 
 	var addFlags = vestingPoolAddCmd.PersistentFlags()
 	addFlags.String("description", "", "pool description, optional")
