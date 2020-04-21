@@ -21,6 +21,7 @@ zwallet is a command line interface (CLI) to quickly demonstrate and understand 
 15. [Get user pool details](#Get-user-pool-details)
 16. [Get lock configuration](#Get-lock-config)
 17. [Verify transaction](#Verify)
+18. [Vesting pool](#Vesting)
 
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
@@ -82,7 +83,6 @@ Response
     Available Commands:
 
       createmswallet           create multisig wallet
-      createreadpool           Create read pool
       deletestake              Delete Stake from user pool
       faucet                   Faucet smart contract
       getbalance               Get balance from sharders
@@ -90,25 +90,26 @@ Response
       getchallengelockedtokens Get info about a challenge pool
       getid                    Get Miner or Sharder ID from its URL
       getlockedtokens          Get locked tokens
-      getreadlockedtokens      Get locked tokens of read pool
-      getstakelockedtokens     Get locked tokens of stake pool
       getuserpooldetails       Get user pool details
       getuserpools             Get user pools from sharders
-      getwritelockedtokens     Get locked tokens of write pool
       help                     Help about any command
       lock                     Lock tokens
       lockconfig               Get lock configuration
-      readlock                 Lock tokens in read pool
-      readunlock               Unlock tokens in read pool
       recoverwallet            Recover wallet
       send                     Send ZCN token to another wallet
       stake                    Stake Miners or Sharders
-      stakeunlock              Unlock tokens in stake pool
-      storageconfig            Get storage SC configurations
       unlock                   Unlock tokens
       verify                   verify transaction
       version                  Prints version information
-      writelock                Lock tokens in write pool
+      vp-add                   Add a vesting pool
+      vp-config                Check out vesting SC configurations.
+      vp-delete                Delete a vesting pool
+      vp-info                  Check out vesting pool information.
+      vp-list                  Check out vesting pools list.
+      vp-stop                  Stop vesting for one of destinations and unlock tokens not vested
+      vp-trigger               Trigger a vesting pool work.
+      vp-unlock                Unlock tokens of a vesting pool
+
 
 
     Flags:
@@ -353,157 +354,107 @@ Response
     Creating and testing a multisig wallet is successful!
 
 
-#### createreadpool
+### Vesting
 
-Create read pool if missing. The read pool used for payments for read requests
-for blobbers.
+#### Add a vesting pool
 
-    ./zwallet createreadpool
+Create a vesting pool.
 
+Flags
 
-
-#### getreadlockedtokens
-
-Get locked tokens of read pool. No arguments required.
-
-    ./zwallet getreadlockedtokens
-
-Response, for example,
-
-    Read pool locked tokens:
-    {"stats":[{"pool_id":"8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84","start_time":1583335855,"duration":1200000000000,"time_left":868741734871,"locked":true,"balance":8000000000}]}
-
-#### readlock
-
-Lock tokens in read pool. Arguments are
-
-1. `--tokens` -- float number -- tokens to lock, required.
-2. `--duration` -- duration to lock in [golang duration string](https://pkg.go.dev/time?tab=doc#ParseDuration) format (1h, 1h30m, 20m), required
-3. `--fee` - -float number, transaction's fee, default is 0
-
-For example, lock 0.8 tokens for a minute.
-
-    ./zwallet readlock --tokens 0.8 --duration 20m --verbose
-
-Response, for example
-
-    Tokens (0.800000) locked successfully
-
-#### readunlock
-
-Unlock tokens in read pool that expired. Arguments are
-
-1. `--pool_id` -- pool_id from getreadlockedtokens response. Make sure token of
-the pool aren't locked anymore. Required.
-2. `--fee` - -float number, transaction's fee, default is 0
-
-
-For example:
-
-    ./zwallet readunlock --pool_id 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 --verbose
-
-Response, for example
-
-    Tokens of 8d86b7a7233067d1c66c175730d839b7e45f635933f00fb1fad172b989f5ed84 unlocked successfully
-
-
-#### getwritelockedtokens
-
-Get information about locked tokens of a write pool of an allocation.
-
-Arguments:
-
-1. `--allocation_id` -- string, allocation identifier, required
+    - description, description for vesting pool, limited by SC configurations
+      'max_description_length'
+    - duration, vesting duration in form of [Golang duration](https://pkg.go.dev/time?tab=doc#ParseDuration),
+      the value limited by SC configurations 'min_lock_period' and 
+      'max_lock_period'
+    - lock, amount of tokens to lock in the pool, the provided amount should fit
+      the amount of destinations; also, the amount limited by SC configurations
+      'min_lock'
+    - d, colon separated values consist of D:V, where D is vesting destination
+      id, and V is value to be vested for the destination,; the flag can be
+      repeated many times
 
 Example
 
-    ./zwallet getwritelockedtokens --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399
+```
+./zwallet vp-add                                                              \
+    --description "for testing"                                               \
+    --duration 5m                                                             \
+    --lock 5                                                                  \
+    --d 9fe14ab61ad7172f3cb9629fa34ca449229579ddf2d2a0fe3a58086344522d8e:1    \
+    --d e7f451fdfe12a385045fedcb2e26d5ceb50f460c19e9a58e105dde17fc624588:2
+```
 
-Response, for example
+Successful output contains pool ID for further requests.
 
-    Write pool locked tokens:
-     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:writepool:6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399","start_time":1583483345,"duration":9223372036854775807,"time_left":9223367927516441225,"locked":true,"balance":50000000000}
+#### Check out vesting pool configurations.
 
-#### writelock
-
-Add locked tokens to a write pool of an allocation.
-
-Arguments:
-
-1. `--allocation_id` -- string, allocation identifier, required
-2. `--tokens` -- float, number of tokens to add to the pool, required
-3. `--fee` -- float, transaction fee, default is 0
+Get Vesting SC configurations.
 
 Example
 
-    ./zwallet writelock --allocation_id adacf6997a5b0b5ef2eec54509e48d18dedcb16cddccb289ad0a23b8df412399 --tokens 1.2
+```
+./zwallet vp-config
+```
 
-Response, for example
+#### Delete a vesting pool
 
-    Tokens (1.200000) locked successfully
+Delete a vesting pool. Stop vesting all destinations, unlock all the rest and
+delete the pool.
 
-#### getstakelockedtokens
+Example
 
-Get stake pool statistic of a blobber.
+```
+./zwallet vp-delete --pool_ID <pool_id>
+```
 
-Arguments:
+#### Check out vesting pool information.
 
-1. `--blobber_id` -- string, blobber identifier, required
-2. `--fee` -- float, transaction fee, default is 0
+Information about a vesting pool for current moment.
 
-Example:
+Example
 
-    ./zwallet getstakelockedtokens --blobber_id f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
+```
+./zwallet vp-info --pool_id <pool_id>
+```
 
-Response, for example
+#### Check out vesting pools list.
 
-    Stake pool locked tokens:
-     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:stakepool:f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25","locked":1464843750,"unlocked":0,"offers":[{"lock":1464843750,"expire":1587073460,"allocation_id":"46ec6678df10e1808616375b4eb51317689700ecec7333ebd606fb0935081135"}],"offers_total":1464843750}
+Get list of all vesting pools (IDs) for current client.
 
-#### stakeunlock
+```
+./zwallet vp-list
+```
 
-Unlock released tokens of a stake pool, where a blobber reduces its capacity.
-Only blobber owner can unlock the tokens.
+#### Stop vesting for one of destinations and unlock tokens not vested
 
-Arguments:
+Stop vesting for a destination and unlock the rest.
 
-1. `--fee` -- float, transaction fee, default is 0
+Example
 
-Example:
+```
+./zwallet vp-stop --pool_id <pool_id> --d <destination_id>
+```
 
-    ./zwallet --wallet blobber1.json stakeunlock
+#### Trigger a vesting pool work.
 
-Where the blobber1.json is file `~/.zcn/blobber1.json` contains blobber owner
-wallet.
+Trigger vesting for a vesting pool for current time. It moves all vested
+tokens of the pool (for current time) to the destinations of the pool. Only
+pool owner can trigger.
 
-Response, for example
+```
+./zwallet vp-trigger --pool_id <pool_id>
+```
 
-    Tokens of stake pool unlocked successfully
+#### Unlock tokens of a vesting pool
 
-The response is the same, even if no tokens unlocked, in case where nothing
-to unlock in the stake pool.
 
-#### getchallengelockedtokens
+1. By pool owner. Unlock all tokens over required if any.
+2. By a destination. Unlock tokens vested for the destination.
 
-Get challenge pool statistic of an allocation.
-
-Arguments:
-
-1. `--allocation_id` -- string, allocation identifier, required
-2. `--fee` -- float, transaction fee, default is 0
-
-Example:
-
-    ./zwallet getchallengelockedtokens --allocaiton_id f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
-
-Response, for example
-
-    Challenge pool info:
-     {"pool_id":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d7:challengepool:6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d70f13cc3ada7e9e780f79f87794d13d467e0ab97cd7cb6db9c6c774e02c61a731","start_time":1584985351,"duration":173700000000000,"time_left":173660225272746,"locked":true,"balance":0}
-
-#### Storage SC configurations
-
-Get storage SC configurations, including configurations of read and write pools.
+```
+./zwallet vp-unlock --pool_id <pool_id>
+```
 
 ### Tips
 

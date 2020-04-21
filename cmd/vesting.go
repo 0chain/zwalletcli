@@ -237,7 +237,9 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting pool added successfully.")
+				log.Println("\nVesting pool added successfully:",
+					zcncore.VestingSmartContractAddress+":vestingpool:"+
+						txn.GetTransactionHash())
 				return
 			}
 		}
@@ -300,10 +302,10 @@ var vestingPoolDeleteCmd = &cobra.Command{
 	},
 }
 
-var vestingPoolLockCmd = &cobra.Command{
-	Use:   "vp-lock",
-	Short: "Lock some tokens for a vesting pool",
-	Long:  "Lock some tokens for a vesting pool.",
+var vestingPoolStopCmd = &cobra.Command{
+	Use:   "vp-stop",
+	Short: "Stop vesting for one of destinations and unlock tokens not vested",
+	Long:  "Stop vesting for one of destinations and unlock tokens not vested",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -321,36 +323,29 @@ var vestingPoolLockCmd = &cobra.Command{
 			log.Fatalf("parsing 'pool_id' flag: %v", err)
 		}
 
-		var lock int64
-		if !flags.Changed("lock") {
-			log.Fatal("missing required 'lock' flag")
+		var dest string
+		if !flags.Changed("d") {
+			log.Fatal("missing required 'd' flag")
 		}
-		var lockf float64
-		if lockf, err = flags.GetFloat64("lock"); err != nil {
-			log.Fatalf("can't get 'lock' flag: %v", err)
-		}
-		lock = zcncore.ConvertToValue(lockf)
 
-		var fee int64
-		if flags.Changed("fee") {
-			var feef float64
-			if feef, err = flags.GetFloat64("fee"); err != nil {
-				log.Fatalf("can't get 'fee' flag: %v", err)
-			}
-			fee = zcncore.ConvertToValue(feef)
+		if dest, err = flags.GetString("d"); err != nil {
+			log.Fatalf("parsing 'd' flag: %v", err)
 		}
 
 		var (
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, fee); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
 			log.Fatal(err)
 		}
 
+		var sr zcncore.VestingStopRequest
+		sr.PoolID = common.Key(poolID)
+		sr.Destination = common.Key(dest)
+
 		statusBar.Begin()
-		err = txn.VestingLock(common.Key(poolID), common.Balance(lock))
-		if err != nil {
+		if err = txn.VestingStop(&sr); err != nil {
 			log.Fatal(err)
 		}
 		statusBar.Wait()
@@ -365,19 +360,19 @@ var vestingPoolLockCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nTokens locked successfully.")
+				log.Printf("\nStop vesting for %s.", dest)
 				return
 			}
 		}
 
-		log.Fatalf("\nFailed to lock tokens: %s\n", statusBar.errMsg)
+		log.Fatalf("\nFailed to stop vesting: %s\n", statusBar.errMsg)
 	},
 }
 
 var vestingPoolUnlockCmd = &cobra.Command{
 	Use:   "vp-unlock",
-	Short: "Unlock all tokens of a vesting pool",
-	Long:  "Unlock all tokens of a vesting pool.",
+	Short: "Unlock tokens of a vesting pool",
+	Long:  "Unlock tokens of a vesting pool.",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -493,7 +488,7 @@ func init() {
 	rootCmd.AddCommand(getVestingClientPoolsCmd)
 	rootCmd.AddCommand(vestingPoolAddCmd)
 	rootCmd.AddCommand(vestingPoolDeleteCmd)
-	rootCmd.AddCommand(vestingPoolLockCmd)
+	rootCmd.AddCommand(vestingPoolStopCmd)
 	rootCmd.AddCommand(vestingPoolUnlockCmd)
 	rootCmd.AddCommand(vestingPoolTriggerCmd)
 
@@ -517,14 +512,12 @@ use -d flag many times to provide few destinations, for example 'dst:1.2'`)
 		"pool identifier, required")
 	vestingPoolDeleteCmd.MarkFlagRequired("pool_id")
 
-	vestingPoolLockCmd.PersistentFlags().String("pool_id", "",
+	vestingPoolStopCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier, required")
-	vestingPoolLockCmd.PersistentFlags().Float64("lock", 0.0,
-		"amount of tokens to lock, required")
-	vestingPoolLockCmd.PersistentFlags().Float64("fee", 0.0,
-		"transaction fee")
-	vestingPoolLockCmd.MarkFlagRequired("pool_id")
-	vestingPoolLockCmd.MarkFlagRequired("lock")
+	vestingPoolStopCmd.PersistentFlags().String("d", "",
+		"destination to stop vesting, required")
+	vestingPoolStopCmd.MarkFlagRequired("pool_id")
+	vestingPoolStopCmd.MarkFlagRequired("d")
 
 	vestingPoolUnlockCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier, required")
