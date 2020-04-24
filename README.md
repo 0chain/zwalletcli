@@ -87,7 +87,6 @@ Response
       faucet                   Faucet smart contract
       getbalance               Get balance from sharders
       getblobbers              Get registered blobbers from sharders
-      getchallengelockedtokens Get info about a challenge pool
       getid                    Get Miner or Sharder ID from its URL
       getlockedtokens          Get locked tokens
       getuserpooldetails       Get user pool details
