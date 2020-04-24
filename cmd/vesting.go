@@ -51,9 +51,17 @@ var getVestingPoolInfoCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		var pending, vested common.Balance
+		for _, d := range info.Destinations {
+			pending += d.Wanted - d.Vested
+			vested += d.Vested
+		}
+
 		fmt.Println("pool_id:     ", info.ID)
 		fmt.Println("balance:     ", info.Balance)
-		fmt.Println("can unlock:  ", info.Left)
+		fmt.Println("can unlock:  ", info.Left, "(excess)")
+		fmt.Println("vested:      ", vested, "(sent, real value)")
+		fmt.Println("pending:     ", pending, "(not vested, real value)")
 		fmt.Println("description: ", info.Description)
 		fmt.Println("start_time:  ", info.StartTime.ToTime())
 		fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
@@ -61,7 +69,9 @@ var getVestingPoolInfoCmd = &cobra.Command{
 		for _, d := range info.Destinations {
 			fmt.Println("  - id:         ", d.ID)
 			fmt.Println("    vesting:    ", d.Wanted)
-			fmt.Println("    can unlock: ", d.Earned)
+			fmt.Println("    can unlock: ", d.Earned, "(virtual, time based value)")
+			fmt.Println("    vested:     ", d.Vested, "(sent, real value)")
+			fmt.Println("    pending:    ", d.Wanted-d.Vested, "(not vested, real value)")
 			fmt.Println("    last unlock:", d.Last.ToTime())
 		}
 		fmt.Println("client_id:   ", info.ClientID)
