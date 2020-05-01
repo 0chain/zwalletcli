@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/core/common"
@@ -19,16 +21,26 @@ var getVestingPoolConfigCmd = &cobra.Command{
 	Long:  `Check out vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		conf, err := zcncore.GetVestingSCConfig()
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err := zcncore.GetVestingSCConfig(statusBar)
 		if err != nil {
 			log.Fatal(err)
 		}
+		wg.Wait()
+		if statusBar.success {
+			conf := &zcncore.VestingSCConfig{}
+			json.Unmarshal([]byte(statusBar.errMsg), conf)
+			fmt.Println("min_lock:", conf.MinLock)
+			fmt.Println("min_duration:", conf.MinDuration)
+			fmt.Println("max_duration:", conf.MaxDuration)
+			fmt.Println("max_destinations:", conf.MaxDestinations)
+			fmt.Println("max_description_length:", conf.MaxDescriptionLength)
+		} else {
+			ExitWithError("\nFailed to get vesting config." + statusBar.errMsg + "\n")
+		}
 
-		fmt.Println("min_lock:", conf.MinLock)
-		fmt.Println("min_duration:", conf.MinDuration)
-		fmt.Println("max_duration:", conf.MaxDuration)
-		fmt.Println("max_destinations:", conf.MaxDestinations)
-		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
 	},
 }
 
@@ -46,38 +58,48 @@ var getVestingPoolInfoCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("can't get 'pool_id' flag: %v", err)
 		}
-		info, err := zcncore.GetVestingPoolInfo(common.Key(poolID))
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err = zcncore.GetVestingPoolInfo(common.Key(poolID), statusBar)
 		if err != nil {
 			log.Fatal(err)
 		}
+		wg.Wait()
+		if statusBar.success {
+			info := &zcncore.VestingPoolInfo{}
+			json.Unmarshal([]byte(statusBar.errMsg), info)
 
-		var earned, pending, vested common.Balance
-		for _, d := range info.Destinations {
-			pending += d.Wanted - d.Vested
-			vested += d.Vested
-			earned += d.Earned
-		}
+			var earned, pending, vested common.Balance
+			for _, d := range info.Destinations {
+				pending += d.Wanted - d.Vested
+				vested += d.Vested
+				earned += d.Earned
+			}
 
-		fmt.Println("pool_id:     ", info.ID)
-		fmt.Println("balance:     ", info.Balance)
-		fmt.Println("can unlock:  ", info.Left, "(excess)")
-		fmt.Println("sent:        ", vested, "(real value)")
-		fmt.Println("pending:     ", pending, "(not sent, real value)")
-		fmt.Println("vested:      ", earned+vested, "(virtual, time based value)")
-		fmt.Println("description: ", info.Description)
-		fmt.Println("start_time:  ", info.StartTime.ToTime())
-		fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
-		fmt.Println("destinations:")
-		for _, d := range info.Destinations {
-			fmt.Println("  - id:         ", d.ID)
-			fmt.Println("    vesting:    ", d.Wanted)
-			fmt.Println("    can unlock: ", d.Earned, "(virtual, time based value)")
-			fmt.Println("    sent:       ", d.Vested, "(real value)")
-			fmt.Println("    pending:    ", d.Wanted-d.Vested, "(not sent, real value)")
-			fmt.Println("    vested:     ", d.Earned+d.Vested, "(virtual, time based value)")
-			fmt.Println("    last unlock:", d.Last.ToTime())
+			fmt.Println("pool_id:     ", info.ID)
+			fmt.Println("balance:     ", info.Balance)
+			fmt.Println("can unlock:  ", info.Left, "(excess)")
+			fmt.Println("sent:        ", vested, "(real value)")
+			fmt.Println("pending:     ", pending, "(not sent, real value)")
+			fmt.Println("vested:      ", earned+vested, "(virtual, time based value)")
+			fmt.Println("description: ", info.Description)
+			fmt.Println("start_time:  ", info.StartTime.ToTime())
+			fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
+			fmt.Println("destinations:")
+			for _, d := range info.Destinations {
+				fmt.Println("  - id:         ", d.ID)
+				fmt.Println("    vesting:    ", d.Wanted)
+				fmt.Println("    can unlock: ", d.Earned, "(virtual, time based value)")
+				fmt.Println("    sent:       ", d.Vested, "(real value)")
+				fmt.Println("    pending:    ", d.Wanted-d.Vested, "(not sent, real value)")
+				fmt.Println("    vested:     ", d.Earned+d.Vested, "(virtual, time based value)")
+				fmt.Println("    last unlock:", d.Last.ToTime())
+			}
+			fmt.Println("client_id:   ", info.ClientID)
+		} else {
+			ExitWithError("\nFailed to get vesting pool info." + statusBar.errMsg + "\n")
 		}
-		fmt.Println("client_id:   ", info.ClientID)
 	},
 }
 
@@ -98,16 +120,25 @@ var getVestingClientPoolsCmd = &cobra.Command{
 				log.Fatalf("error in 'client_id' flag: %v", err)
 			}
 		}
-		list, err = zcncore.GetVestingClientList(common.Key(clientID))
+		wg := &sync.WaitGroup{}
+		statusBar := &ZCNStatus{wg: wg}
+		wg.Add(1)
+		err = zcncore.GetVestingClientList(common.Key(clientID), statusBar)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if len(list.Pools) == 0 {
-			log.Println("no vesting pools")
-			return
-		}
-		for _, pool := range list.Pools {
-			log.Println("- ", pool)
+		wg.Wait()
+		if statusBar.success {
+			json.Unmarshal([]byte(statusBar.errMsg), list)
+			if len(list.Pools) == 0 {
+				log.Println("no vesting pools")
+				return
+			}
+			for _, pool := range list.Pools {
+				log.Println("- ", pool)
+			}
+		} else {
+			ExitWithError("\nFailed to get vesting pool list." + statusBar.errMsg + "\n")
 		}
 	},
 }
