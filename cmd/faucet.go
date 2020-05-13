@@ -50,7 +50,7 @@ var faucetcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Println("Execute faucet smart contract success")
+				fmt.Println("Execute faucet smart contract success with txn : ", txn.GetTransactionHash())
 				return
 			}
 		}
