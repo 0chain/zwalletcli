@@ -22,6 +22,7 @@ zwallet is a command line interface (CLI) to quickly demonstrate and understand 
 16. [Get lock configuration](#Get-lock-config)
 17. [Verify transaction](#Verify)
 18. [Vesting pool](#Vesting)
+19. [Miner SC](#Miner-SC)
 
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
@@ -454,6 +455,50 @@ pool owner can trigger.
 ```
 ./zwallet vp-unlock --pool_id <pool_id>
 ```
+
+### Miner SC
+
+#### Get SC configurations and state
+
+    ./zwallet mn-config
+
+#### Node information
+
+Get miner/sharder information from Miner SC.
+
+    ./zwallet mn-info --id NODE_ID
+
+
+#### Lock stake for a node.
+
+Lock stake for miner or sharder
+
+    ./zwallet mn-lock --id NODE_ID
+
+#### Check out stake pool info.
+
+Get miner/sharder stake pool info from Miner SC.
+
+    ./zwallet mn-pool-info --id NODE_ID --pool_id POOL_ID
+
+#### Unlock a stake
+
+Unlock miner/sharder stake pool. Tokens will be released next VC.
+
+    ./zwallet mn-unlock --id NODE_ID --pool_id POOL_ID
+
+#### Update node settings.
+
+Change miner/sharder settings in Miner SC by delegate_wallet owner.
+
+    ./zwallet mn-update-settings --id NODE_ID  [flags]
+
+Flags are:
+
+    --max_stake float     max stake allowed
+    --min_stake float     min stake allowed
+    --num_delegates int   max number of delegate pools
+
 
 ### Tips
 
