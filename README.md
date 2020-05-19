@@ -83,32 +83,38 @@ Response
 
     Available Commands:
 
-      createmswallet           create multisig wallet
-      deletestake              Delete Stake from user pool
-      faucet                   Faucet smart contract
-      getbalance               Get balance from sharders
-      getblobbers              Get registered blobbers from sharders
-      getid                    Get Miner or Sharder ID from its URL
-      getlockedtokens          Get locked tokens
-      getuserpooldetails       Get user pool details
-      getuserpools             Get user pools from sharders
-      help                     Help about any command
-      lock                     Lock tokens
-      lockconfig               Get lock configuration
-      recoverwallet            Recover wallet
-      send                     Send ZCN token to another wallet
-      stake                    Stake Miners or Sharders
-      unlock                   Unlock tokens
-      verify                   verify transaction
-      version                  Prints version information
-      vp-add                   Add a vesting pool
-      vp-config                Check out vesting SC configurations.
-      vp-delete                Delete a vesting pool
-      vp-info                  Check out vesting pool information.
-      vp-list                  Check out vesting pools list.
-      vp-stop                  Stop vesting for one of destinations and unlock tokens not vested
-      vp-trigger               Trigger a vesting pool work.
-      vp-unlock                Unlock tokens of a vesting pool
+      createmswallet     create multisig wallet
+      deletestake        Delete Stake from user pool
+      faucet             Faucet smart contract
+      getbalance         Get balance from sharders
+      getblobbers        Get registered blobbers from sharders
+      getid              Get Miner or Sharder ID from its URL
+      getlockedtokens    Get locked tokens
+      getuserpooldetails Get user pool details
+      getuserpools       Get user pools from sharders
+      help               Help about any command
+      lock               Lock tokens
+      lockconfig         Get lock configuration
+      mn-config          Get miner SC global info.
+      mn-info            Get miner/sharder info from Miner SC.
+      mn-lock            Add miner/sharder stake.
+      mn-pool-info       Get miner/sharder pool info from Miner SC.
+      mn-unlock          Unlock miner/sharder stake.
+      mn-update-settings Change miner/sharder settings in Miner SC.
+      recoverwallet      Recover wallet
+      send               Send ZCN token to another wallet
+      stake              Stake Miners or Sharders
+      unlock             Unlock tokens
+      verify             verify transaction
+      version            Prints version information
+      vp-add             Add a vesting pool
+      vp-config          Check out vesting pool configurations.
+      vp-delete          Delete a vesting pool
+      vp-info            Check out vesting pool information.
+      vp-list            Check out vesting pools list.
+      vp-stop            Stop vesting for one of destinations and unlock tokens not vested
+      vp-trigger         Trigger a vesting pool work.
+      vp-unlock          Unlock tokens of a vesting pool
 
 
 
