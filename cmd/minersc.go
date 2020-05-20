@@ -330,22 +330,24 @@ var minerConfig = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-			err       error
-		)
-		wg.Add(1)
-		if err = zcncore.GetMinerSCConfig(statusBar); err != nil {
+		var conf, err = zcncore.GetMinerSCConfig()
+		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
 
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		fmt.Println(statusBar.errMsg)
+		fmt.Println("id:        ", conf.ID)
+		fmt.Println("last_round:", conf.LastRound)
+		fmt.Println("reward_rate:  ", conf.RewardRate)
+		fmt.Println("interest_rate:", conf.InterestRate)
+		fmt.Println("view_change:  ", conf.ViewChange)
+		fmt.Println("freeze_before:", conf.FreezeBefore)
+		fmt.Println("share_ratio:          ", conf.ShareRatio)
+		fmt.Println("max_charge:           ", conf.MaxCharge)
+		fmt.Println("epoch:                ", conf.Epoch)
+		fmt.Println("reward_decline_rate:  ", conf.RewardDeclineRate)
+		fmt.Println("interest_decline_rate:", conf.InterestDeclineRate)
+		fmt.Println("max_mint:    ", conf.MaxMint.String())
+		fmt.Println("total_minted:", conf.TotalMinted.String())
 	},
 }
 

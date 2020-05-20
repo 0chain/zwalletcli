@@ -1,13 +1,11 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/core/common"
@@ -21,26 +19,16 @@ var getVestingPoolConfigCmd = &cobra.Command{
 	Long:  `Check out vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.GetVestingSCConfig(statusBar)
+		conf, err := zcncore.GetVestingSCConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
-		if statusBar.success {
-			conf := &zcncore.VestingSCConfig{}
-			json.Unmarshal([]byte(statusBar.errMsg), conf)
-			fmt.Println("min_lock:", conf.MinLock)
-			fmt.Println("min_duration:", conf.MinDuration)
-			fmt.Println("max_duration:", conf.MaxDuration)
-			fmt.Println("max_destinations:", conf.MaxDestinations)
-			fmt.Println("max_description_length:", conf.MaxDescriptionLength)
-		} else {
-			ExitWithError("\nFailed to get vesting config." + statusBar.errMsg + "\n")
-		}
 
+		fmt.Println("min_lock:", conf.MinLock)
+		fmt.Println("min_duration:", conf.MinDuration)
+		fmt.Println("max_duration:", conf.MaxDuration)
+		fmt.Println("max_destinations:", conf.MaxDestinations)
+		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
 	},
 }
 
@@ -58,48 +46,38 @@ var getVestingPoolInfoCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("can't get 'pool_id' flag: %v", err)
 		}
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err = zcncore.GetVestingPoolInfo(common.Key(poolID), statusBar)
+		info, err := zcncore.GetVestingPoolInfo(common.Key(poolID))
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
-		if statusBar.success {
-			info := &zcncore.VestingPoolInfo{}
-			json.Unmarshal([]byte(statusBar.errMsg), info)
 
-			var earned, pending, vested common.Balance
-			for _, d := range info.Destinations {
-				pending += d.Wanted - d.Vested
-				vested += d.Vested
-				earned += d.Earned
-			}
-
-			fmt.Println("pool_id:     ", info.ID)
-			fmt.Println("balance:     ", info.Balance)
-			fmt.Println("can unlock:  ", info.Left, "(excess)")
-			fmt.Println("sent:        ", vested, "(real value)")
-			fmt.Println("pending:     ", pending, "(not sent, real value)")
-			fmt.Println("vested:      ", earned+vested, "(virtual, time based value)")
-			fmt.Println("description: ", info.Description)
-			fmt.Println("start_time:  ", info.StartTime.ToTime())
-			fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
-			fmt.Println("destinations:")
-			for _, d := range info.Destinations {
-				fmt.Println("  - id:         ", d.ID)
-				fmt.Println("    vesting:    ", d.Wanted)
-				fmt.Println("    can unlock: ", d.Earned, "(virtual, time based value)")
-				fmt.Println("    sent:       ", d.Vested, "(real value)")
-				fmt.Println("    pending:    ", d.Wanted-d.Vested, "(not sent, real value)")
-				fmt.Println("    vested:     ", d.Earned+d.Vested, "(virtual, time based value)")
-				fmt.Println("    last unlock:", d.Last.ToTime())
-			}
-			fmt.Println("client_id:   ", info.ClientID)
-		} else {
-			ExitWithError("\nFailed to get vesting pool info." + statusBar.errMsg + "\n")
+		var earned, pending, vested common.Balance
+		for _, d := range info.Destinations {
+			pending += d.Wanted - d.Vested
+			vested += d.Vested
+			earned += d.Earned
 		}
+
+		fmt.Println("pool_id:     ", info.ID)
+		fmt.Println("balance:     ", info.Balance)
+		fmt.Println("can unlock:  ", info.Left, "(excess)")
+		fmt.Println("sent:        ", vested, "(real value)")
+		fmt.Println("pending:     ", pending, "(not sent, real value)")
+		fmt.Println("vested:      ", earned+vested, "(virtual, time based value)")
+		fmt.Println("description: ", info.Description)
+		fmt.Println("start_time:  ", info.StartTime.ToTime())
+		fmt.Println("expire_at:   ", info.ExpireAt.ToTime())
+		fmt.Println("destinations:")
+		for _, d := range info.Destinations {
+			fmt.Println("  - id:         ", d.ID)
+			fmt.Println("    vesting:    ", d.Wanted)
+			fmt.Println("    can unlock: ", d.Earned, "(virtual, time based value)")
+			fmt.Println("    sent:       ", d.Vested, "(real value)")
+			fmt.Println("    pending:    ", d.Wanted-d.Vested, "(not sent, real value)")
+			fmt.Println("    vested:     ", d.Earned+d.Vested, "(virtual, time based value)")
+			fmt.Println("    last unlock:", d.Last.ToTime())
+		}
+		fmt.Println("client_id:   ", info.ClientID)
 	},
 }
 
@@ -112,7 +90,7 @@ var getVestingClientPoolsCmd = &cobra.Command{
 		var (
 			flags    = cmd.Flags()
 			clientID string
-			list     *zcncore.VestingClientList
+			list     []common.Key
 			err      error
 		)
 		if flags.Changed("client_id") {
@@ -120,25 +98,16 @@ var getVestingClientPoolsCmd = &cobra.Command{
 				log.Fatalf("error in 'client_id' flag: %v", err)
 			}
 		}
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err = zcncore.GetVestingClientList(common.Key(clientID), statusBar)
+		list, err = zcncore.GetVestingClientList(common.Key(clientID))
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
-		if statusBar.success {
-			json.Unmarshal([]byte(statusBar.errMsg), list)
-			if len(list.Pools) == 0 {
-				log.Println("no vesting pools")
-				return
-			}
-			for _, pool := range list.Pools {
-				log.Println("- ", pool)
-			}
-		} else {
-			ExitWithError("\nFailed to get vesting pool list." + statusBar.errMsg + "\n")
+		if len(list) == 0 {
+			log.Println("no vesting pools")
+			return
+		}
+		for _, pool := range list {
+			log.Println("- ", pool)
 		}
 	},
 }
@@ -538,10 +507,11 @@ func init() {
 
 	getVestingPoolInfoCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier")
-	getVestingClientPoolsCmd.MarkFlagRequired("pool_id")
+	getVestingPoolInfoCmd.MarkFlagRequired("pool_id")
 
 	getVestingClientPoolsCmd.PersistentFlags().String("client_id", "",
 		"client_id, default is current client")
+	getVestingClientPoolsCmd.MarkFlagRequired("client_id")
 
 	var addFlags = vestingPoolAddCmd.PersistentFlags()
 	addFlags.String("description", "", "pool description, optional")
