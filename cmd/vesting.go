@@ -19,8 +19,16 @@ var getVestingPoolConfigCmd = &cobra.Command{
 	Long:  `Check out vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		conf, err := zcncore.GetVestingSCConfig()
-		if err != nil {
+
+		var (
+			conf = new(zcncore.VestingSCConfig)
+			cb   = NewJSONInfoCB(conf)
+			err  error
+		)
+		if err = zcncore.GetVestingSCConfig(cb); err != nil {
+			log.Fatal(err)
+		}
+		if err = cb.Waiting(); err != nil {
 			log.Fatal(err)
 		}
 
@@ -46,8 +54,15 @@ var getVestingPoolInfoCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("can't get 'pool_id' flag: %v", err)
 		}
-		info, err := zcncore.GetVestingPoolInfo(common.Key(poolID))
+		var (
+			info = new(zcncore.VestingPoolInfo)
+			cb   = NewJSONInfoCB(info)
+		)
+		err = zcncore.GetVestingPoolInfo(common.Key(poolID), cb)
 		if err != nil {
+			log.Fatal(err)
+		}
+		if err = cb.Waiting(); err != nil {
 			log.Fatal(err)
 		}
 
@@ -98,10 +113,18 @@ var getVestingClientPoolsCmd = &cobra.Command{
 				log.Fatalf("error in 'client_id' flag: %v", err)
 			}
 		}
-		list, err = zcncore.GetVestingClientList(common.Key(clientID))
+		var (
+			vcl zcncore.VestingClientList
+			cb  = NewJSONInfoCB(&vcl)
+		)
+		err = zcncore.GetVestingClientList(common.Key(clientID), cb)
 		if err != nil {
 			log.Fatal(err)
 		}
+		if err = cb.Waiting(); err != nil {
+			log.Fatal(err)
+		}
+		list = vcl.Pools
 		if len(list) == 0 {
 			log.Println("no vesting pools")
 			return

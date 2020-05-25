@@ -330,8 +330,16 @@ var minerConfig = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var conf, err = zcncore.GetMinerSCConfig()
-		if err != nil {
+		var (
+			conf = new(zcncore.MinerSCConfig)
+			cb   = NewJSONInfoCB(conf)
+			err  error
+		)
+
+		if err = zcncore.GetMinerSCConfig(cb); err != nil {
+			log.Fatal(err)
+		}
+		if err = cb.Waiting(); err != nil {
 			log.Fatal(err)
 		}
 
