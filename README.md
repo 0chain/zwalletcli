@@ -11,18 +11,14 @@ zwallet is a command line interface (CLI) to quickly demonstrate and understand 
 5. [Lock tokens to earn interest](#Lock)
 6. [Unlock locked tokens](#Unlock)
 7. [Recover wallet using passphrase](#Recover)
-8. [Stake miners or sharders](#Stake)
-9. [Delete stake](#Delete-stake)
-10. [Get balance](#Get-balance) 
-11. [Get blobbers list](#Get-blobbers)
-12. [Get miner or sharder ID](#Get-id)
-13. [Get locked tokens](#Get-locked-tokens)
-14. [Get user pools](#Get-user-pools)
-15. [Get user pool details](#Get-user-pool-details)
-16. [Get lock configuration](#Get-lock-config)
-17. [Verify transaction](#Verify)
-18. [Vesting pool](#Vesting)
-19. [Miner SC](#Miner-SC)
+8. [Get balance](#Get-balance) 
+9. [Get blobbers list](#Get-blobbers)
+10. [Get miner or sharder ID](#Get-id)
+11. [Get locked tokens](#Get-locked-tokens)
+12. [Get lock configuration](#Get-lock-config)
+13. [Verify transaction](#Verify)
+14. [Vesting pool](#Vesting)
+15. [Miner SC](#Miner-SC)
 
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
@@ -84,14 +80,11 @@ Response
     Available Commands:
 
       createmswallet     create multisig wallet
-      deletestake        Delete Stake from user pool
       faucet             Faucet smart contract
       getbalance         Get balance from sharders
       getblobbers        Get registered blobbers from sharders
       getid              Get Miner or Sharder ID from its URL
       getlockedtokens    Get locked tokens
-      getuserpooldetails Get user pool details
-      getuserpools       Get user pools from sharders
       help               Help about any command
       lock               Lock tokens
       lockconfig         Get lock configuration
@@ -101,9 +94,9 @@ Response
       mn-pool-info       Get miner/sharder pool info from Miner SC.
       mn-unlock          Unlock miner/sharder stake.
       mn-update-settings Change miner/sharder settings in Miner SC.
+      mn-user-info       Get miner/sharder user pools info from Miner SC.
       recoverwallet      Recover wallet
       send               Send ZCN token to another wallet
-      stake              Stake Miners or Sharders
       unlock             Unlock tokens
       verify             verify transaction
       version            Prints version information
@@ -505,6 +498,17 @@ Flags are:
     --min_stake float     min stake allowed
     --num_delegates int   max number of delegate pools
 
+
+### User pools of Miner SC.
+
+Get list of pools of Miner SC of a user.
+
+    ./zwallet mn-user-info
+
+Optional flag `--client_id` can be used to get pools information for given
+user. Current user used by default.
+
+There is `--json` flag to print result as JSON.
 
 ### Tips
 

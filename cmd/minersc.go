@@ -8,6 +8,7 @@ import (
 
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
 
@@ -141,6 +142,62 @@ var minerscInfo = &cobra.Command{
 		}
 
 		fmt.Println(statusBar.errMsg)
+	},
+}
+
+var minerscUserInfo = &cobra.Command{
+	Use:   "mn-user-info",
+	Short: "Get miner/sharder user pools info from Miner SC.",
+	Long:  "Get miner/sharder user pools info from Miner SC.",
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags    = cmd.Flags()
+			clientID string
+
+			err error
+		)
+
+		if flags.Changed("client_id") {
+			if clientID, err = flags.GetString("client_id"); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		var (
+			info = new(zcncore.MinerSCUserInfo)
+			cb   = NewJSONInfoCB(info)
+		)
+		if err = zcncore.GetMinerSCUserInfo(clientID, cb); err != nil {
+			log.Fatal(err)
+		}
+		if err = cb.Waiting(); err != nil {
+			log.Fatal(err)
+		}
+
+		if flags.Changed("json") {
+			var j bool
+			if j, err = flags.GetBool("json"); err != nil {
+				log.Fatal(err)
+			}
+			if j {
+				util.PrintJSON(info)
+				return
+			}
+		}
+
+		if len(info.Pools) == 0 {
+			fmt.Println("no user pools in Miner SC")
+			return
+		}
+
+		for _, up := range info.Pools {
+			fmt.Println("- pool_id:        ", up.PoolID)
+			fmt.Println("  node_id:        ", up.MinerID)
+			fmt.Println("  balance:        ", up.Balance.String())
+			fmt.Println("  stake_diversity:", up.StakeDiversity)
+		}
 	},
 }
 
@@ -362,6 +419,7 @@ var minerConfig = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(minerscUpdateSettings)
 	rootCmd.AddCommand(minerscInfo)
+	rootCmd.AddCommand(minerscUserInfo)
 	rootCmd.AddCommand(minerscPoolInfo)
 	rootCmd.AddCommand(minerscLock)
 	rootCmd.AddCommand(minerscUnlock)
@@ -375,6 +433,9 @@ func init() {
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")
+
+	minerscUserInfo.PersistentFlags().String("client_id", "", "get info for user, if empty, current user used, optional")
+	minerscUserInfo.PersistentFlags().Bool("json", false, "as JSON")
 
 	minerscPoolInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscPoolInfo.MarkFlagRequired("id")

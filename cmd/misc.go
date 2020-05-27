@@ -34,63 +34,6 @@ var getidcmd = &cobra.Command{
 	},
 }
 
-var getuserpoolscmd = &cobra.Command{
-	Use:   "getuserpools",
-	Short: "Get user pools from sharders",
-	Long:  `Get user pools from sharders`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.GetUserPools(statusBar)
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
-		}
-		if statusBar.success {
-			fmt.Printf("\nUser pools: %v\n", statusBar.errMsg)
-		} else {
-			ExitWithError("\nERROR: Get user pool failed. " + statusBar.errMsg + "\n")
-		}
-		return
-	},
-}
-
-var getuserpooldetailscmd = &cobra.Command{
-	Use:   "getuserpooldetails",
-	Short: "Get user pool details",
-	Long: `Get user pool details for client_id and pool_id.
-			<client_id> <pool_id>`,
-	Args: cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		fflags := cmd.Flags()
-		if fflags.Changed("client_id") == false {
-			ExitWithError("Error: client_id flag is missing")
-		}
-		if fflags.Changed("pool_id") == false {
-			ExitWithError("Error: pool_id flag is missing")
-		}
-		clientID := cmd.Flag("client_id").Value.String()
-		poolID := cmd.Flag("pool_id").Value.String()
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.GetUserPoolDetails(clientID, poolID, statusBar)
-		if err != nil {
-			ExitWithError(err)
-		}
-		wg.Wait()
-		if statusBar.success {
-			fmt.Printf("\nUser pool details: %v\n", statusBar.errMsg)
-		} else {
-			ExitWithError("\nERROR: Get user pool details failed. " + statusBar.errMsg + "\n")
-		}
-
-	},
-}
-
 type Terms struct {
 	ReadPrice               int64         `json:"read_price"`
 	WritePrice              int64         `json:"write_price"`
@@ -199,13 +142,7 @@ func writeToaFile(fileNameAndPath string, content string) error {
 
 func init() {
 	rootCmd.AddCommand(getidcmd)
-	rootCmd.AddCommand(getuserpoolscmd)
-	rootCmd.AddCommand(getuserpooldetailscmd)
 	rootCmd.AddCommand(getblobberscmd)
 	getidcmd.PersistentFlags().String("url", "", "URL to get the ID")
 	getidcmd.MarkFlagRequired("url")
-	getuserpooldetailscmd.PersistentFlags().String("client_id", "", "Miner or Sharder client id")
-	getuserpooldetailscmd.PersistentFlags().String("pool_id", "", "Pool ID from user pool matching miner or sharder id")
-	getuserpooldetailscmd.MarkFlagRequired("client_id")
-	getuserpooldetailscmd.MarkFlagRequired("pool_id")
 }
