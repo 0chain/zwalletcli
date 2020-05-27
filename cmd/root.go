@@ -20,8 +20,6 @@ var walletFile string
 var cDir string
 var bVerbose bool
 
-var sharders []string
-var miners []string
 var clientConfig string
 var minSubmit int
 var minCfm int
@@ -85,8 +83,7 @@ func initConfig() {
 	if err := nodeConfig.ReadInConfig(); err != nil {
 		ExitWithError("Can't read config:", err)
 	}
-	sharders = nodeConfig.GetStringSlice("sharders")
-	miners = nodeConfig.GetStringSlice("miners")
+	blockWorker := nodeConfig.GetString("block_worker")
 	signScheme := nodeConfig.GetString("signature_scheme")
 	chainID := nodeConfig.GetString("chain_id")
 	minSubmit = nodeConfig.GetInt("min_submit")
@@ -103,7 +100,7 @@ func initConfig() {
 	}
 	//set the log file
 	zcncore.SetLogFile("cmdlog.log", bVerbose)
-	err := zcncore.InitZCNSDK(miners, sharders, signScheme,
+	err := zcncore.InitZCNSDK(blockWorker, signScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
