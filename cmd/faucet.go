@@ -32,7 +32,7 @@ var faucetcmd = &cobra.Command{
 			ExitWithError(err)
 		}
 		token := float64(0)
-		token, err = cmd.Flags().GetFloat64("token")
+		token, err = cmd.Flags().GetFloat64("tokens")
 		wg.Add(1)
 		err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress, methodName, input, zcncore.ConvertToValue(token))
 		if err == nil {
@@ -62,7 +62,7 @@ func init() {
 	rootCmd.AddCommand(faucetcmd)
 	faucetcmd.PersistentFlags().String("methodName", "", "methodName")
 	faucetcmd.PersistentFlags().String("input", "", "input")
-	faucetcmd.PersistentFlags().Float64("token", 0, "Token request")
+	faucetcmd.PersistentFlags().Float64("tokens", 0, "Token request")
 	faucetcmd.MarkFlagRequired("methodName")
 	faucetcmd.MarkFlagRequired("input")
 }

@@ -96,7 +96,7 @@ Response
       mn-update-settings Change miner/sharder settings in Miner SC.
       mn-user-info       Get miner/sharder user pools info from Miner SC.
       recoverwallet      Recover wallet
-      send               Send ZCN token to another wallet
+      send               Send ZCN tokens to another wallet
       unlock             Unlock tokens
       verify             verify transaction
       version            Prints version information
@@ -177,18 +177,18 @@ Use send command to send a transaction from one wallet to the other. Send comman
 
 Command
 
-     ./zwallet send --wallet from --desc "testing" --toclientID "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --token 0.5
+     ./zwallet send --wallet from --desc "testing" --to_client_id "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --tokens 0.5
 
 Response
 
-    Send token success
+    Send tokens success
 
 When you run a getbalance on both the wallets you see the difference
 
 ### Lock
 Command
 
-    ./zwallet lock --wallet from --durationHr 0 --durationMin 5 --token 10.0
+    ./zwallet lock --wallet from --durationHr 0 --durationMin 5 --tokens 10.0
 
 Response
 
@@ -201,11 +201,11 @@ Use this command to unlock the locked tokens. Unless you unlock, the tokens are 
 
 Command
 
-    ./zwallet unlock --poolid 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
+    ./zwallet unlock --pool_id 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
 
 Response
 
-    Unlock token success
+    Unlock tokens success
 
 ### Recover
 Use this command to recover wallet from a different computer. You need to provide mnemonics mentioned in the wallet as an argument to prove that you own the wallet.
@@ -219,7 +219,7 @@ Use this command to stake your coins to miners or sharders. You can get their id
 
 Command
 
-    ./zwallet stake --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --token 10
+    ./zwallet stake --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --tokens 10
 
 Response 
 

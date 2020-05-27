@@ -10,25 +10,25 @@ import (
 
 var sendcmd = &cobra.Command{
 	Use:   "send",
-	Short: "Send ZCN token to another wallet",
-	Long: `Send ZCN token to another wallet.
-	        <to_client_id> <token> <description> [transaction fee]`,
+	Short: "Send ZCN tokens to another wallet",
+	Long: `Send ZCN tokens to another wallet.
+	        <to_client_id> <tokens> <description> [transaction fee]`,
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
 		if fflags.Changed("to_client_id") == false {
 			ExitWithError("Error: to_client_id flag is missing")
 		}
-		if fflags.Changed("token") == false {
-			ExitWithError("Error: token flag is missing")
+		if fflags.Changed("tokens") == false {
+			ExitWithError("Error: tokens flag is missing")
 		}
 		if fflags.Changed("desc") == false {
 			ExitWithError("Error: Description flag is missing")
 		}
 		to_client_id := cmd.Flag("to_client_id").Value.String()
-		token, err := cmd.Flags().GetFloat64("token")
+		token, err := cmd.Flags().GetFloat64("tokens")
 		if err != nil {
-			ExitWithError("Error: invalid token.", err)
+			ExitWithError("Error: invalid 'tokens' flag", err)
 		}
 		desc := cmd.Flag("desc").Value.String()
 		fee := float64(0)
@@ -56,21 +56,21 @@ var sendcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Println("Send token success")
+				fmt.Println("Send tokens success")
 				return
 			}
 		}
-		ExitWithError("Send token failed. " + statusBar.errMsg)
+		ExitWithError("Send tokens failed. " + statusBar.errMsg)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sendcmd)
 	sendcmd.PersistentFlags().String("to_client_id", "", "to_client_id")
-	sendcmd.PersistentFlags().Float64("token", 0, "Token to send")
+	sendcmd.PersistentFlags().Float64("tokens", 0, "Token to send")
 	sendcmd.PersistentFlags().String("desc", "", "Description")
 	sendcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
 	sendcmd.MarkFlagRequired("to_client_id")
-	sendcmd.MarkFlagRequired("token")
+	sendcmd.MarkFlagRequired("tokens")
 	sendcmd.MarkFlagRequired("desc")
 }

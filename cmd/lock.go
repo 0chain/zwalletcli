@@ -63,14 +63,14 @@ var lockcmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
-		if fflags.Changed("token") == false {
-			ExitWithError("Error: token flag is missing")
+		if fflags.Changed("tokens") == false {
+			ExitWithError("Error: tokens flag is missing")
 		}
 		if (fflags.Changed("durationHr") == false) &&
 			(fflags.Changed("durationMin") == false) {
 			ExitWithError("Error: durationHr and durationMin flag is missing. atleast one is required")
 		}
-		token, err := cmd.Flags().GetFloat64("token")
+		token, err := cmd.Flags().GetFloat64("tokens")
 		if err != nil {
 			ExitWithError("Error: invalid number of tokens")
 		}
@@ -118,9 +118,9 @@ func init() {
 	rootCmd.AddCommand(lockconfigcmd)
 	rootCmd.AddCommand(lockcmd)
 	rootCmd.AddCommand(getlockedtokenscmd)
-	lockcmd.PersistentFlags().Float64("token", 0, "Number to tokens to lock")
+	lockcmd.PersistentFlags().Float64("tokens", 0, "Number to tokens to lock")
 	lockcmd.PersistentFlags().Int64("durationHr", 0, "Duration Hours to lock")
 	lockcmd.PersistentFlags().Int("durationMin", 0, "Duration Mins to lock")
 	lockcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
-	lockcmd.MarkFlagRequired("token")
+	lockcmd.MarkFlagRequired("tokens")
 }

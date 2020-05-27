@@ -45,7 +45,7 @@ var unlockcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Printf("\nUnlock token success\n")
+				fmt.Printf("\nUnlock tokens success\n")
 				return
 			}
 		}
@@ -56,7 +56,7 @@ var unlockcmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(unlockcmd)
-	unlockcmd.PersistentFlags().String("pool_id", "", "Poolid - hash of the locked transaction")
+	unlockcmd.PersistentFlags().String("pool_id", "", "Pool ID - hash of the locked transaction")
 	unlockcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
 	unlockcmd.MarkFlagRequired("pool_id")
 }
