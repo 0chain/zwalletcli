@@ -39,21 +39,14 @@ Before you start playing with zwalet, you need to access the blockchain. Go to n
 
 Sample config.yaml
 
-      miners:
-      - http://one.devnet-0chain.net:31071
-      - http://one.devnet-0chain.net:31072
-      - http://one.devnet-0chain.net:31073
-      - http://one.devnet-0chain.net:31074                  
-      sharders:
-      - http://one.devnet-0chain.net:31171
-      - http://one.devnet-0chain.net:31172
-      preferred_blobbers:
-      - http://one.devnet-0chain.net:31051
-      - http://one.devnet-0chain.net:31052
+      ---
+      block_worker: http://localhost:9091
       signature_scheme: bls0chain
       min_submit: 50 # in percentage
       min_confirmation: 50 # in percentage
       confirmation_chain_length: 3
+
+We use blockWorker to connect to the network instead of giving network details directly, It will fetch the network details automatically from the blockWorker's network API.
 
 ### Setup
 The zwallet command line uses the ~/.zcn/config.yaml file at runtime to point to the network specified in that file.
