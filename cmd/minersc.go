@@ -54,6 +54,13 @@ var minerscUpdateSettings = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		// remove not settings fields
+		miner = &zcncore.MinerSCMinerInfo{
+			NumberOfDelegates: miner.NumberOfDelegates,
+			MinStake:          miner.MinStake,
+			MaxStake:          miner.MaxStake,
+		}
+
 		if flags.Changed("num_delegates") {
 			miner.NumberOfDelegates, err = flags.GetInt("num_delegates")
 			if err != nil {
@@ -400,18 +407,24 @@ var minerConfig = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		fmt.Println("id:        ", conf.ID)
-		fmt.Println("last_round:", conf.LastRound)
-		fmt.Println("reward_rate:  ", conf.RewardRate)
-		fmt.Println("interest_rate:", conf.InterestRate)
-		fmt.Println("view_change:  ", conf.ViewChange)
+		fmt.Println("view_change:          ", conf.ViewChange)
+		fmt.Println("max_n:                ", conf.MaxN)
+		fmt.Println("min_n:                ", conf.MinN)
+		fmt.Println("t_percent:            ", conf.TPercent)
+		fmt.Println("k_percent:            ", conf.KPercent)
+		fmt.Println("last_round:           ", conf.LastRound)
+		fmt.Println("max_stake:            ", conf.MaxStake)
+		fmt.Println("min_stake:            ", conf.MinStake)
+		fmt.Println("interest_rate:        ", conf.InterestRate)
+		fmt.Println("reward_rate:          ", conf.RewardRate)
 		fmt.Println("share_ratio:          ", conf.ShareRatio)
+		fmt.Println("block_reward:         ", conf.BlockReward)
 		fmt.Println("max_charge:           ", conf.MaxCharge)
 		fmt.Println("epoch:                ", conf.Epoch)
 		fmt.Println("reward_decline_rate:  ", conf.RewardDeclineRate)
 		fmt.Println("interest_decline_rate:", conf.InterestDeclineRate)
-		fmt.Println("max_mint:    ", conf.MaxMint.String())
-		fmt.Println("total_minted:", conf.TotalMinted.String())
+		fmt.Println("max_mint:             ", conf.MaxMint)
+		fmt.Println("minted:               ", conf.Minted)
 	},
 }
 
