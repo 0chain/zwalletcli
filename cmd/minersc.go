@@ -405,7 +405,6 @@ var minerConfig = &cobra.Command{
 		fmt.Println("reward_rate:  ", conf.RewardRate)
 		fmt.Println("interest_rate:", conf.InterestRate)
 		fmt.Println("view_change:  ", conf.ViewChange)
-		fmt.Println("freeze_before:", conf.FreezeBefore)
 		fmt.Println("share_ratio:          ", conf.ShareRatio)
 		fmt.Println("max_charge:           ", conf.MaxCharge)
 		fmt.Println("epoch:                ", conf.Epoch)
