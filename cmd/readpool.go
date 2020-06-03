@@ -19,7 +19,7 @@ func createReadPool() (err error) {
 	}
 
 	wg.Add(1)
-	if err = txn.CreateReadPool(); err != nil {
+	if err = txn.CreateReadPool(0); err != nil {
 		return
 	}
 	wg.Wait()
