@@ -40,8 +40,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stderr (default false)")
-	initConfig()
-	fmt.Printf("%s", cfgFile)
 }
 
 func Execute() {
