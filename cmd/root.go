@@ -74,9 +74,9 @@ func initConfig() {
 	}
 	nodeConfig.AddConfigPath(configDir)
 	if &cfgFile != nil && len(cfgFile) > 0 {
-		nodeConfig.SetConfigName(cfgFile)
+		nodeConfig.SetConfigFile(configDir + "/" + cfgFile)
 	} else {
-		nodeConfig.SetConfigName("config")
+		nodeConfig.SetConfigFile(configDir + "/" + "config.yaml")
 	}
 	if err := nodeConfig.ReadInConfig(); err != nil {
 		ExitWithError("Can't read config:", err)
