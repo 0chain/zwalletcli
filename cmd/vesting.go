@@ -58,7 +58,7 @@ var getVestingPoolInfoCmd = &cobra.Command{
 			info = new(zcncore.VestingPoolInfo)
 			cb   = NewJSONInfoCB(info)
 		)
-		err = zcncore.GetVestingPoolInfo(common.Key(poolID), cb)
+		err = zcncore.GetVestingPoolInfo(poolID, cb)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -117,7 +117,7 @@ var getVestingClientPoolsCmd = &cobra.Command{
 			vcl zcncore.VestingClientList
 			cb  = NewJSONInfoCB(&vcl)
 		)
-		err = zcncore.GetVestingClientList(common.Key(clientID), cb)
+		err = zcncore.GetVestingClientList(clientID, cb)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -258,7 +258,7 @@ var vestingPoolAddCmd = &cobra.Command{
 		}
 
 		statusBar.Begin()
-		if err = txn.VestingAdd(&add, common.Balance(lock)); err != nil {
+		if err = txn.VestingAdd(&add, lock); err != nil {
 			log.Fatal(err)
 		}
 		statusBar.Wait()
@@ -314,7 +314,7 @@ var vestingPoolDeleteCmd = &cobra.Command{
 		}
 
 		statusBar.Begin()
-		if err = txn.VestingDelete(common.Key(poolID)); err != nil {
+		if err = txn.VestingDelete(poolID); err != nil {
 			log.Fatal(err)
 		}
 		statusBar.Wait()
@@ -435,7 +435,7 @@ var vestingPoolUnlockCmd = &cobra.Command{
 		}
 
 		statusBar.Begin()
-		err = txn.VestingUnlock(common.Key(poolID))
+		err = txn.VestingUnlock(poolID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -490,7 +490,7 @@ var vestingPoolTriggerCmd = &cobra.Command{
 		}
 
 		statusBar.Begin()
-		err = txn.VestingTrigger(common.Key(poolID))
+		err = txn.VestingTrigger(poolID)
 		if err != nil {
 			log.Fatal(err)
 		}

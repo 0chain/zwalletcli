@@ -297,8 +297,7 @@ var minerscLock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCLock(id,
-			common.Balance(zcncore.ConvertToValue(tokens)))
+		err = txn.MinerSCLock(id, zcncore.ConvertToValue(tokens))
 		if err != nil {
 			log.Fatal(err)
 		}
