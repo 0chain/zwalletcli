@@ -152,6 +152,96 @@ var minerscInfo = &cobra.Command{
 	},
 }
 
+var minerscMiners = &cobra.Command{
+	Use:   "ls-miners",
+	Short: "Get list of all active miners fro Miner SC",
+	Long:  "Get list of all active miners from Miner SC",
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			flags = cmd.Flags()
+			err   error
+			info  = new(zcncore.MinerSCNodes)
+			cb    = NewJSONInfoCB(info)
+		)
+
+		if err = zcncore.GetMiners(cb); err != nil {
+			log.Fatal(err)
+		}
+
+		if err = cb.Waiting(); err != nil {
+			log.Fatal(err)
+		}
+
+		if len(info.Nodes) == 0 {
+			fmt.Println("no miners in Miner SC")
+			return
+		}
+
+		if flags.Changed("json") {
+			var j bool
+			if j, err = flags.GetBool("json"); err != nil {
+				log.Fatal(err)
+			}
+			if j {
+				util.PrintJSON(info)
+				return
+			}
+		}
+
+		for _, node := range info.Nodes {
+			fmt.Println("- ID:        ", node.Miner.ID)
+			fmt.Println("- Host:      ", node.Miner.Host)
+			fmt.Println("- Port:      ", node.Miner.Port)
+		}
+	},
+}
+
+var minerscSharders = &cobra.Command{
+	Use:   "ls-sharders",
+	Short: "Get list of all active sharders fro Miner SC",
+	Long:  "Get list of all active sharders from Miner SC",
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags = cmd.Flags()
+			err   error
+			info  = new(zcncore.MinerSCNodes)
+			cb    = NewJSONInfoCB(info)
+		)
+		if err = zcncore.GetSharders(cb); err != nil {
+			log.Fatal(err)
+		}
+
+		if err = cb.Waiting(); err != nil {
+			log.Fatal(err)
+		}
+
+		if len(info.Nodes) == 0 {
+			fmt.Println("no sharders in Miner SC")
+			return
+		}
+
+		if flags.Changed("json") {
+			var j bool
+			if j, err = flags.GetBool("json"); err != nil {
+				log.Fatal(err)
+			}
+			if j {
+				util.PrintJSON(info)
+				return
+			}
+		}
+
+		for _, node := range info.Nodes {
+			fmt.Println("- ID:        ", node.Miner.ID)
+			fmt.Println("- Host:      ", node.Miner.Host)
+			fmt.Println("- Port:      ", node.Miner.Port)
+		}
+	},
+}
+
 var minerscUserInfo = &cobra.Command{
 	Use:   "mn-user-info",
 	Short: "Get miner/sharder user pools info from Miner SC.",
@@ -435,6 +525,11 @@ func init() {
 	rootCmd.AddCommand(minerscLock)
 	rootCmd.AddCommand(minerscUnlock)
 	rootCmd.AddCommand(minerConfig)
+	rootCmd.AddCommand(minerscMiners)
+	rootCmd.AddCommand(minerscSharders)
+
+	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
+	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
 
 	minerscUpdateSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
 	minerscUpdateSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
