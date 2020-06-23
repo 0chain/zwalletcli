@@ -16,6 +16,7 @@ import (
 )
 
 var cfgFile string
+var networkFile string
 var walletFile string
 var cDir string
 var bVerbose bool
@@ -37,6 +38,7 @@ var clientWallet *zcncrypto.Wallet
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config.yaml)")
+	rootCmd.PersistentFlags().StringVar(&networkFile, "network", "", "network file to overwrite the network details (if required, default is network.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stderr (default false)")
@@ -66,6 +68,7 @@ func getConfigDir() string {
 
 func initConfig() {
 	nodeConfig := viper.New()
+	networkConfig := viper.New()
 	var configDir string
 	if cDir != "" {
 		configDir = cDir
@@ -78,9 +81,18 @@ func initConfig() {
 	} else {
 		nodeConfig.SetConfigFile(configDir + "/" + "config.yaml")
 	}
+
+	networkConfig.AddConfigPath(configDir)
+	if &networkFile != nil && len(networkFile) > 0 {
+		networkConfig.SetConfigFile(configDir + "/" + networkFile)
+	} else {
+		networkConfig.SetConfigFile(configDir + "/" + "network.yaml")
+	}
+
 	if err := nodeConfig.ReadInConfig(); err != nil {
 		ExitWithError("Can't read config:", err)
 	}
+
 	blockWorker := nodeConfig.GetString("block_worker")
 	signScheme := nodeConfig.GetString("signature_scheme")
 	chainID := nodeConfig.GetString("chain_id")
@@ -105,6 +117,14 @@ func initConfig() {
 		zcncore.WithConfirmationChainLength(CfmChainLength))
 	if err != nil {
 		ExitWithError(err.Error())
+	}
+
+	if err := networkConfig.ReadInConfig(); err == nil {
+		miners := networkConfig.GetStringSlice("miners")
+		sharders := networkConfig.GetStringSlice("sharders")
+		if len(miners) > 0 && len(sharders) > 0 {
+			zcncore.SetNetwork(miners, sharders)
+		}
 	}
 
 	// is freshly created wallet?
