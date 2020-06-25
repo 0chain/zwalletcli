@@ -499,6 +499,8 @@ var minerConfig = &cobra.Command{
 		fmt.Println("view_change:          ", conf.ViewChange)
 		fmt.Println("max_n:                ", conf.MaxN)
 		fmt.Println("min_n:                ", conf.MinN)
+		fmt.Println("max_s:                ", conf.MaxS)
+		fmt.Println("min_s:                ", conf.MinS)
 		fmt.Println("t_percent:            ", conf.TPercent)
 		fmt.Println("k_percent:            ", conf.KPercent)
 		fmt.Println("last_round:           ", conf.LastRound)
@@ -514,6 +516,7 @@ var minerConfig = &cobra.Command{
 		fmt.Println("interest_decline_rate:", conf.InterestDeclineRate)
 		fmt.Println("max_mint:             ", conf.MaxMint)
 		fmt.Println("minted:               ", conf.Minted)
+		fmt.Println("max_delegates:        ", conf.MaxDelegates)
 	},
 }
 
