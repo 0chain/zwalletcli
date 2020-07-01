@@ -207,6 +207,10 @@ Response
 
 When you run a getbalance on both the wallets you see the difference
 
+NOTE
+
+   This command may return a success response in the case of multiple transactions from the same wallet falling within the same round. So to be sure that send transaction has committed, wait a few rounds (several seconds) and check balances and/or inspect finalized blockchain transactions. This is not regarded as an error, rather that the send request was successful but not actually transacted. This is an issue with the cli tools rather than the gosdk itself.
+
 ### Lock
 
 Command
