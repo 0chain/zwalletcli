@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
 )
@@ -15,13 +16,13 @@ import (
 type OnJSONInfoCb struct {
 	value interface{}
 	err   error
-	got   chan struct{}
+	wg    sync.WaitGroup
 }
 
 func (ojsonic *OnJSONInfoCb) OnInfoAvailable(op int, status int,
 	info string, errMsg string) {
 
-	defer close(ojsonic.got)
+	defer ojsonic.wg.Done()
 
 	if status != zcncore.StatusSuccess {
 		ojsonic.err = errors.New(errMsg)
@@ -39,13 +40,13 @@ func (ojsonic *OnJSONInfoCb) OnInfoAvailable(op int, status int,
 
 // Wait for info.
 func (ojsonic *OnJSONInfoCb) Waiting() (err error) {
-	<-ojsonic.got
+	ojsonic.wg.Wait()
 	return ojsonic.err
 }
 
 func NewJSONInfoCB(val interface{}) (cb *OnJSONInfoCb) {
 	cb = new(OnJSONInfoCb)
 	cb.value = val
-	cb.got = make(chan struct{})
+	cb.wg.Add(1)
 	return
 }

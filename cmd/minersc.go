@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/common"
@@ -263,7 +264,7 @@ var minerscUserInfo = &cobra.Command{
 		}
 
 		var (
-			info = new(zcncore.MinerSCUserInfo)
+			info = new(zcncore.MinerSCUserPoolsInfo)
 			cb   = NewJSONInfoCB(info)
 		)
 		if err = zcncore.GetMinerSCUserInfo(clientID, cb); err != nil {
@@ -289,11 +290,24 @@ var minerscUserInfo = &cobra.Command{
 			return
 		}
 
-		for _, up := range info.Pools {
-			fmt.Println("- pool_id:        ", up.PoolID)
-			fmt.Println("  node_id:        ", up.MinerID)
-			fmt.Println("  balance:        ", up.Balance.String())
-			fmt.Println("  stake_diversity:", up.StakeDiversity)
+		var total common.Balance
+		for _, pools := range info.Pools {
+			for _, pool := range pools {
+				total += pool.Balance
+			}
+		}
+
+		for nit, pools := range info.Pools {
+			fmt.Println("- node:", nit)
+			for _, pool := range pools {
+				fmt.Println("  - pool_id:       ", pool.ID)
+				fmt.Println("    balance:       ", pool.Balance)
+				fmt.Println("    interests paid:", pool.InterestPaid)
+				fmt.Println("    rewards paid:  ", pool.RewardPaid)
+				fmt.Println("    status:        ", strings.ToLower(pool.Status))
+				fmt.Println("    stake %:       ",
+					float64(pool.Balance)/float64(total)*100.0, "%")
+			}
 		}
 	},
 }
