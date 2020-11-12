@@ -24,7 +24,13 @@ var getbalancecmd = &cobra.Command{
 			ExitWithError(err.Error())
 		}
 		if statusBar.success {
-			fmt.Printf("\nBalance: %v\n", zcncore.ConvertToToken(statusBar.balance))
+			token := zcncore.ConvertToToken(statusBar.balance)
+			tokenUSD, err := zcncore.ConvertTokenToUSD(token)
+			if err != nil {
+				ExitWithError("\nGet balance failed. " + err.Error() + "\n")
+			} else {
+				fmt.Printf("\nBalance: %v (%v USD)\n", token, tokenUSD)
+			}
 		} else {
 			ExitWithError("\nGet balance failed. " + statusBar.errMsg + "\n")
 		}
