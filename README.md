@@ -188,18 +188,48 @@ Response
 
     Execute faucet smart contract success
 
+### Get balance
+
+getbalance helps in two ways
+
+- to get balance of an existing wallet
+- to create a wallet if there is none
+
+Command
+
+    ./zwallet getbalance
+
+Response
+
+    No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
+    ZCN wallet created!!
+
+If you do not have any balance, you get the following.
+
+    Get balance failed.
+
+Use [faucet](#Faucet) and try again
+
+    Balance: 1
+
+If you open the wallet.json file, you will see the wallet details.
+
+    {"client_id":"7ea92e2e104489092f067b2644b22c5b1da001c0730f1fd7e990fd6b6bacaedd","client_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","keys":[{"public_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","private_key":"94b1e9b2adf1dd1c141797aaf586b60b144011983723a266e19d6d6aaf859e1b"}],"mnemonics":"night acid purpose slim junk wrist clown lyrics engine faint select capable swallow direct armor buzz student degree omit fiction favorite air volume learn","version":"1.0","date_created":"2020-03-06 13:52:24.763873623 +0530 IST m=+0.004795132"}
+
+Out of these, the client_id and menmonics fields will be useful later.
+
 ### Send
 
 Use send command to send a transaction from one wallet to the other. Send commands take four parameters.
 
-- --from wallet -- default is the account in wallet.json
-- --to_client_id -- address of the wallet receiving the funds
+- --from wallet -- default is the account in `~/.zcn/wallet.json`
+- --to_client_id -- address of the wallet receiving the funds (this must be a registered wallet)
 - --desc -- description for the transaction
 - --tokens -- tokens in decimals to be transferred.
 
 Command
 
-     ./zwallet send --wallet from --desc "testing" --to_client_id "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --tokens 0.5
+     ./zwallet send --desc "testing" --to_client_id "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --tokens 0.5
 
 Response
 
@@ -215,17 +245,34 @@ NOTE
 
 Command
 
-    ./zwallet lock --wallet from --durationHr 0 --durationMin 5 --tokens 10.0
+    ./zwallet lock --durationHr 0 --durationMin 5 --tokens 0.1
 
 Response
 
-    Tokens (10.000000) locked successfully
+    Tokens (0.100000) locked successfully
 
 If you run the getbalance, you see that interest would have been already paid. Those additional tokens are yours to use. How cool is that!
+
+### Get locked tokens
+
+Use getlockedtokens command to get information about locked tokens
+
+Command
+
+    ./zwallet getlockedtokens
+
+Response
+
+    Locked tokens:
+    {"stats":[{"pool_id":"41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e","start_time":"2019-06-17 05:48:54 +0000 UTC","duration":"5m0s","time_left":"3m57.17069839s","locked":true,"interest_rate":0.000004756468797564688,"interest_earned":475646,"balance":100000000000}]}
+
+In the above response, make a note of pool_id. You need this when you want to unlock. Rest of the fields are self-explanatory.
 
 ### Unlock
 
 Use this command to unlock the locked tokens. Unless you unlock, the tokens are not released.
+
+You can only unlock tokens once the lock duration has passed. The time left and lock status is available when running `getlockedtokens`.
 
 Command
 
@@ -243,60 +290,6 @@ Command
 
     ./zwallet recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
 
-### Stake
-
-Use this command to stake your coins to miners or sharders. You can get their id using URL from [getid](#Get-id) command
-
-Command
-
-    ./zwallet stake --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --tokens 10
-
-Response
-
-    Tokens staked successfully.
-
-### Delete stake
-
-Use this command to delete your stake from miners or sharders (user pool). You can get their id using URL from [getid](#Get-id) command
-
-Command
-
-    ./zwallet deletestake --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --pool_id 7ea92e2e104489092f067b2644b22c5b1da001c0730f1fd7e990fd6b6bacaedd
-
-Response
-
-    Delete stake success.
-
-### Get balance
-
-getbalance helps in two ways
-
-- to get balance of an existing wallet
-- to create a wallet if there is none
-
-Command
-
-    ./zwallet getbalance
-
-Response
-
-    No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
-    ZCN wallet created!!
-
-If you do not have any balance
-
-    Get balance failed.
-
-Use [faucet](#Faucet) and try again
-
-    Balance: 1
-
-If you open the wallet.json file, you will see the wallet details.
-
-    {"client_id":"7ea92e2e104489092f067b2644b22c5b1da001c0730f1fd7e990fd6b6bacaedd","client_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","keys":[{"public_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","private_key":"94b1e9b2adf1dd1c141797aaf586b60b144011983723a266e19d6d6aaf859e1b"}],"mnemonics":"night acid purpose slim junk wrist clown lyrics engine faint select capable swallow direct armor buzz student degree omit fiction favorite air volume learn","version":"1.0","date_created":"2020-03-06 13:52:24.763873623 +0530 IST m=+0.004795132"}
-
-Out of these, the client_id and menmonics fields will be useful later.
-
 ### Get lock config
 
 0Chain has a great way of earning additional tokens by locking tokens. When you lock tokens for a period of time, you will earn interest. The terms of lock can be obtained by lockconfig command.
@@ -309,20 +302,6 @@ Response
     Configuration:
     {"ID":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d9","max_lock_period":31536000000000000,"min_lock_period":60000000000,"simple_global_node":{"interest_rate":0.5,"min_lock":10}}
 
-### Get locked tokens
-
-Use getlockedtokens command to get informatiion about locked tokens
-
-Command
-
-    ./zwallet getlockedtokens
-
-Response
-
-    Locked tokens:
-    {"stats":[{"pool_id":"41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e","start_time":"2019-06-17 05:48:54 +0000 UTC","duration":"5m0s","time_left":"3m57.17069839s","locked":true,"interest_rate":0.000004756468797564688,"interest_earned":475646,"balance":100000000000}]}
-
-In the above response, make a note of pool_id. You need this when you want to unlock. Rest of the fields are self-explanatory.
 
 ### Get id
 
@@ -354,27 +333,6 @@ Response
       http://localhost:5052 | 7a90e6790bcd3d78422d7a230390edc102870fe58c15472073922024985b1c7d
       http://localhost:5051 | f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
 
-### Get user pools
-
-Use this command to get list of user pools.
-Command
-
-    ./zwallet getuserpools
-
-Response
-
-    User pools list.
-
-### Get user pool details
-
-Use this command to get details for a particular pool.
-Command
-
-    ./zwallet getuserpooldetails --client_id 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 --pool_id 2f051ca6447d8712a020213672bece683dbd0d23a81fdf93ff273043a0764d18
-
-Response
-
-    User pool details.
 
 ### Verify
 
@@ -503,17 +461,51 @@ pool owner can trigger.
 
     ./zwallet mn-config
 
+Response
+
+    view_change:           7301
+    max_n:                 8
+    min_n:                 2
+    max_s:                 3
+    min_s:                 1
+    t_percent:             0.51
+    k_percent:             0.75
+    last_round:            7369
+    max_stake:             100
+    min_stake:             0
+    interest_rate:         0.001
+    reward_rate:           1
+    share_ratio:           0.1
+    block_reward:          0.7
+    max_charge:            0.5
+    epoch:                 15000000
+    reward_decline_rate:   0.1
+    interest_decline_rate: 0.1
+    max_mint:              4000000
+    minted:                147.3653
+    max_delegates:         200
+
+
 #### Node information
 
-Get miner/sharder information from Miner SC.
+Get miner/sharder information from Miner SC. 
 
     ./zwallet mn-info --id NODE_ID
 
+Response
+
+    {"simple_miner":{"id":"31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929","n2n_host":"198.18.0.71","host":"localhost","port":7071,"public_key":"255452b9f49ebb8c8b8fcec9f0bd8a4284e540be1286bd562578e7e59765e41a7aada04c9e2ad3e28f79aacb0f1be66715535a87983843fea81f23d8011e728b","short_name":"localhost.m0","build_tag":"2a366103470715432bcac43405ab722823a00c23","total_stake":1000000000,"delegate_wallet":"31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"generator_rewards":3343620000000,"generator_fees":48},"node_type":"miner","last_health_check":1612439517},"active":{"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61":{"stats":{"delegate_id":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2","high":1330000000,"low":1000000,"interest_paid":10000000,"reward_paid":1208970000000,"number_rounds":0,"status":"ACTIVE"},"pool":{"pool":{"id":"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61","balance":1000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2"}}}}}
+
+
 #### Lock stake for a node.
 
-Lock stake for miner or sharder
+Lock stake for miner or sharder. 
 
     ./zwallet mn-lock --id NODE_ID
+
+Response
+
+    locked with: e5f87e4a82be6297c4a39caebff87c6258f3be861b8698b01f6fbf38d227fa6f
 
 #### Check out stake pool info.
 
@@ -521,11 +513,19 @@ Get miner/sharder stake pool info from Miner SC.
 
     ./zwallet mn-pool-info --id NODE_ID --pool_id POOL_ID
 
+Response
+
+    {"stats":{"delegate_id":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2","high":1330000000,"low":1330000000,"interest_paid":0,"reward_paid":42560000000,"number_rounds":0,"status":"ACTIVE"},"pool":{"pool":{"id":"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61","balance":1000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2"}}}
+
 #### Unlock a stake
 
 Unlock miner/sharder stake pool. Tokens will be released next VC.
 
     ./zwallet mn-unlock --id NODE_ID --pool_id POOL_ID
+
+Response
+
+    tokens will be unlocked next VC
 
 #### Update node settings.
 
@@ -545,13 +545,24 @@ Get list of pools of Miner SC of a user.
 
     ./zwallet mn-user-info
 
+Response
+
+    - node: 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 (miner)
+        - pool_id:        e5f87e4a82be6297c4a39caebff87c6258f3be861b8698b01f6fbf38d227fa6f
+          balance:        0.1
+          interests paid: 0
+          rewards paid:   0.399
+          status:         active
+          stake %:        100 %
+
 Optional flag `--client_id` can be used to get pools information for given
 user. Current user used by default.
 
 There is `--json` flag to print result as JSON.
 
-### Tips
+### Tips 
 
 1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
 2. Use cmdlog.log to check possible reasons for failure of transactions.
 3. zwallet also comes with a Makefile which simplifies a lot of these zwalletcli commands.
+4. Use `--verbose` flag on any of the command to see more information.
