@@ -7,36 +7,51 @@ import (
 	"github.com/0chain/gosdk/zcncore"
 )
 
+import "fmt"
+
 func createReadPool() (err error) {
-	var (
-		txn       zcncore.TransactionScheme
-		wg        sync.WaitGroup
-		statusBar = &ZCNStatus{wg: &wg}
-	)
+  fmt.Println("d1 a")
+  var (
+    txn       zcncore.TransactionScheme
+    wg        sync.WaitGroup
+    statusBar = &ZCNStatus{wg: &wg}
+  )
 
-	if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
-		return
-	}
+  fmt.Println("d2.1", statusBar.errMsg)
 
-	wg.Add(1)
-	if err = txn.CreateReadPool(0); err != nil {
-		return
-	}
-	wg.Wait()
+  if txn, err = zcncore.NewTransaction(statusBar, 0); err != nil {
+    fmt.Println("d1 b")
+    return
+  }
 
-	if statusBar.success {
-		statusBar.success = false
+  fmt.Println("d2.2", statusBar.errMsg)
 
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			return
-		}
-		wg.Wait()
+  wg.Add(1)
+  fmt.Println("d2.2.1", statusBar.errMsg)
+  if err = txn.CreateReadPool(0); err != nil {
+    fmt.Println("d1 c")
+    return
+  }
+  fmt.Println("d2.2.2", statusBar.errMsg)
+  wg.Wait()
 
-		if statusBar.success {
-			return // nil
-		}
-	}
+  fmt.Println("d2.3", statusBar.errMsg)
+  if statusBar.success {
+    statusBar.success = false
 
-	return errors.New(statusBar.errMsg)
+    wg.Add(1)
+    if err = txn.Verify(); err != nil {
+      fmt.Println("d1 d")
+      return
+    }
+    wg.Wait()
+
+    if statusBar.success {
+      fmt.Println("d1 e")
+      return // nil
+    }
+  }
+
+  fmt.Println("d1 f", statusBar.errMsg)
+  return errors.New(statusBar.errMsg)
 }
