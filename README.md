@@ -26,7 +26,7 @@ zwallet CLI provides a self-explaining "help" option that lists commands and par
 
 ## How to get it?
 
-    git clone https://github.com/0chain/zboxcli.git
+    git clone https://github.com/0chain/zwalletcli.git
 
 ## Pre-requisites
 
