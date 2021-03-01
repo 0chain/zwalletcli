@@ -519,7 +519,7 @@ Response
 
 #### Unlock a stake
 
-Unlock miner/sharder stake pool. Tokens will be released next VC.
+Unlock miner/sharder stake pool. Tokens will be released next VC OR at next reward round.
 
     ./zwallet mn-unlock --id NODE_ID --pool_id POOL_ID
 
