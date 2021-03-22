@@ -115,6 +115,10 @@ func (zcn *ZCNStatus) OnVoteComplete(status int, proposal string, err string) {
 	zcn.walletString = proposal
 }
 
+func PrintError(v ...interface{}) {
+	fmt.Fprintln(os.Stderr, v...)
+}
+
 func ExitWithError(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
 	os.Exit(1)
