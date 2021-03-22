@@ -42,7 +42,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stderr (default false)")
-	rootCmd.AddCommand(registerwalletcmd)
 }
 
 func Execute() {
@@ -192,23 +191,4 @@ func initConfig() {
 		log.Printf("Read pool created successfully")
 	}
 
-}
-
-var registerwalletcmd = &cobra.Command{
-	Use:   "registerwallet",
-	Short: "Register wallet with the chain",
-	Long:  `Register wallet with the chain`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-
-		wg.Add(1)
-		err := zcncore.RegisterToMiners(clientWallet, statusBar)
-		if err != nil {
-			statusBar.OnWalletCreateComplete(zcncore.StatusError, "", fmt.Sprintf("%s", err.Error()))
-		} else {
-			log.Printf("Wallet successfully registered with the chain")
-		}
-	},
 }
