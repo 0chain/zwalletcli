@@ -1,6 +1,154 @@
-# zwallet - a CLI for 0chain Blockchain
+# zwallet - a CLI for 0chain wallet
 
-zwallet is a command line interface (CLI) to quickly demonstrate and understand the capabilities of 0Chain Blockchain. The utility is built using 0Chain's goSDK library written in Go. There are some cool videos on how to lock tokens. Check out this [video](https://youtu.be/Eiz9mqdFtZo) on how to use the sample makefile for sending and receiving tokens to the 0Chain testnet, and another [video](https://youtu.be/g44VczBzmXo) on how to lock tokens and earn interest.
+`zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain. 
+
+The CLI uses the [0chain Go SDK](https://github.com/0chain/gosdk) to do most of its functions.
+
+## Architecture
+
+`zwallet` works with any 0chain network by setting the network's 0dns on `~/.zcn/config.yaml`. 
+
+Besides the config file, `zwallet` also uses the wallet details located at `~/.zcn/wallet.json` (by default). If no wallet exist yet, the CLI will preemptively create it before doing the command requested.
+
+![alt text](docs/architecture.png "Architecture")
+
+For most of its transactional commands, `zwallet` will use the `0dns` to get the nodes, then sends the transaction(s) requested to the miners, and finally waits the confirmation on the sharders.  
+
+## Getting started
+
+### 1. Installation
+
+**Prerequisites**
+- go 1.13
+
+**Procedures**
+1. Clone the `zwalletcli` repo and 
+
+```sh
+git clone https://github.com/0chain/zwalletcli.git
+cd zwalletcli
+```
+
+2. Execute install
+```sh
+make install
+```
+
+3. Add config yaml at `~/.zcn/config.yaml`
+
+The following will use `https://one.devnet-0chain.net` as your blockchain network.
+```sh
+cat > ~/.zcn/config.yaml << EOF
+block_worker: http://one.devnet-0chain.net/dns
+signature_scheme: bls0chain
+min_submit: 50 # in percentage
+min_confirmation: 50 # in percentage
+confirmation_chain_length: 3
+EOF
+```
+
+4. Run `zwallet`
+```sh
+./zwallet
+```
+
+A list of `zwallet` commands should be displayed.
+
+----
+For detailed steps on the installation, follow any of the following:
+- [How to build on Linux](https://github.com/0chain/zwalletcli/wiki/Build-Linux)
+- [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
+
+### 2. Run `zwallet` commands
+
+The following steps assume the current directory is inside the `zwalletcli` repo.
+
+1. Register a new wallet
+
+The default wallet information is stored on `/.zcn/wallet.json`. Initially, there is no wallet yet.
+
+When you execute any `zwallet` command, it will create a wallet if it cannot find any.
+
+Run the `ls-miners` command to display list of miners in the network.
+
+```sh
+./zwallet ls-miners
+```
+
+The output would indicate that it has created a wallet for you.
+```
+No wallet in path  <home dir>/.zcn/wallet.json found. Creating wallet...
+ZCN wallet created!!
+Creating related read pool for storage smart-contract...
+Read pool created successfully
+- ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
+- Host:       one.devnet-0chain.net
+- Port:       31203
+- ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
+- Host:       one.devnet-0chain.net
+- Port:       31201
+- ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
+- Host:       one.devnet-0chain.net
+- Port:       31202
+```
+
+2. Get some tokens
+
+Faucet Smart Contract is available on devnets and can be used to get tokens.
+
+Run the `faucet` command to get 1 token.
+```sh
+./zwallet faucet --methodName pour --input "need token"
+```
+Output
+```
+Execute faucet smart contract success with txn :  915cfc6fa81eb3622c7082436a8ff752420e89dee16069a625d5206dc93ac3ca
+```
+
+3. Check balance
+Run the `getblance` command
+```sh
+./zwallet getbalance
+```
+Output
+```
+Balance: 1 (1.76 USD)
+```
+
+4. Lock token to get interest
+Tokens can be locked into a pool to gain interest with Interest Pool smart contract.
+   
+Run the `lock` command and provide the tokens. 
+```sh
+./zwallet lock --tokens 0.5 --durationMin 5 
+```
+Output
+```
+Tokens (0.500000) locked successfully
+```
+
+Check balance right after and see that the locked tokens is deducted but has already gained interest.
+```sh
+./zwallet getbalance
+
+Balance: 0.5000004743 (0.8800008347680001 USD)
+```
+
+
+That's it! You are now ready to use `zwallet`
+
+
+
+
+
+
+
+
+the flow should be an intro, architecture, a Quickstart with just create wallet, register, faucet, lock tokens for interest. 
+Advanced would be stake tokens to miner, sharder, blobber.  Also vesting and multisig.  Go through all the parameter options in the cli
+
+
+
 
 ## Features
 
@@ -24,54 +172,53 @@ zwallet is a command line interface (CLI) to quickly demonstrate and understand 
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
 
-## How to get it?
 
-    git clone https://github.com/0chain/zwalletcli.git
 
-## Pre-requisites
-
-    Go V1.12 or higher.
-
-### [How to build on Linux](https://github.com/0chain/zwalletcli/wiki/Build-Linux)
-
-### [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
 
 ## Getting started with zwallet
 
-### Before you start
+### Create your CLI config to interact with the blockchain
 
-Before you start playing with zwalet, you need to access the blockchain. Go to network folder in the repo, and choose a network. Copy it to your ~/.zcn folder and then rename it as config.yaml file.
+This command will create a default config file in `~/.zcn/config.yaml`. 
 
-    mkdir ~/.zcn
-    cp network/one.yaml ~/.zcn/config.yaml
+```sh
+cat > ~/.zcn/config.yaml << EOF
+block_worker: http://one.devnet-0chain.net/dns
+signature_scheme: bls0chain
+min_submit: 50 # in percentage
+min_confirmation: 50 # in percentage
+confirmation_chain_length: 3
+EOF
+```
 
-Sample config.yaml
+Update the config as required. The following described the individual fields.
 
-      ---
-      block_worker: http://localhost:9091
-      signature_scheme: bls0chain
-      min_submit: 50 # in percentage
-      min_confirmation: 50 # in percentage
-      confirmation_chain_length: 3
+| Field | Description | Value type |
+| ----- | ----------- | ---------- |
+| block_worker | The URL to chain network DNS that provides the lists of miners and sharders | string |
+| signature_scheme | The signature scheme used in the network. This would be `bls0chain` for most networks | string |
+| min_submit | The desired minimum success ratio (in percent) to meet when submitting transactions to miners | integer |
+| min_confirmation | The desired minimum success ratio (in percent) to meet when verifying transactions on sharders | integer |
+| confirmation_chain_length | The desired chain length to meet when verifying transactions | integer |
 
-We use blockWorker to connect to the network instead of giving network details directly, It will fetch the network details automatically from the blockWorker's network API.
+#### (Optional) Create your config to enumerate network nodes
 
-#### Override Network Details
+The block worker already provide the lists of miners and sharders on the blockchain network. You can override those lists by providing a network config in `~/.zcn/network.yaml`.
 
-By default it will use the miner/sharder values which it will get using the `block_worker_url/network`. In case you want to override those values and give custom miner/sharder to use, You can create a `network.yaml` in your ~/.zcn (config) folder and paste the miner/sharder values in below format.
+This command will create a sample network config file in `~/.zcn/network.yaml`.
 
-    miners:
-      - http://localhost:7071
-      - http://localhost:7072
-      - http://localhost:7073
-    sharders:
-      - http://localhost:7171
+```sh
+cat > ~/.zcn/network2.yaml << EOF
+miners:
+  - http://one.devnet-0chain.net:31201
+  - http://one.devnet-0chain.net:31202
+  - http://one.devnet-0chain.net:31203
+sharders:
+  - http://one.devnet-0chain.net:31101
+EOF
+```
 
-Note: This is also useful for the Mac OS users running local cluster and having trouble with docker internal IPs (block_worker return docker IPs in local)
-
-### Setup
-
-The zwallet command line uses the ~/.zcn/config.yaml file at runtime to point to the network specified in that file.
+Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
 
 ## Commands
 
@@ -559,6 +706,26 @@ Optional flag `--client_id` can be used to get pools information for given
 user. Current user used by default.
 
 There is `--json` flag to print result as JSON.
+
+### Video resources
+
+TODO check videos
+- [Send and receive token](https://youtu.be/Eiz9mqdFtZo)
+- [Lock tokens and earn interest](https://youtu.be/g44VczBzmXo)
+
+
+### Troubleshooting
+
+1. `zwallet getbalance` says it failed
+
+This happens when the wallet has no token.
+
+```sh
+zwallet getbalance
+
+Get balance failed.
+```
+
 
 ### Tips 
 
