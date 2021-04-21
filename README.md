@@ -47,6 +47,8 @@ confirmation_chain_length: 3
 EOF
 ```
 
+To know more about the specific config, details are found [here](#zcnconfigyaml).
+
 4. Run `zwallet`
 ```sh
 ./zwallet
@@ -63,19 +65,39 @@ For detailed steps on the installation, follow any of the following:
 
 The following steps assume the current directory is inside the `zwalletcli` repo.
 
-1. Register a new wallet
+1. View all `zwallet` commands
+   
+Executing just `zwallet` reveals all the supported commands.
 
-The default wallet information is stored on `/.zcn/wallet.json`. Initially, there is no wallet yet.
+```
+Use Zwallet to store, send and execute smart contract on 0Chain platform.
+                        Complete documentation is available at https://0chain.net
 
-When you execute any `zwallet` command, it will create a wallet if it cannot find any.
+Usage:
+  zwallet [command]
 
-Run the `ls-miners` command to display list of miners in the network.
+Available Commands:
+  createmswallet     create multisig wallet
+  faucet             Faucet smart contract
+  getbalance         Get balance from sharders
+  getblobbers        Get registered blobbers from sharders
+  getid              Get Miner or Sharder ID from its URL
+  getlockedtokens    Get locked tokens
+....
+```
 
+2. Register a new wallet
+
+The wallet information is stored on `/.zcn/wallet.json`. Initially, there is no wallet yet.
+
+When you execute any `zwallet` command, it will automatically create a wallet if it cannot find any and save that locally.
+
+Run the `ls-miners` command and see that it creates a wallet first before completing the command requested.
 ```sh
 ./zwallet ls-miners
 ```
 
-The output would indicate that it has created a wallet for you.
+Output
 ```
 No wallet in path  <home dir>/.zcn/wallet.json found. Creating wallet...
 ZCN wallet created!!
@@ -94,7 +116,7 @@ Read pool created successfully
 
 2. Get some tokens
 
-Faucet Smart Contract is available on devnets and can be used to get tokens.
+Faucet Smart Contract is available on dev networks and can be used to get tokens.
 
 Run the `faucet` command to get 1 token.
 ```sh
@@ -105,7 +127,8 @@ Output
 Execute faucet smart contract success with txn :  915cfc6fa81eb3622c7082436a8ff752420e89dee16069a625d5206dc93ac3ca
 ```
 
-3. Check balance
+3. Check wallet balance
+
 Run the `getblance` command
 ```sh
 ./zwallet getbalance
@@ -115,10 +138,11 @@ Output
 Balance: 1 (1.76 USD)
 ```
 
-4. Lock token to get interest
-Tokens can be locked into a pool to gain interest with Interest Pool smart contract.
+4. Lock tokens to get interest
+
+Tokens can be locked into a pool to gain interest. It uses the Interest Pool smart contract.
    
-Run the `lock` command and provide the tokens. 
+Run the `lock` command and provide the amount of tokens and how long to lock them. 
 ```sh
 ./zwallet lock --tokens 0.5 --durationMin 5 
 ```
@@ -137,18 +161,192 @@ Balance: 0.5000004743 (0.8800008347680001 USD)
 
 That's it! You are now ready to use `zwallet`
 
+## Flags
+
+`zwallet` accept global flags to override default configuration. The flags can be used in any command.
+
+| Flag | Description | Default |
+| ----- | ----------- | ---------- |
+| `--config` | [Config file](#zcnconfigyaml) | `config.yaml` |
+| `configDir` | Config directory | `~/.zcn` |
+| `network` | [Network file](#zcnnetworkyaml) | `network.yaml` |
+| `verbose` | Enable verbose logging | `false` |
+| `wallet` | Wallet file | `wallet.json` |
+
+## Features
+
+1. Creating and restoring wallets
+2. Explore network
+3. Getting tokens from faucet
+4. Sending tokens
+5. Staking for interest
+6. Staking on miners and sharders 
+7. Vesting pool
 
 
+### Creating and restoring wallets
+
+#### Creating wallet
+
+Simply run any `zwallet` command and it will create a wallet if none exist yet.
+
+Here is a `faucet` command to create wallet at default location`~/.zcn/wallet.json`.
+
+```sh
+./zwallet faucet --methodName pour --input "new wallet"
+```
+
+Command to create another wallet at `~/.zcn/new_wallet.json`
+```sh
+./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
+```
+
+Verify second wallet
+```sh
+cat ~/.zcn/new_wallet.json
+```
+
+#### Recovering wallet
+
+It is critical that the wallet is backed up particularly the mnemonics for recovering the wallet.
+
+To recover wallet with mnemonic, use `recoverwallet` command. 
+
+Example
+
+```sh
+zwallet recoverwallet --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell" --wallet recovered_wallet.json
+```
+
+Verify recovered wallet
+```sh
+cat ~/.zcn/recovered_wallet.json
+```
+
+#### Creating multisig wallet
+
+TODO
+
+```
+   createmswallet     create multisig wallet
+```
+
+### Exploring network
+
+```
+   getblobbers        Get registered blobbers from sharders
+   getid              Get Miner or Sharder ID from its URL
+   ls-miners          Get list of all active miners fro Miner SC
+   ls-sharders        Get list of all active sharders fro Miner SC
+```
+
+### Getting and sending tokens
+
+TODO 
+```
+   faucet             Faucet smart contract
+   send               Send ZCN tokens to another wallet
+   getbalance         Get balance from sharders
+   verify             verify transaction
+```
+
+### Staking for interest
+
+TODO
+
+```
+   getlockedtokens    Get locked tokens
+   lock               Lock tokens
+   lockconfig         Get lock configuration
+   unlock             Unlock tokens
+```
+
+### Staking on miners and sharders
+
+TODO
+
+```
+mn-config          Get miner SC global info.
+mn-info            Get miner/sharder info from Miner SC.
+mn-lock            Add miner/sharder stake.
+mn-pool-info       Get miner/sharder pool info from Miner SC.
+mn-unlock          Unlock miner/sharder stake.
+mn-update-settings Change miner/sharder settings in Miner SC.
+mn-user-info       Get miner/sharder user pools info from Miner SC.
+```
+
+### Vesting pool
+
+TODO 
+
+```
+   vp-add             Add a vesting pool
+   vp-config          Check out vesting pool configurations.
+   vp-delete          Delete a vesting pool
+   vp-info            Check out vesting pool information.
+   vp-list            Check out vesting pools list.
+   vp-stop            Stop vesting for one of destinations and unlock tokens not vested
+   vp-trigger         Trigger a vesting pool work.
+   vp-unlock          Unlock tokens of a vesting pool
+```
 
 
+## Config
+
+### ~/.zcn/config.yaml
+
+`~/.zcn/config.yaml` is a required `zwallet` config.
+
+| Field | Description | Value type |
+| ----- | ----------- | ---------- |
+| `block_worker` | The URL to chain network DNS that provides the lists of miners and sharders | string |
+| `signature_scheme` | The signature scheme used in the network. This would be `bls0chain` for most networks | string |
+| `min_submit` | The desired minimum success ratio (in percent) to meet when submitting transactions to miners | integer |
+| `min_confirmation` | The desired minimum success ratio (in percent) to meet when verifying transactions on sharders | integer |
+| `confirmation_chain_length` | The desired chain length to meet when verifying transactions | integer |
+
+### (Optional) ~/.zcn/network.yaml 
+
+Network nodes are automatically discovered using the `block_worker` provided on `~/.zcn/config.yaml`.
+
+To override/limit the nodes used on `zwallet`, create `~/.zcn/network.yaml` as shown below. 
+
+```sh
+cat > ~/.zcn/network.yaml << EOF
+miners:
+  - http://one.devnet-0chain.net:31201
+  - http://one.devnet-0chain.net:31202
+  - http://one.devnet-0chain.net:31203
+sharders:
+  - http://one.devnet-0chain.net:31101
+EOF
+```
+
+Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
+
+## Video resources
+
+TODO verify video content
+- [Send and receive token](https://youtu.be/Eiz9mqdFtZo)
+- [Lock tokens and earn interest](https://youtu.be/g44VczBzmXo)
 
 
+## Troubleshooting
 
-the flow should be an intro, architecture, a Quickstart with just create wallet, register, faucet, lock tokens for interest. 
-Advanced would be stake tokens to miner, sharder, blobber.  Also vesting and multisig.  Go through all the parameter options in the cli
+1. For more logging, add `--verbose` when running commands.
+2. `zwallet getbalance` says it failed
+
+This happens when the wallet has no token.
+
+```sh
+zwallet getbalance
+
+Get balance failed.
+```
 
 
-
+---
+# OLD README
 
 ## Features
 
@@ -171,54 +369,6 @@ Advanced would be stake tokens to miner, sharder, blobber.  Also vesting and mul
 15. [Miner SC](#Miner-SC)
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
-
-
-
-
-## Getting started with zwallet
-
-### Create your CLI config to interact with the blockchain
-
-This command will create a default config file in `~/.zcn/config.yaml`. 
-
-```sh
-cat > ~/.zcn/config.yaml << EOF
-block_worker: http://one.devnet-0chain.net/dns
-signature_scheme: bls0chain
-min_submit: 50 # in percentage
-min_confirmation: 50 # in percentage
-confirmation_chain_length: 3
-EOF
-```
-
-Update the config as required. The following described the individual fields.
-
-| Field | Description | Value type |
-| ----- | ----------- | ---------- |
-| block_worker | The URL to chain network DNS that provides the lists of miners and sharders | string |
-| signature_scheme | The signature scheme used in the network. This would be `bls0chain` for most networks | string |
-| min_submit | The desired minimum success ratio (in percent) to meet when submitting transactions to miners | integer |
-| min_confirmation | The desired minimum success ratio (in percent) to meet when verifying transactions on sharders | integer |
-| confirmation_chain_length | The desired chain length to meet when verifying transactions | integer |
-
-#### (Optional) Create your config to enumerate network nodes
-
-The block worker already provide the lists of miners and sharders on the blockchain network. You can override those lists by providing a network config in `~/.zcn/network.yaml`.
-
-This command will create a sample network config file in `~/.zcn/network.yaml`.
-
-```sh
-cat > ~/.zcn/network2.yaml << EOF
-miners:
-  - http://one.devnet-0chain.net:31201
-  - http://one.devnet-0chain.net:31202
-  - http://one.devnet-0chain.net:31203
-sharders:
-  - http://one.devnet-0chain.net:31101
-EOF
-```
-
-Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
 
 ## Commands
 
@@ -706,30 +856,3 @@ Optional flag `--client_id` can be used to get pools information for given
 user. Current user used by default.
 
 There is `--json` flag to print result as JSON.
-
-### Video resources
-
-TODO check videos
-- [Send and receive token](https://youtu.be/Eiz9mqdFtZo)
-- [Lock tokens and earn interest](https://youtu.be/g44VczBzmXo)
-
-
-### Troubleshooting
-
-1. `zwallet getbalance` says it failed
-
-This happens when the wallet has no token.
-
-```sh
-zwallet getbalance
-
-Get balance failed.
-```
-
-
-### Tips 
-
-1. Sometimes when a transaction is sent, it may fail with a message "verify transaction failed". In such cases you need to resend the transactions
-2. Use cmdlog.log to check possible reasons for failure of transactions.
-3. zwallet also comes with a Makefile which simplifies a lot of these zwalletcli commands.
-4. Use `--verbose` flag on any of the command to see more information.
