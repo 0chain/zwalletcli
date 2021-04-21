@@ -6,13 +6,11 @@ The CLI uses the [0chain Go SDK](https://github.com/0chain/gosdk) to do most of 
 
 ## Architecture
 
-`zwallet` works with any 0chain network by setting the network's 0dns on `~/.zcn/config.yaml`. 
+`zwallet` is configurable to work with any 0chain network. It uses a config file and a wallet file stored locally on the filesystem. 
 
-Besides the config file, `zwallet` also uses the wallet details located at `~/.zcn/wallet.json` (by default). If no wallet exist yet, the CLI will preemptively create it before doing the command requested.
+For most of its transactional commands, `zwallet` uses the `0dns` to discover the network nodes, then submits the transaction(s) requested to the miners, and finally waits the confirmation on the sharders.  
 
 ![alt text](docs/architecture.png "Architecture")
-
-For most of its transactional commands, `zwallet` will use the `0dns` to get the nodes, then sends the transaction(s) requested to the miners, and finally waits the confirmation on the sharders.  
 
 ## Getting started
 
@@ -36,7 +34,7 @@ make install
 
 3. Add config yaml at `~/.zcn/config.yaml`
 
-The following will use `https://one.devnet-0chain.net` as your blockchain network.
+The following will set `https://one.devnet-0chain.net` as your blockchain network.
 ```sh
 cat > ~/.zcn/config.yaml << EOF
 block_worker: http://one.devnet-0chain.net/dns
@@ -47,7 +45,7 @@ confirmation_chain_length: 3
 EOF
 ```
 
-To know more about the specific config, details are found [here](#zcnconfigyaml).
+To know more about the config fields, details are found [here](#zcnconfigyaml).
 
 4. Run `zwallet`
 ```sh
@@ -65,34 +63,13 @@ For detailed steps on the installation, follow any of the following:
 
 The following steps assume the current directory is inside the `zwalletcli` repo.
 
-1. View all `zwallet` commands
-   
-Executing just `zwallet` reveals all the supported commands.
-
-```
-Use Zwallet to store, send and execute smart contract on 0Chain platform.
-                        Complete documentation is available at https://0chain.net
-
-Usage:
-  zwallet [command]
-
-Available Commands:
-  createmswallet     create multisig wallet
-  faucet             Faucet smart contract
-  getbalance         Get balance from sharders
-  getblobbers        Get registered blobbers from sharders
-  getid              Get Miner or Sharder ID from its URL
-  getlockedtokens    Get locked tokens
-....
-```
-
-2. Register a new wallet
+1. Register a new wallet
 
 The wallet information is stored on `/.zcn/wallet.json`. Initially, there is no wallet yet.
 
-When you execute any `zwallet` command, it will automatically create a wallet if it cannot find any and save that locally.
+When you execute any `zwallet` command, it will automatically create a wallet if it cannot find any, and save that locally.
 
-Run the `ls-miners` command and see that it creates a wallet first before completing the command requested.
+Run the `ls-miners` command and see that it creates a wallet first before completing the command requested which is listing the miner nodes.
 ```sh
 ./zwallet ls-miners
 ```
@@ -116,7 +93,7 @@ Read pool created successfully
 
 2. Get some tokens
 
-Faucet Smart Contract is available on dev networks and can be used to get tokens.
+Faucet smart contract is available on dev networks and can be used to get tokens.
 
 Run the `faucet` command to get 1 token.
 ```sh
@@ -159,7 +136,7 @@ Balance: 0.5000004743 (0.8800008347680001 USD)
 ```
 
 
-That's it! You are now ready to use `zwallet`
+That's it! You are now ready to use `zwallet`.
 
 ## Flags
 
@@ -196,7 +173,7 @@ Here is a `faucet` command to create wallet at default location`~/.zcn/wallet.js
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
 
-Command to create another wallet at `~/.zcn/new_wallet.json`
+Command to create a second wallet at `~/.zcn/new_wallet.json`
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
 ```
@@ -208,7 +185,7 @@ cat ~/.zcn/new_wallet.json
 
 #### Recovering wallet
 
-It is critical that the wallet is backed up particularly the mnemonics for recovering the wallet.
+It is critical that the wallet is backed up particularly the mnemonics in order to recover it later on.
 
 To recover wallet with mnemonic, use `recoverwallet` command. 
 
