@@ -74,7 +74,7 @@ Run the `ls-miners` command and see that it creates a wallet first before comple
 ./zwallet ls-miners
 ```
 
-Output
+Sample output
 ```
 No wallet in path  <home dir>/.zcn/wallet.json found. Creating wallet...
 ZCN wallet created!!
@@ -99,7 +99,7 @@ Run the `faucet` command to get 1 token.
 ```sh
 ./zwallet faucet --methodName pour --input "need token"
 ```
-Output
+Sample output
 ```
 Execute faucet smart contract success with txn :  915cfc6fa81eb3622c7082436a8ff752420e89dee16069a625d5206dc93ac3ca
 ```
@@ -110,20 +110,20 @@ Run the `getblance` command
 ```sh
 ./zwallet getbalance
 ```
-Output
+Sample output
 ```
 Balance: 1 (1.76 USD)
 ```
 
 4. Lock tokens to get interest
 
-Tokens can be locked into a pool to gain interest. It uses the Interest Pool smart contract.
+Tokens can be locked to gain interest.
    
 Run the `lock` command and provide the amount of tokens and how long to lock them. 
 ```sh
 ./zwallet lock --tokens 0.5 --durationMin 5 
 ```
-Output
+Sample output
 ```
 Tokens (0.500000) locked successfully
 ```
@@ -138,42 +138,33 @@ Balance: 0.5000004743 (0.8800008347680001 USD)
 
 That's it! You are now ready to use `zwallet`.
 
-## Flags
+## Global parameters
 
-`zwallet` accept global flags to override default configuration. The flags can be used in any command.
+`zwallet` accept global parameters to override default configuration. The flags can be used in any command.
 
 | Flag | Description | Default |
 | ----- | ----------- | ---------- |
 | `--config` | [Config file](#zcnconfigyaml) | `config.yaml` |
-| `configDir` | Config directory | `~/.zcn` |
-| `network` | [Network file](#zcnnetworkyaml) | `network.yaml` |
-| `verbose` | Enable verbose logging | `false` |
-| `wallet` | Wallet file | `wallet.json` |
+| `--configDir` | Config directory | `~/.zcn` |
+| `--network` | [Network file](#zcnnetworkyaml) | `network.yaml` |
+| `--verbose` | Enable verbose logging | `false` |
+| `--wallet` | Wallet file | `wallet.json` |
 
-## Features
-
-1. Creating and restoring wallets
-2. Explore network
-3. Getting tokens from faucet
-4. Sending tokens
-5. Staking for interest
-6. Staking on miners and sharders 
-7. Vesting pool
-
+## Commands
 
 ### Creating and restoring wallets
 
-#### Creating wallet
+#### Creating wallet - (any command)
 
 Simply run any `zwallet` command and it will create a wallet if none exist yet.
 
-Here is a `faucet` command to create wallet at default location`~/.zcn/wallet.json`.
+Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
 
-Command to create a second wallet at `~/.zcn/new_wallet.json`
+Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
 ```
@@ -183,59 +174,283 @@ Verify second wallet
 cat ~/.zcn/new_wallet.json
 ```
 
-#### Recovering wallet
+#### Recovering wallet - `recoverwallet`
 
-It is critical that the wallet is backed up particularly the mnemonics in order to recover it later on.
+Recovering wallet is useful when restoring a lost wallet or when loading the wallet on a different computer.
 
-To recover wallet with mnemonic, use `recoverwallet` command. 
+It is critical that the wallet's mnemonics is backed up as this is needed in recovery.
 
-Example
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--mnemonic` | Yes | The mnemonics of the wallet to recover | | |
+
+To recover a wallet, use `recoverwallet` command.
 
 ```sh
-zwallet recoverwallet --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell" --wallet recovered_wallet.json
+./zwallet recoverwallet --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell" --wallet recovered_wallet.json
 ```
+Output
+```
+No wallet in path  <home_dir>/.zcn/wallet.json found. Creating wallet...
+ZCN wallet created!!
+Creating related read pool for storage smart-contract...
+Read pool created successfully
+Wallet recovered!!
+
+```
+
 
 Verify recovered wallet
 ```sh
 cat ~/.zcn/recovered_wallet.json
 ```
 
-#### Creating multisig wallet
+#### Creating multisig wallet - `createmswallet`
 
 TODO
 
-```
-   createmswallet     create multisig wallet
+### Exploring network nodes
+
+#### Listing all miners - `ls-miners`
+
+```sh
+./zwallet ls-miners
 ```
 
-### Exploring network
-
+Sample output
 ```
-   getblobbers        Get registered blobbers from sharders
-   getid              Get Miner or Sharder ID from its URL
-   ls-miners          Get list of all active miners fro Miner SC
-   ls-sharders        Get list of all active sharders fro Miner SC
+- ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
+- Host:       one.devnet-0chain.net
+- Port:       31203
+- ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
+- Host:       one.devnet-0chain.net
+- Port:       31201
+- ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
+- Host:       one.devnet-0chain.net
+- Port:       31202
+```
+
+#### Listing all sharders -`ls-sharders`
+
+```sh
+./zwallet ls-sharders
+```
+
+Sample output
+```
+- ID:         675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
+- Host:       one.devnet-0chain.net
+- Port:       31101
+- ID:         12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
+- Host:       one.devnet-0chain.net
+- Port:       31102
+```
+
+#### Listing all blobbers - `getblobbers`
+
+```sh
+./zwallet getblobbers
+```
+
+Sample output
+```
+Blobbers:
+                 URL                 |                                ID                                |          CAP           |     R / W PRICE     | DEMAND  
++------------------------------------+------------------------------------------------------------------+------------------------+---------------------+--------+
+  http://one.devnet-0chain.net:31305 | 011a5444c9fe53137da7c3d871f3bf4bbf3c01607b14aa95ff2de43b5537d4b6 | 271.5 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
+  http://one.devnet-0chain.net:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
+  http://one.devnet-0chain.net:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
+```
+
+#### Getting node by URL - `getid`
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--url` | Yes | URL to the node (miner, sharder, blobber) | | |
+
+The following command get the details of the sharder on a given URL
+```sh
+./zwallet getid --url http://one.devnet-0chain.net:31101
+```    
+
+Output
+```
+URL: http://one.devnet-0chain.net:31101 
+ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
 ### Getting and sending tokens
 
-TODO 
-```
-   faucet             Faucet smart contract
-   send               Send ZCN tokens to another wallet
-   getbalance         Get balance from sharders
-   verify             verify transaction
+#### Getting tokens - `faucet`
+
+Faucet smart contract can be used to get tokens for testing purposes. 
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--methodName` | Yes | Smart Contract method to call (`pour` - get tokens, `refill` - return tokens) | | `pour`, `refill`|
+| `--input` | Yes | Request description |  | any string |
+| `--tokens` | No | Amount of tokens (maximum of 1.0) | 1.0 | (0 - 1.0]|
+
+
+The following command will give 1 token to the default wallet.
+
+```sh
+./zwallet faucet --methodName pour --input "need token"
 ```
 
-### Staking for interest
+The following command will return 0.5 token to faucet.
 
-TODO
-
+```sh
+./zwallet faucet --methodName refill --input "not using" --tokens 0.5
 ```
-   getlockedtokens    Get locked tokens
-   lock               Lock tokens
-   lockconfig         Get lock configuration
-   unlock             Unlock tokens
+
+Sample output from `faucet` prints the transaction
+```
+Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
+```
+
+#### Checking balance - `getbalance`
+
+Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
+
+```sh
+./zwallet getbalance
+```
+
+Sample output
+```
+Balance: 3 (4.2299999999999995 USD)
+```
+
+To check the balance of another wallet, use `--wallet` global parameter.
+```sh
+./zwallet getbalance --wallet another_wallet.json
+```
+
+Note: When there is no token on the wallet yet, output will show `Get balance failed.`
+
+#### Sending tokens to another wallet - `send`
+
+Transfering tokens from wallet to another is done through `send`
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--to_client_id` | Yes | Client ID of the recipient | | |
+| `--tokens` | Yes | Amount of tokens to send |  | valid number |
+| `--desc` | Yes | Transfer description |  | any string|
+| `--fee` | No | Amount of tokens to use as fee | 0.0 | valid number|
+
+The following sends 0.2 token from the default wallet to the specified client ID.
+```sh
+./zwallet send --to_client_id e7ebb698213b6bda097c0a14ccbe574356e99e9b666e4baeae540da1d9b51e7e --tokens .2 --desc "gift"
+```
+Output
+```
+Send tokens success
+```
+Note: To use a different wallet as sender, use `--wallet` global parameter.
+```sh
+./zwallet send --to_client_id e7ebb698213b6bda097c0a14ccbe574356e99e9b666e4baeae540da1d9b51e7e --tokens .2 --desc "gift" --wallet another_wallet.json
+```
+
+#### Verifying a transaction - `verify`
+
+`verify` checks whether a given transaction hash was confirmed on the blockchain.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--hash` | Yes | Hash of transaction to verify | | valid transaction hash|
+
+Note: Not all `zwallet` commands (eg. `send`) prints the transaction hash created. To see more details printed including the hashes, use `--verbose` global parameter.
+
+Sample `verify` command
+```sh
+./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850
+```
+Output
+```
+Transaction verification success
+```
+
+Note: To see more details about the transaction, use `--verbose` global parameter.
+```sh
+./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
+```
+
+### Locking tokens 
+
+Tokens can be locked for a period of time to gain additional tokens as interest. This locking tokens uses the Interest Pool smart contract.
+
+#### Locking tokens for interest - `lock`
+
+Locking for interest takes out the tokens from the balance. It is available again after unlocking the tokens explicitly which can be done after the lock duration has passed. 
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--durationHr` | Yes if `--durationMin` is not provided | Duration in hours | | valid number |
+| `--durationMin` | Yes if `--durationHr` is not provided | Duration in minutes | | valid number |
+| `--tokens` | Yes | Amount of tokens to lock |  | valid number |
+| `--fee` | No | Amount of tokens to use as fee | 0.0 | valid number|
+
+The following command locked 1 token for 5 minutes
+```sh
+./zwallet lock --durationMin 5 --tokens 1
+```
+Output
+```
+Tokens (1.000000) locked successfully
+```
+
+Check balance to see the locked tokens are gone, but has started to gain some tokens as interest.
+
+```sh
+./zwallet getbalance
+```
+
+#### Getting locked tokens for interest - `getlockedtokens`
+
+`getlockedtokens` show the locked tokens, how much interest it gained and how much time left it is locked.
+
+```sh
+./zwallet getlockedtokens
+```
+Output
+```
+Locked tokens:
+ {"stats":[{"pool_id":"399ff67983846b2c35ec569bf6f74b97fac0b066c30da21038a7285d34ba9f6f","start_time":1619452683,"duration":300000000000,"time_left":224226400964,"locked":true,"apr":0.1,"tokens_earned":9486,"balance":10000000000}]}
+```
+
+Note: `pool_id` is required when unlocking the tokens.
+
+#### Unlocking tokens - `unlock`
+
+Unless you unlock, the tokens are not released.
+
+Unlocking tokens are only possible once the lock duration has passed. 
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--pool_id` | Yes | Pool ID of locked tokens (get info at `getlockedtokens`) | | |
+Example command
+```sh
+./zwallet unlock --pool_id 399ff67983846b2c35ec569bf6f74b97fac0b066c30da21038a7285d34ba9f6f
+```
+Output
+```
+Unlock tokens success
+```
+
+### Getting lock config - `lockconfig`
+`lockconfig` shows the global configuration for staking tokens for interest such as minimum token and minimum duration.  
+
+```sh
+./zwallet lockconfig
+```
+
+Sample output
+```
+Configuration:
+{"ID":"cf8d0df9bd8cc637a4ff4e792ffe3686da6220c45f0e1103baa609f3f1751ef4","simple_global_node":{"max_mint":40000000000000000,"total_minted":2174138942117,"min_lock":10,"apr":0.1},"min_lock_period":60000000000}
 ```
 
 ### Staking on miners and sharders
@@ -347,73 +562,6 @@ Get balance failed.
 
 zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
 
-## Commands
-
-Note in this document, we will show only the commands, response will vary depending on your usage, so may not be provided in all places.
-
-### Command with no arguments
-
-When you run zwallet with no arguments, it will list all the supported commands.
-If you don't have a wallet yet, It will create one.
-
-Command
-
-    ./zwallet
-
-Response
-
-    Use zwallet to store, send and execute smart contract on 0Chain platform.
-    Complete documentation is available at https://0chain.net
-
-    Usage:
-      zwallet [command]
-
-    Available Commands:
-
-      createmswallet     create multisig wallet
-      faucet             Faucet smart contract
-      getbalance         Get balance from sharders
-      getblobbers        Get registered blobbers from sharders
-      getid              Get Miner or Sharder ID from its URL
-      getlockedtokens    Get locked tokens
-      help               Help about any command
-      lock               Lock tokens
-      lockconfig         Get lock configuration
-      ls-miners          Get list of all active miners fro Miner SC
-      ls-sharders        Get list of all active sharders fro Miner SC
-      mn-config          Get miner SC global info.
-      mn-info            Get miner/sharder info from Miner SC.
-      mn-lock            Add miner/sharder stake.
-      mn-pool-info       Get miner/sharder pool info from Miner SC.
-      mn-unlock          Unlock miner/sharder stake.
-      mn-update-settings Change miner/sharder settings in Miner SC.
-      mn-user-info       Get miner/sharder user pools info from Miner SC.
-      recoverwallet      Recover wallet
-      send               Send ZCN tokens to another wallet
-      unlock             Unlock tokens
-      verify             verify transaction
-      version            Prints version information
-      vp-add             Add a vesting pool
-      vp-config          Check out vesting pool configurations.
-      vp-delete          Delete a vesting pool
-      vp-info            Check out vesting pool information.
-      vp-list            Check out vesting pools list.
-      vp-stop            Stop vesting for one of destinations and unlock tokens not vested
-      vp-trigger         Trigger a vesting pool work.
-      vp-unlock          Unlock tokens of a vesting pool
-
-
-
-    Flags:
-          --config string      config file (default is config.yaml)
-          --configDir string   configuration directory (default is $HOME/.zcn)
-      -h, --help               help for zwallet
-          --verbose            prints sdk log in stderr (default false)
-          --wallet string      wallet file (default is wallet.json)
-
-
-    Use "zwallet [command] --help" for more information about a command.
-
 ### Create multisig wallet
 
 Before jumping on to command description a quick introduction to Multisignature Wallet.
@@ -450,175 +598,6 @@ Response
 
     Creating and testing a multisig wallet is successful!
 
-### Faucet
-
-faucet command is useful to get test tokens into your wallet for transactional purposes.
-
-Command
-
-     ./zwallet faucet --methodName pour --input "{Pay day}"
-
-Response
-
-    Execute faucet smart contract success
-
-### Get balance
-
-getbalance helps in two ways
-
-- to get balance of an existing wallet
-- to create a wallet if there is none
-
-Command
-
-    ./zwallet getbalance
-
-Response
-
-    No wallet in path  $Home/.zcn/wallet.txt found. Creating wallet...
-    ZCN wallet created!!
-
-If you do not have any balance, you get the following.
-
-    Get balance failed.
-
-Use [faucet](#Faucet) and try again
-
-    Balance: 1
-
-If you open the wallet.json file, you will see the wallet details.
-
-    {"client_id":"7ea92e2e104489092f067b2644b22c5b1da001c0730f1fd7e990fd6b6bacaedd","client_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","keys":[{"public_key":"221fe6a29dbd09496556778aff010ff12dadc2fe0aec9c4d9e8a48c18cb00e13138a974d7728cc67597a6f92ba9355513eda4726e4fa1124b0ed5a8c9cc4490b","private_key":"94b1e9b2adf1dd1c141797aaf586b60b144011983723a266e19d6d6aaf859e1b"}],"mnemonics":"night acid purpose slim junk wrist clown lyrics engine faint select capable swallow direct armor buzz student degree omit fiction favorite air volume learn","version":"1.0","date_created":"2020-03-06 13:52:24.763873623 +0530 IST m=+0.004795132"}
-
-Out of these, the client_id and menmonics fields will be useful later.
-
-### Send
-
-Use send command to send a transaction from one wallet to the other. Send commands take four parameters.
-
-- --from wallet -- default is the account in `~/.zcn/wallet.json`
-- --to_client_id -- address of the wallet receiving the funds (this must be a registered wallet)
-- --desc -- description for the transaction
-- --tokens -- tokens in decimals to be transferred.
-
-Command
-
-     ./zwallet send --desc "testing" --to_client_id "7fe5e58d94684e3ec0b7fe076c4bc2aa56c455bfc7a476155c142d42eaf0d416" --tokens 0.5
-
-Response
-
-    Send tokens success
-
-When you run a getbalance on both the wallets you see the difference
-
-NOTE
-
-   This command may return a success response in the case of multiple transactions from the same wallet falling within the same round. So to be sure that send transaction has committed, wait a few rounds (several seconds) and check balances and/or inspect finalized blockchain transactions. This is not regarded as an error, rather that the send request was successful but not actually transacted. This is an issue with the cli tools rather than the gosdk itself.
-
-### Lock
-
-Command
-
-    ./zwallet lock --durationHr 0 --durationMin 5 --tokens 0.1
-
-Response
-
-    Tokens (0.100000) locked successfully
-
-If you run the getbalance, you see that interest would have been already paid. Those additional tokens are yours to use. How cool is that!
-
-### Get locked tokens
-
-Use getlockedtokens command to get information about locked tokens
-
-Command
-
-    ./zwallet getlockedtokens
-
-Response
-
-    Locked tokens:
-    {"stats":[{"pool_id":"41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e","start_time":"2019-06-17 05:48:54 +0000 UTC","duration":"5m0s","time_left":"3m57.17069839s","locked":true,"interest_rate":0.000004756468797564688,"interest_earned":475646,"balance":100000000000}]}
-
-In the above response, make a note of pool_id. You need this when you want to unlock. Rest of the fields are self-explanatory.
-
-### Unlock
-
-Use this command to unlock the locked tokens. Unless you unlock, the tokens are not released.
-
-You can only unlock tokens once the lock duration has passed. The time left and lock status is available when running `getlockedtokens`.
-
-Command
-
-    ./zwallet unlock --pool_id 41fd52bbc848553365ae7b1319a3732764ea699964c3c97f1d85fb45fb46572e
-
-Response
-
-    Unlock tokens success
-
-### Recover
-
-Use this command to recover wallet from a different computer. You need to provide mnemonics mentioned in the wallet as an argument to prove that you own the wallet.
-
-Command
-
-    ./zwallet recoverwallet --mnemonic  "portion hockey where day drama flame stadium daughter mad salute easily exact wood peanut actual draw ethics dwarf poverty flag ladder hockey quote awesome"
-
-### Get lock config
-
-0Chain has a great way of earning additional tokens by locking tokens. When you lock tokens for a period of time, you will earn interest. The terms of lock can be obtained by lockconfig command.
-Command
-
-    ./zwallet lockconfig
-
-Response
-
-    Configuration:
-    {"ID":"6dba10422e368813802877a85039d3985d96760ed844092319743fb3a76712d9","max_lock_period":31536000000000000,"min_lock_period":60000000000,"simple_global_node":{"interest_rate":0.5,"min_lock":10}}
-
-
-### Get id
-
-Use this command to get ID of a miner or sharder.
-
-Command
-
-    ./zwallet getid --url http://localhost:7071
-
-Response
-
-    URL: http://localhost:7071
-    ID: 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929
-
-### Get blobbers
-
-Use this command to get list of blobbers.
-Command
-
-    ./zwallet getblobbers
-
-Response
-
-    Blobbers:
-           URL          |                                ID
-    +-----------------------+------------------------------------------------------------------+
-      http://localhost:5054 | 2a4d5a5c6c0976873f426128d2ff23a060ee715bccf0fd3ca5e987d57f25b78e
-      http://localhost:5053 | 2f051ca6447d8712a020213672bece683dbd0d23a81fdf93ff273043a0764d18
-      http://localhost:5052 | 7a90e6790bcd3d78422d7a230390edc102870fe58c15472073922024985b1c7d
-      http://localhost:5051 | f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
-
-
-### Verify
-
-Use this command to verify a transaction.
-Command
-
-    ./zwallet verify --hash f65af5d64000c7cd2883f4910eb69086f9d6e6635c744e62afcfab58b938ee25
-
-Response
-
-    Transaction status.
-    Creating and testing a multisig wallet is successful!
 
 ### Vesting
 
