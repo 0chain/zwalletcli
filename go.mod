@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.2.5-0.20210319165558-1ce76cf741df
+	github.com/0chain/gosdk v1.2.5-0.20210504014124-f8bc1417a85d
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-runewidth v0.0.6 // indirect

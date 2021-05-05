@@ -5,6 +5,8 @@ github.com/0chain/gosdk v1.1.7 h1:2rfZOim4FRAcWrlegzL2Bptpa6f2zeYnNGSNAWNHUTU=
 github.com/0chain/gosdk v1.1.7/go.mod h1:edV5GwogiT6nK2+s4QcFCz3saUhkuFK6EIqNJfOt8xc=
 github.com/0chain/gosdk v1.2.5-0.20210319165558-1ce76cf741df h1:GD40tYyKw5vJs9zuroJIfVqfeOdNpb75yxSDPSh8zZw=
 github.com/0chain/gosdk v1.2.5-0.20210319165558-1ce76cf741df/go.mod h1:edV5GwogiT6nK2+s4QcFCz3saUhkuFK6EIqNJfOt8xc=
+github.com/0chain/gosdk v1.2.5-0.20210504014124-f8bc1417a85d h1:EWlNtQgxHZIjl8DxRwigBXXN9nKz6kAxYZQSLCp8rXE=
+github.com/0chain/gosdk v1.2.5-0.20210504014124-f8bc1417a85d/go.mod h1:EntD+g2xA5SLUAm6JABMhkYAlTOmp0XhSnf/5xfwnV4=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -201,6 +203,7 @@ golang.org/x/sys v0.0.0-20181116152217-5ac8a444bdc5/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190124100055-b90733256f2e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 h1:DH4skfRX4EBpamg7iV4ZlCpblAHI6s6TDM39bFZumv8=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d h1:+R4KGOnez64A81RvjARKc4UT5/tI9ujCIVX+P5KiHuI=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

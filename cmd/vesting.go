@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/core/common"
@@ -37,6 +38,79 @@ var getVestingPoolConfigCmd = &cobra.Command{
 		fmt.Println("max_duration:", conf.MaxDuration)
 		fmt.Println("max_destinations:", conf.MaxDestinations)
 		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
+	},
+}
+
+var updateVestingPoolConfigCmd = &cobra.Command{
+	Use:   "vp-update-config",
+	Short: "Update the vesting pool configurations.",
+	Long:  `Update the vesting pool configurations.`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags     = cmd.Flags()
+			err       error
+			conf      = new(zcncore.VestingSCConfig)
+			wg        sync.WaitGroup
+			statusBar = &ZCNStatus{wg: &wg}
+		)
+
+		if flags.Changed("min_lock") {
+			var minLock float64
+			if minLock, err = flags.GetFloat64("min_lock"); err != nil {
+				log.Fatal(err)
+			}
+			conf.MinLock = common.Balance(zcncore.ConvertToValue(minLock))
+		}
+		if flags.Changed("max_destinations") {
+			if conf.MaxDestinations, err = flags.GetInt("max_destinations"); err != nil {
+				log.Fatal(err)
+			}
+		}
+		if flags.Changed("max_description_length") {
+			if conf.MaxDescriptionLength, err = flags.GetInt("max_description_length"); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("min_duration") {
+			if conf.MinDuration, err = flags.GetDuration("min_duration"); err != nil {
+				log.Fatal(err)
+			}
+		}
+		if flags.Changed("max_duration") {
+			if conf.MaxDuration, err = flags.GetDuration("max_duration"); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		txn, err := zcncore.NewTransaction(statusBar, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
+		wg.Add(1)
+		if err = txn.VestingUpdateConfig(conf); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+
+		if !statusBar.success {
+			log.Fatal("fatal:", statusBar.errMsg)
+		}
+
+		statusBar.success = false
+		wg.Add(1)
+		if err = txn.Verify(); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+
+		if !statusBar.success {
+			log.Fatal("fatal:", statusBar.errMsg)
+		}
+
+		fmt.Println("vesting smart contract settings updated")
 	},
 }
 
@@ -527,6 +601,7 @@ func init() {
 	rootCmd.AddCommand(vestingPoolStopCmd)
 	rootCmd.AddCommand(vestingPoolUnlockCmd)
 	rootCmd.AddCommand(vestingPoolTriggerCmd)
+	rootCmd.AddCommand(updateVestingPoolConfigCmd)
 
 	getVestingPoolInfoCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier")
@@ -562,4 +637,10 @@ use -d flag many times to provide few destinations, for example 'dst:1.2'`)
 	vestingPoolTriggerCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier, required")
 	vestingPoolTriggerCmd.MarkFlagRequired("pool_id")
+
+	updateVestingPoolConfigCmd.PersistentFlags().Int("max_description_length", 0, "max length for descriptions")
+	updateVestingPoolConfigCmd.PersistentFlags().Int("max_destinations", 0, "max destinations allowed")
+	updateVestingPoolConfigCmd.PersistentFlags().Float64("min_lock", 0.0, "minimum lock for vesting")
+	updateVestingPoolConfigCmd.PersistentFlags().Duration("min_duration", 0.0, "minimum duration for vesting")
+	updateVestingPoolConfigCmd.PersistentFlags().Duration("max_duration", 0.0, "max duration for vesting")
 }
