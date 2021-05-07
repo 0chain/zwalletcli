@@ -2,13 +2,13 @@
 
 `zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain. 
 
-The CLI uses the [0chain Go SDK](https://github.com/0chain/gosdk) to do most of its functions.
+The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
 ## Architecture
 
-`zwallet` is configurable to work with any 0chain network. It uses a config file and a wallet file stored locally on the filesystem. 
+`zwallet` can be configured to work with any 0chain network. It uses a config file and a wallet file both stored on the local filesystem. 
 
-For most of its transactional commands, `zwallet` uses the `0dns` to discover the network nodes, then submits the transaction(s) requested to the miners, and finally waits the confirmation on the sharders.  
+For most transactions, `zwallet` uses the `0dns` to discover the network nodes, creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.  
 
 ![alt text](docs/architecture.png "Architecture")
 
@@ -34,7 +34,7 @@ make install
 
 3. Add config yaml at `~/.zcn/config.yaml`
 
-The following will set `https://one.devnet-0chain.net` as your blockchain network.
+The following sample script will set `https://one.devnet-0chain.net` as your blockchain network.
 ```sh
 cat > ~/.zcn/config.yaml << EOF
 block_worker: http://one.devnet-0chain.net/dns
@@ -45,7 +45,7 @@ confirmation_chain_length: 3
 EOF
 ```
 
-To know more about the config fields, details are found [here](#zcnconfigyaml).
+To understand more about the config properties, detailed explanation are found [here](#zcnconfigyaml).
 
 4. Run `zwallet`
 ```sh
@@ -61,13 +61,13 @@ For detailed steps on the installation, follow any of the following:
 
 ### 2. Run `zwallet` commands
 
-The following steps assume the current directory is inside the `zwalletcli` repo.
+The following steps assume that your terminal's working directory is inside the `zwalletcli` repo.
 
 1. Register a new wallet
 
 The wallet information is stored on `/.zcn/wallet.json`. Initially, there is no wallet yet.
 
-When you execute any `zwallet` command, it will automatically create a wallet if it cannot find any, and save that locally.
+When you execute any `zwallet` command, it will automatically create a wallet file locally if none exist.
 
 Run the `ls-miners` command and see that it creates a wallet first before completing the command requested which is listing the miner nodes.
 ```sh
@@ -93,7 +93,7 @@ Read pool created successfully
 
 2. Get some tokens
 
-Faucet smart contract is available on dev networks and can be used to get tokens.
+Faucet smart contract is available and can be used to get tokens to your wallet.
 
 Run the `faucet` command to get 1 token.
 ```sh
@@ -140,10 +140,11 @@ That's it! You are now ready to use `zwallet`.
 
 ## Global parameters
 
-`zwallet` accept global parameters to override default configuration. The flags can be used in any command.
+`zwallet` accept global parameters to override default configuration and can be used in any command.
 
-| Flag | Description | Default |
+| Parameter | Description | Default |
 | ----- | ----------- | ---------- |
+| `--help` | Show help |  |
 | `--config` | [Config file](#zcnconfigyaml) | `config.yaml` |
 | `--configDir` | Config directory | `~/.zcn` |
 | `--network` | [Network file](#zcnnetworkyaml) | `network.yaml` |
@@ -164,7 +165,7 @@ Here is a sample with `faucet` command and this creates a wallet at default loca
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
 
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
+Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json` 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
 ```
@@ -187,16 +188,15 @@ It is critical that the wallet's mnemonics is backed up as this is needed in rec
 To recover a wallet, use `recoverwallet` command.
 
 ```sh
-./zwallet recoverwallet --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell" --wallet recovered_wallet.json
+./zwallet recoverwallet --wallet recovered_wallet.json --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell"
 ```
-Output
+Sample output
 ```
 No wallet in path  <home_dir>/.zcn/wallet.json found. Creating wallet...
 ZCN wallet created!!
 Creating related read pool for storage smart-contract...
 Read pool created successfully
 Wallet recovered!!
-
 ```
 
 
@@ -207,11 +207,113 @@ cat ~/.zcn/recovered_wallet.json
 
 #### Creating multisig wallet - `createmswallet`
 
-TODO
+A multi-signature (multisig) wallet is supported by the chain through the Multisig smart contract. 
+
+A multisig wallet is a wallet where transactions are voted by its configured signers. A multisig wallet is created by providing the list of signer public keys and the minimum number of votes required to fully signed a transaction.
+
+The Multisig smart contract allows the registration of new multisig wallets, and allows the signers to propose and vote a multisig wallet transactions.
+
+`createmswallet` demonstrates the multisig functionality by using the following SDK functions.
+
+- RegisterMultiSig - registers the multisig/group wallet with the list of signers. All wallets must be registered already.
+
+- RegisterVote - votes for a proposal. This creates a proposal if does not exist and can be used by other signers to add vote. When the threshold number of votes are registered, transaction will be automatically processed. Any extra votes will be ignored.
+
+Note: Proposals have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
+
+Note: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated, not just registered. To activate, the wallets must have received tokens.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--numsigners` | Yes | The number of signers of the multisig wallet | | |
+| `--threshold` | Yes | The number of signers required to vote a transaction | | |
+| `--testn` | No | Whether to have all signers vote on the test transation, otherwise just the minimum threshold  | false | |
+
+Sample command with 3 wallet signers and a threshold of 2 votes.
+```sh
+./zwallet createmswallet --numsigners 3 --threshold 2
+```
+
+Sample output. 4 wallets are registered (3 signers + multisig wallet)
+```sh
+ registering 4 wallets 
+
+Successfully registered group wallet
+
+Successfully registered signer wallet number 1 
+
+
+Successfully registered signer wallet number 2 
+
+
+Successfully registered signer wallet number 3 
+
+
+Multisig wallet SC registration requested. verifying status
+MultisigSC  wallet SC registration request success
+
+
+testing voteRecipient test wallet:
+{"client_id":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","client_key":"f1b19476ec60b413bca66341537873318548701d16a8c0f49b7f6a88c0bf6c1f3852ea8dee5fde0eddb1e9ceb8c21c171f86e1ee39fee5d8aa3b177b5e7f9c24","keys":[{"public_key":"f1b19476ec60b413bca66341537873318548701d16a8c0f49b7f6a88c0bf6c1f3852ea8dee5fde0eddb1e9ceb8c21c171f86e1ee39fee5d8aa3b177b5e7f9c24","private_key":"7c11b4e4b9c658ffa2d3a890a28dcf9b6fa12214366e3fe5655a161ec86b650c"}],"mnemonics":"bring prize miracle rib again safe viable inhale pen member novel zoo outside quit shrug room perfect crisp canoe alien abandon old exchange kiwi","version":"1.0","date_created":"2021-05-07 21:56:41.788221 +1000 AEST m=+9.371315501"}
+
+Activating group wallet by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 1 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 2 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 3 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+Checking balance on group wallet with clientID 558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e before the vote
+Balance: 1
+
+Created Vote#1 from signer #0:
+{"proposal_id":"testing MSVoting","transfer":{"from":"558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e","to":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","amount":1000000000},"signature":"6fdbda2a3a338183d9082dc786b83f8a9d146997bb8d4bb79d4a73c24b74e395"}
+
+Multisig Vote registration requested. verifying status
+Multisig Voting success
+
+Created Vote#2 from signer #1:
+{"proposal_id":"testing MSVoting","transfer":{"from":"558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e","to":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","amount":1000000000},"signature":"1318d95df3b32f47f7adf38e6d3bd142f400e6fb5cdf7968e1ac2e02b967a208"}
+
+Multisig Vote registration requested. verifying status
+Multisig Voting success
+
+
+Checking balance on group wallet 558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e after the vote
+Balance: 0.9
+
+Checking balance on recipient wallet after the vote
+Balance: 0.1
+
+Creating and testing a multisig wallet is successful!
+```
+
 
 ### Exploring network nodes
 
 #### Listing all miners - `ls-miners`
+
+The list of miners to display are retrieved using the Miner smart contract. 
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--json` | No | Print output as JSON | | <empty to enable>  |
 
 ```sh
 ./zwallet ls-miners
@@ -231,6 +333,12 @@ Sample output
 ```
 
 #### Listing all sharders -`ls-sharders`
+
+The list of sharders to display are retrieved using the Miner smart contract.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--json` | No | Print output as JSON | | <empty to enable>  |
 
 ```sh
 ./zwallet ls-sharders
@@ -281,7 +389,9 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 ### Getting and sending tokens
 
-#### Getting tokens - `faucet`
+[Video walkthrough](https://youtu.be/Eiz9mqdFtZo)
+
+#### Getting tokens with Faucet smart contract - `faucet`
 
 Faucet smart contract can be used to get tokens for testing purposes. 
 
@@ -372,18 +482,47 @@ Output
 Transaction verification success
 ```
 
-Note: To see more details about the transaction, use `--verbose` global parameter.
+Note: To see more details about the transaction on `verify`, use `--verbose` global parameter.
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
 ```
 
-### Locking tokens 
+### Locking tokens
 
-Tokens can be locked for a period of time to gain additional tokens as interest. This locking tokens uses the Interest Pool smart contract.
+Tokens can be locked for a period of time to gain additional tokens as interest. This locking of tokens uses the Interest Pool smart contract.
+
+[Video walkthrough](https://youtu.be/g44VczBzmXo)
+
+### Getting lock config - `lockconfig`
+`lockconfig` shows the global configuration for locking tokens for interest such as minimum token and minimum lock period (duration).
+
+```sh
+./zwallet lockconfig
+```
+
+Sample output
+```
+Configuration:
+{"ID":"cf8d0df9bd8cc637a4ff4e792ffe3686da6220c45f0e1103baa609f3f1751ef4","simple_global_node":{"max_mint":40000000000000000,"total_minted":2174138942117,"min_lock":10,"apr":0.1},"min_lock_period":60000000000}
+```
+
+Formatted output
+```json
+{
+  "ID":"cf8d0df9bd8cc637a4ff4e792ffe3686da6220c45f0e1103baa609f3f1751ef4",
+  "simple_global_node":{
+    "max_mint":40000000000000000,
+    "total_minted":2174138942117,
+    "min_lock":10,
+    "apr":0.1
+  },
+  "min_lock_period":60000000000
+}
+```
 
 #### Locking tokens for interest - `lock`
 
-Locking for interest takes out the tokens from the balance. It is available again after unlocking the tokens explicitly which can be done after the lock duration has passed. 
+Locking for interest takes out the tokens from the balance. It will be available again after unlocking the tokens explicitly but only possible the lock duration has passed. 
 
 | Parameter | Required | Description | Default | Valid Values |
 | ----- | --------| ----------- | ---------- | ----- |
@@ -414,10 +553,28 @@ Check balance to see the locked tokens are gone, but has started to gain some to
 ```sh
 ./zwallet getlockedtokens
 ```
-Output
+Sample output
 ```
 Locked tokens:
  {"stats":[{"pool_id":"399ff67983846b2c35ec569bf6f74b97fac0b066c30da21038a7285d34ba9f6f","start_time":1619452683,"duration":300000000000,"time_left":224226400964,"locked":true,"apr":0.1,"tokens_earned":9486,"balance":10000000000}]}
+```
+
+Formatted output
+```json
+{
+  "stats":[
+    {
+      "pool_id":"399ff67983846b2c35ec569bf6f74b97fac0b066c30da21038a7285d34ba9f6f",
+      "start_time":1619452683,
+      "duration":300000000000,
+      "time_left":224226400964,
+      "locked":true,
+      "apr":0.1,
+      "tokens_earned":9486,
+      "balance":10000000000
+    }
+  ]
+}
 ```
 
 Note: `pool_id` is required when unlocking the tokens.
@@ -430,8 +587,8 @@ Unlocking tokens are only possible once the lock duration has passed.
 
 | Parameter | Required | Description | Default | Valid Values |
 | ----- | --------| ----------- | ---------- | ----- |
-| `--pool_id` | Yes | Pool ID of locked tokens (get info at `getlockedtokens`) | | |
-Example command
+| `--pool_id` | Yes | Pool ID of locked tokens (get at `getlockedtokens`) | | |
+Sample command
 ```sh
 ./zwallet unlock --pool_id 399ff67983846b2c35ec569bf6f74b97fac0b066c30da21038a7285d34ba9f6f
 ```
@@ -440,48 +597,471 @@ Output
 Unlock tokens success
 ```
 
-### Getting lock config - `lockconfig`
-`lockconfig` shows the global configuration for staking tokens for interest such as minimum token and minimum duration.  
+### Staking on miners and sharders 
+
+Miner smart contract allows staking on the miner and sharder nodes. 
+
+The maximum number of stake pools per node is limited to the number of delegates allowed.
+
+To find out the number of delegates and also what is the minimum and maximum tokens that can be staked, query the config.
+
+#### Getting the staking config - `mn-config`
+
+The following config displays the config and current state.
 
 ```sh
-./zwallet lockconfig
+./zwallet mn-config
 ```
 
 Sample output
 ```
-Configuration:
-{"ID":"cf8d0df9bd8cc637a4ff4e792ffe3686da6220c45f0e1103baa609f3f1751ef4","simple_global_node":{"max_mint":40000000000000000,"total_minted":2174138942117,"min_lock":10,"apr":0.1},"min_lock_period":60000000000}
+view_change:           0
+max_n:                 8
+min_n:                 2
+max_s:                 3
+min_s:                 1
+t_percent:             0.51
+k_percent:             0.75
+last_round:            5527098
+max_stake:             100
+min_stake:             0
+interest_rate:         5.55e-07
+reward_rate:           1
+share_ratio:           0.8
+block_reward:          0.21
+max_charge:            0.5
+epoch:                 15000000
+reward_decline_rate:   0.1
+interest_decline_rate: 0.1
+max_mint:              4000000
+minted:                928552.464
+max_delegates:         200
 ```
 
-### Staking on miners and sharders
+#### Getting a miner or sharder info for staking - `mn-info`
 
-TODO
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--id` | Yes | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) | | |
 
+Sample command
+```sh
+./zwallet mn-info --id 68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24
 ```
-mn-config          Get miner SC global info.
-mn-info            Get miner/sharder info from Miner SC.
-mn-lock            Add miner/sharder stake.
-mn-pool-info       Get miner/sharder pool info from Miner SC.
-mn-unlock          Unlock miner/sharder stake.
-mn-update-settings Change miner/sharder settings in Miner SC.
-mn-user-info       Get miner/sharder user pools info from Miner SC.
+
+Sample output
+```json
+{"simple_miner":{"id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","n2n_host":"five.devnet-0chain.net","host":"five.devnet-0chain.net","port":31102,"path":"sharder02","public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22","short_name":"localhost.s02","build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813","total_stake":0,"delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"sharder_rewards":1160553450000000},"node_type":"sharder","last_health_check":1619554377},"pending":{"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{"stats":{"delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"}}}}}
+```
+
+Reformatted output
+```json
+{
+  "simple_miner":{
+    "id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24",
+    "n2n_host":"five.devnet-0chain.net",
+    "host":"five.devnet-0chain.net",
+    "port":31102,
+    "path":"sharder02",
+    "public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22",
+    "short_name":"localhost.s02",
+    "build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813",
+    "total_stake":0,
+    "delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24",
+    "service_charge":0.1,
+    "number_of_delegates":10,
+    "min_stake":0,
+    "max_stake":1000000000000,
+    "stat":{
+      "sharder_rewards":1160553450000000
+    },
+    "node_type":"sharder",
+    "last_health_check":1619554377
+  },
+  "pending":{
+    "01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{
+      "stats":{
+        "delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07",
+        "high":0,
+        "low":-1,
+        "interest_paid":0,
+        "reward_paid":0,
+        "number_rounds":0,
+        "status":"PENDING"
+      },
+      "pool":{
+        "pool":{
+          "id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f",
+          "balance":10000000000
+        },
+        "lock":{
+          "delete_view_change_set":false,
+          "delete_after_view_change":0,
+          "owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"
+        }
+      }
+    }
+  }
+}
+```
+
+#### Locking a stake on a node - `mn-lock`
+
+Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime although have to wait for the next view change cycle.
+
+Note however that if a node becomes offline, all stake pools are automatically unlocked and tokens are returned to wallets.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--id` | Yes | Node ID of a miner or sharder to stake for (get at `ls-miners` or `ls-sharders`) | | |
+| `--tokens` | Yes | Amounts of token to stake | | valid number |
+
+Sample command
+```sh
+./zwallet mn-lock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --tokens 1
+```
+
+The output would print the stake pool id.
+```sh
+locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+Note: If the locking of stakes is failing, verify the following.
+1. Wallet has enough tokens
+2. Node ID is valid
+3. Node has available delegate
+
+### Getting the stake pools of a wallet - `mn-user-info`
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--client_id` | No | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` | |
+| `--json` | No | Print output as JSON | | <empty to enable>  |
+
+Sample command
+```sh
+./zwallet mn-user-info 
+```
+
+Sample output
+```
+- node: dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a (sharder)
+  - pool_id:        b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+    balance:        1
+    interests paid: 0
+    rewards paid:   0
+    status:         pending
+    stake %:        100 %
+```
+
+Sample reformmated JSON output
+```json
+{
+  "pools":{
+    "sharder":{
+      "dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a":[
+        {
+          "id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85",
+          "balance":10000000000,
+          "interest_paid":0,
+          "reward_paid":0,
+          "status":"PENDING",
+          "high":0,
+          "low":-1
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Getting the stake pool info - `mn-pool-info`
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--id` | Yes | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) | | |
+| `--pool_id` | Yes | Pool ID of a stake (get at `mn-info` or `mn-user-info`) | | |
+
+Sample command
+```sh
+./zwallet mn-pool-info --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+Sample output
+```json
+{"stats":{"delegate_id":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829"}}}
+```
+
+Reformatted output
+```json
+{
+  "stats":{
+    "delegate_id":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829",
+    "high":0,
+    "low":-1,
+    "interest_paid":0,
+    "reward_paid":0,
+    "number_rounds":0,
+    "status":"PENDING"
+  },
+  "pool":{
+    "pool":{
+      "id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85",
+      "balance":10000000000
+    },
+    "lock":{
+      "delete_view_change_set":false,
+      "delete_after_view_change":0,
+      "owner":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829"
+    }
+  }
+}
+```
+
+#### Unlock a stake - `mn-unlock`
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--id` | Yes | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) | | |
+| `--pool_id` | Yes | Pool ID of a stake (get at `mn-user-info`) | | |
+
+```sh
+./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+Output
+```
+tokens will be unlocked next VC
+```
+
+Tokens are released on the next view change cycle or at the next reward round.
+
+
+#### Updating staking config of a node - `mn-update-settings`
+
+Staking config can only be updated by the node's delegate wallet.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--id` | Yes | Node ID of a miner or sharder | | |
+| `--max_stake` | No | Minimum amount of tokens allowed when staking | | valid number |
+| `--min_stake` | No | Maximum amount of tokens allowed when staking | | valid number |
+| `--num_delegates` | No | Maximum number of staking pools | | valid number |
+
+Sample command
+```sh
+./zwallet mn-update-settings --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --max_stake 1000000000000 --min_stake 10000000 --num_delegates 25
 ```
 
 ### Vesting pool
 
-TODO 
+Vesting pool allows the transfer of locked tokens to desired destination after a duration set.
 
-```
-   vp-add             Add a vesting pool
-   vp-config          Check out vesting pool configurations.
-   vp-delete          Delete a vesting pool
-   vp-info            Check out vesting pool information.
-   vp-list            Check out vesting pools list.
-   vp-stop            Stop vesting for one of destinations and unlock tokens not vested
-   vp-trigger         Trigger a vesting pool work.
-   vp-unlock          Unlock tokens of a vesting pool
+#### Checking vesting pool config - `vp-config`
+
+Display the Vesting Pool smart contract config.
+
+```sh
+./zwallet vp-config
 ```
 
+Sample output
+```
+min_lock: 0.01
+min_duration: 2m0s
+max_duration: 2h0m0s
+max_destinations: 3
+max_description_length: 20
+```
+
+#### Adding a vesting pool - `vp-add`
+
+Create a new vesting pool.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--d` | Yes | Pair of destination wallet and amount of tokens (repeat parameter for more pairs) | | value pattern: `<wallet_client_id>:<amount>`  |
+| `--duration` | Yes | Vesting pool duration | | eg. "5m" for 5 minutes, "1h" for 1 hour (should be within min and max allowed duration) |
+| `--lock` | Yes | Amount of tokens to lock on the pool | | Should fit the destination amounts and must meet minimum lock amount |
+| `--description` | No | Vesting pool description | |  |
+| `--fee` | No | Amount of tokens to use as fee | 0.0 | valid number|
+| `--start_time` | No | When to start the vesting pool | now | Unix time in seconds |
+
+Sample command
+```
+./zwallet vp-add --duration 5m --lock 5 --d af6c894e2f5dd76b6df1329e924b4177e58692d165090f52b0cc11c639b3bb92:1 --d 8c4e3623964442e7ff9b9f52e5e7a5d8248a85856cf369f71149b7b922653396:2
+```
+
+Sample output
+```
+Vesting pool added successfully: 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+```
+
+Note: The destination wallets should be registered already on the blockchain.
+
+#### Checking vesting pool list - `vp-list`
+
+Display the pool list of the wallet.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--client_id` | No | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` | |
+
+Sample command
+```sh
+./zwallet vp-list
+```
+
+Sample output
+```
+-  2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+```
+
+#### Checking vesting pool info - `vp-info`
+
+Display vesting pool information.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--pool_id` | Yes | ID of vesting pool | | |
+
+Sample command
+```sh
+./zwallet vp-info --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+```
+
+Sample output 
+```
+pool_id:      2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+balance:      5
+can unlock:   2 (excess)
+sent:         0 (real value)
+pending:      3 (not sent, real value)
+vested:       3 (virtual, time based value)
+description:  
+start_time:   2021-05-08 00:06:00 +1000 AEST
+expire_at:    2021-05-08 00:11:00 +1000 AEST
+destinations:
+  - id:          af6c894e2f5dd76b6df1329e924b4177e58692d165090f52b0cc11c639b3bb92
+    vesting:     1
+    can unlock:  1 (virtual, time based value)
+    sent:        0 (real value)
+    pending:     1 (not sent, real value)
+    vested:      1 (virtual, time based value)
+    last unlock: 2021-05-08 00:06:00 +1000 AEST
+  - id:          8c4e3623964442e7ff9b9f52e5e7a5d8248a85856cf369f71149b7b922653396
+    vesting:     2
+    can unlock:  2 (virtual, time based value)
+    sent:        0 (real value)
+    pending:     2 (not sent, real value)
+    vested:      2 (virtual, time based value)
+    last unlock: 2021-05-08 00:06:00 +1000 AEST
+client_id:    e6bca3f65f3ac102cd972ee2a85c4ee8318fd63cce91f14a76e81d024451213e
+```
+
+#### Triggering a vesting pool work - `vp-trigger`
+
+Pool owner can trigger a vesting pool to transfer to the destinations right away.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--pool_id` | Yes | ID of vesting pool | | |
+
+Sample command
+```sh
+./zwallet vp-trigger --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+```
+
+Sample output
+```
+Vesting triggered successfully.
+```
+
+Vesting pool info should not show tokens in `sent`.
+```
+./zwallet vp-info --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+pool_id:      2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
+balance:      2
+can unlock:   2 (excess)
+sent:         3 (real value)
+pending:      0 (not sent, real value)
+vested:       3 (virtual, time based value)
+description:  
+start_time:   2021-05-08 00:06:00 +1000 AEST
+expire_at:    2021-05-08 00:11:00 +1000 AEST
+destinations:
+  - id:          af6c894e2f5dd76b6df1329e924b4177e58692d165090f52b0cc11c639b3bb92
+    vesting:     1
+    can unlock:  0 (virtual, time based value)
+    sent:        1 (real value)
+    pending:     0 (not sent, real value)
+    vested:      1 (virtual, time based value)
+    last unlock: 2021-05-08 00:11:00 +1000 AEST
+  - id:          8c4e3623964442e7ff9b9f52e5e7a5d8248a85856cf369f71149b7b922653396
+    vesting:     2
+    can unlock:  0 (virtual, time based value)
+    sent:        2 (real value)
+    pending:     0 (not sent, real value)
+    vested:      2 (virtual, time based value)
+    last unlock: 2021-05-08 00:11:00 +1000 AEST
+client_id:    e6bca3f65f3ac102cd972ee2a85c4ee8318fd63cce91f14a76e81d024451213e
+```
+#### Unlock tokens of a vesting pool - `vp-unlock`
+
+Unlocking tokens from a vesting pool can be done by both owner and destination wallet
+- owner can unlock tokens not yet vested
+- destination can unlock tokens already vested
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--pool_id` | Yes | ID of vesting pool | | |
+
+Sample command by a destination wallet
+```sh
+./zwallet vp-unlock --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:1d9d6b07a792f967b24cfaf6c60dc372193c59946af07e41282426c6b12ea1b2
+```
+
+Sample output
+```
+Tokens unlocked successfully.
+```
+
+#### Stopping vesting for a destination - `vp-stop`
+
+Owner can stop vesting for a destination and unlock the rest of tokens not yet vested.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--d` | Yes | Destination wallet | | wallet client ID |
+| `--pool_id` | Yes | ID of vesting pool | | |
+
+Sample command
+```sh
+./zwallet vp-stop --d af6c894e2f5dd76b6df1329e924b4177e58692d165090f52b0cc11c639b3bb92 --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:1d9d6b07a792f967b24cfaf6c60dc372193c59946af07e41282426c6b12ea1b2
+```
+
+Sample output
+```
+Stop vesting for af6c894e2f5dd76b6df1329e924b4177e58692d165090f52b0cc11c639b3bb92.
+```
+
+#### Deleting a vesting pool - `vp-delete`
+
+Deleting a vesting pool stops vesting and unlock the tokens not yet vested.
+
+| Parameter | Required | Description | Default | Valid Values |
+| ----- | --------| ----------- | ---------- | ----- |
+| `--pool_id` | Yes | ID of vesting pool | | |
+
+Sample command
+```sh
+./zwallet vp-delete --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:68a0dbf319578db69d3acd65bc42f2f29325c85bf5666a2fc4f25ef794b9e6e4
+```
+
+Sample output
+```
+Vesting pool deleted successfully.
+```
 
 ## Config
 
@@ -518,7 +1098,6 @@ Overriding the nodes can be useful in local chain setup. In some cases, the bloc
 
 ## Video resources
 
-TODO verify video content
 - [Send and receive token](https://youtu.be/Eiz9mqdFtZo)
 - [Lock tokens and earn interest](https://youtu.be/g44VczBzmXo)
 
@@ -535,280 +1114,3 @@ zwallet getbalance
 
 Get balance failed.
 ```
-
-
----
-# OLD README
-
-## Features
-
-[zwallet](#Command-with-no-arguments) supports following features:
-
-1. [Create Wallet](#Command-with-no-arguments)
-2. [Create multisig wallet](#Create-multisig-wallet)
-3. [Get test tokens from 0Chain Faucet](#Faucet)
-4. [Send tokens between Wallets](#Send)
-5. [Lock tokens to earn interest](#Lock)
-6. [Unlock locked tokens](#Unlock)
-7. [Recover wallet using passphrase](#Recover)
-8. [Get balance](#Get-balance)
-9. [Get blobbers list](#Get-blobbers)
-10. [Get miner or sharder ID](#Get-id)
-11. [Get locked tokens](#Get-locked-tokens)
-12. [Get lock configuration](#Get-lock-config)
-13. [Verify transaction](#Verify)
-14. [Vesting pool](#Vesting)
-15. [Miner SC](#Miner-SC)
-
-zwallet CLI provides a self-explaining "help" option that lists commands and parameters they need to perform the intended action
-
-### Create multisig wallet
-
-Before jumping on to command description a quick introduction to Multisignature Wallet.
-
-A Multisignature Wallet is a wallet for which any transaction from this wallet needs to be voted by T(N) associated signer wallets. To create a Multisignature Wallet, you need to specify the number of signers (N) you want on that wallet and minimum number of votes (T) it needs for a transaction to be approved.
-
-APIs
-
-- CreateMSWallet API will create the group wallet (MultiSignature Wallet) and corresponding number of Signer Wallets. All of these wallets have to be registered first on the Blockchain.
-
-- RegisterMultiSig API registers the group wallet with MultiSig smartcontract.
-
-- CreateVote API creates a vote for a proposal.
-
-- RegisterVote API will vote for a proposal. Initially, if the proposal does not exist, MultiSig smartcontract will automatically create one as identified by the ProposalID parameter. Any vote bearing the same ProposalID, will be counted as a vote for the transaction. When the threshold number of votes are registered, transaction will be automatically processed. Any extra votes will be ignored.
-
-Note 1: All Proposals will have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
-
-Note 2: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated with one or more tokens.
-
-Back to the command _createmswallet_. This command demonstrates how to create a multi-signature wallet, create a proposal for a transaction, and vote for the transaction. Note that this command works only on bls0chain encryption enabled 0chain Blockchain instance. The encryption scheme is specified by the "signature_scheme" field in the nodes.yml file under the configDir option.
-
-Command
-
-    ./zwallet createmswallet --numsigners 3 --threshold 2
-
-where
-
-1. numsigners is the number of accounts that can sign the vote.
-2. threshold is the minimum number of votes required for the transaction to pass.
-3. testn is an optional argument. set it to true to test sending votes from all signer accounts. By default votes from only threshold number of signer accounts is used.
-
-Response
-
-    Creating and testing a multisig wallet is successful!
-
-
-### Vesting
-
-#### Add a vesting pool
-
-Create a vesting pool.
-
-Flags
-
-    - description, description for vesting pool, limited by SC configurations
-      'max_description_length'
-    - duration, vesting duration in form of [Golang duration](https://pkg.go.dev/time?tab=doc#ParseDuration),
-      the value limited by SC configurations 'min_lock_period' and
-      'max_lock_period'
-    - lock, amount of tokens to lock in the pool, the provided amount should fit
-      the amount of destinations; also, the amount limited by SC configurations
-      'min_lock'
-    - d, colon separated values consist of D:V, where D is vesting destination
-      id, and V is value to be vested for the destination,; the flag can be
-      repeated many times
-
-Example
-
-```
-./zwallet vp-add                                                              \
-    --description "for testing"                                               \
-    --duration 5m                                                             \
-    --lock 5                                                                  \
-    --d 9fe14ab61ad7172f3cb9629fa34ca449229579ddf2d2a0fe3a58086344522d8e:1    \
-    --d e7f451fdfe12a385045fedcb2e26d5ceb50f460c19e9a58e105dde17fc624588:2
-```
-
-Successful output contains pool ID for further requests.
-
-#### Check out vesting pool configurations.
-
-Get Vesting SC configurations.
-
-Example
-
-```
-./zwallet vp-config
-```
-
-#### Delete a vesting pool
-
-Delete a vesting pool. Stop vesting all destinations, unlock all the rest and
-delete the pool.
-
-Example
-
-```
-./zwallet vp-delete --pool_ID <pool_id>
-```
-
-#### Check out vesting pool information.
-
-Information about a vesting pool for current moment.
-
-Example
-
-```
-./zwallet vp-info --pool_id <pool_id>
-```
-
-#### Check out vesting pools list.
-
-Get list of all vesting pools (IDs) for current client.
-
-```
-./zwallet vp-list
-```
-
-#### Stop vesting for one of destinations and unlock tokens not vested
-
-Stop vesting for a destination and unlock the rest.
-
-Example
-
-```
-./zwallet vp-stop --pool_id <pool_id> --d <destination_id>
-```
-
-#### Trigger a vesting pool work.
-
-Trigger vesting for a vesting pool for current time. It moves all vested
-tokens of the pool (for current time) to the destinations of the pool. Only
-pool owner can trigger.
-
-```
-./zwallet vp-trigger --pool_id <pool_id>
-```
-
-#### Unlock tokens of a vesting pool
-
-1. By pool owner. Unlock all tokens over required if any.
-2. By a destination. Unlock tokens vested for the destination.
-
-```
-./zwallet vp-unlock --pool_id <pool_id>
-```
-
-### Miner SC
-
-#### Get Miners list from Miner SC
-
-    ./zwallet ls-miners
-
-#### Get Sharders list from Miner SC
-
-    ./zwallet ls-sharders
-
-#### Get SC configurations and state
-
-    ./zwallet mn-config
-
-Response
-
-    view_change:           7301
-    max_n:                 8
-    min_n:                 2
-    max_s:                 3
-    min_s:                 1
-    t_percent:             0.51
-    k_percent:             0.75
-    last_round:            7369
-    max_stake:             100
-    min_stake:             0
-    interest_rate:         0.001
-    reward_rate:           1
-    share_ratio:           0.1
-    block_reward:          0.7
-    max_charge:            0.5
-    epoch:                 15000000
-    reward_decline_rate:   0.1
-    interest_decline_rate: 0.1
-    max_mint:              4000000
-    minted:                147.3653
-    max_delegates:         200
-
-
-#### Node information
-
-Get miner/sharder information from Miner SC. 
-
-    ./zwallet mn-info --id NODE_ID
-
-Response
-
-    {"simple_miner":{"id":"31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929","n2n_host":"198.18.0.71","host":"localhost","port":7071,"public_key":"255452b9f49ebb8c8b8fcec9f0bd8a4284e540be1286bd562578e7e59765e41a7aada04c9e2ad3e28f79aacb0f1be66715535a87983843fea81f23d8011e728b","short_name":"localhost.m0","build_tag":"2a366103470715432bcac43405ab722823a00c23","total_stake":1000000000,"delegate_wallet":"31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"generator_rewards":3343620000000,"generator_fees":48},"node_type":"miner","last_health_check":1612439517},"active":{"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61":{"stats":{"delegate_id":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2","high":1330000000,"low":1000000,"interest_paid":10000000,"reward_paid":1208970000000,"number_rounds":0,"status":"ACTIVE"},"pool":{"pool":{"id":"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61","balance":1000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2"}}}}}
-
-
-#### Lock stake for a node.
-
-Lock stake for miner or sharder. 
-
-    ./zwallet mn-lock --id NODE_ID
-
-Response
-
-    locked with: e5f87e4a82be6297c4a39caebff87c6258f3be861b8698b01f6fbf38d227fa6f
-
-#### Check out stake pool info.
-
-Get miner/sharder stake pool info from Miner SC.
-
-    ./zwallet mn-pool-info --id NODE_ID --pool_id POOL_ID
-
-Response
-
-    {"stats":{"delegate_id":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2","high":1330000000,"low":1330000000,"interest_paid":0,"reward_paid":42560000000,"number_rounds":0,"status":"ACTIVE"},"pool":{"pool":{"id":"215befba83bd2d4aaeddc89ae07f4205f322d2f0cce2829f9a9ff5a5fc5ece61","balance":1000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"bf325bb5b978c32ab38226d1c26857cb78171f837e98f33f3b6ffccc5a6bb8c2"}}}
-
-#### Unlock a stake
-
-Unlock miner/sharder stake pool. Tokens will be released next VC OR at next reward round.
-
-    ./zwallet mn-unlock --id NODE_ID --pool_id POOL_ID
-
-Response
-
-    tokens will be unlocked next VC
-
-#### Update node settings.
-
-Change miner/sharder settings in Miner SC by delegate_wallet owner.
-
-    ./zwallet mn-update-settings --id NODE_ID  [flags]
-
-Flags are:
-
-    --max_stake float     max stake allowed
-    --min_stake float     min stake allowed
-    --num_delegates int   max number of delegate pools
-
-### User pools of Miner SC.
-
-Get list of pools of Miner SC of a user.
-
-    ./zwallet mn-user-info
-
-Response
-
-    - node: 31810bd1258ae95955fb40c7ef72498a556d3587121376d9059119d280f34929 (miner)
-        - pool_id:        e5f87e4a82be6297c4a39caebff87c6258f3be861b8698b01f6fbf38d227fa6f
-          balance:        0.1
-          interests paid: 0
-          rewards paid:   0.399
-          status:         active
-          stake %:        100 %
-
-Optional flag `--client_id` can be used to get pools information for given
-user. Current user used by default.
-
-There is `--json` flag to print result as JSON.
