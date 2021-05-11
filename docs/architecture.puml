@@ -1,0 +1,52 @@
+@startuml
+left to right direction
+
+card "<size:42><&terminal></size> zwalletcli" as cli
+
+folder filesystem {
+    file "\~/.zcn/config.yaml" as config
+    file "\~/.zcn/wallet.json" as wallet
+}
+
+cloud "0chain network" {
+
+  node miners [
+       Miner1
+       ===
+       Miner2
+       ===
+       Miner3
+       ===
+       ...
+  ]
+
+  node sharders [
+       Sharder1
+       ===
+       Sharder2
+       ===
+       Sharder3
+       ===
+       ...
+  ]
+
+  node "0dns" as 0dns
+
+  miners -> sharders
+  sharders -> miners
+}
+
+cli -> config: use
+cli -> wallet: use
+cli -> 0dns: discover nodes
+cli -> miners
+cli -> sharders: verify, get data
+
+note right of config: required
+note right of wallet: contains secret key
+note right of miners: processes transactions
+note right of sharders: holds blockchain data
+note right of 0dns: serves the latest miner and sharder nodes
+
+
+@enduml

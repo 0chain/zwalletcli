@@ -21,3 +21,7 @@ zwallet
 zwallet
 
 
+/.idea/.gitignore
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/zwalletcli.iml
