@@ -153,6 +153,44 @@ That's it! You are now ready to use `zwallet`.
 
 ## Commands
 
+- [Creating and Restoring wallets](#creating-and-restoring-wallets)
+  - [Creating wallet - (any command)](#creating-wallet---any-command)
+  - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
+  - [Registering wallet - `register`](#registering-wallet---register)
+  - [Creating multisig wallet - `createmswallet`](#creating-multisig-wallet---createmswallet)
+- [Exploring network nodes](#exploring-network-nodes)
+  - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
+  - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
+  - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
+  - [Getting node by URL - `getid`](#getting-node-by-url---getid)  
+- [Getting and sending tokens](#getting-and-sending-tokens)
+  - [Getting tokens with Faucet smart contract - `faucet`](#getting-and-sending-tokens)
+  - [Checking balance - `getbalance`](#checking-balance---getbalance)  
+  - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
+  - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
+- [Locking tokens](#locking-tokens)    
+  - [Getting lock config - `lockconfig`](#getting-lock-config---lockconfig)
+  - [Locking tokens for interest - `lock`](#locking-tokens-for-interest---lock)
+  - [Getting locked tokens for interest - `getlockedtokens`](#getting-locked-tokens-for-interest---getlockedtokens)
+  - [Unlocking tokens - `unlock`](#unlocking-tokens---unlock)
+- [Staking on miners and sharders](#staking-on-miners-and-sharders)
+  - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
+  - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
+  - [Locking a stake on a node - `mn-lock`](#locking-a-stake-on-a-node---mn-lock)
+  - [Getting the stake pools of a wallet - `mn-user-info`](#getting-the-stake-pools-of-a-wallet---mn-user-info)
+  - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
+  - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
+  - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+- [Vesting pool](#vesting-pool)
+  - [Checking vesting pool config - `vp-config`](#checking-vesting-pool-config---vp-config)
+  - [Adding a vesting pool - `vp-add`](#adding-a-vesting-pool---vp-add)  
+  - [Checking vesting pool list - `vp-list`](#checking-vesting-pool-list---vp-list)
+  - [Checking vesting pool info - `vp-info`](#checking-vesting-pool-info---vp-info)
+  - [Triggering a vesting pool work - `vp-trigger`](#triggering-a-vesting-pool-work---vp-trigger)
+  - [Unlocking tokens of a vesting pool - `vp-unlock`](#unlocking-tokens-of-a-vesting-pool---vp-unlock)
+  - [Stopping vesting for a destination - `vp-stop`](#stopping-vesting-for-a-destination---vp-stop)
+  - [Deleting a vesting pool - `vp-delete`](#deleting-a-vesting-pool---vp-delete)
+    
 ### Creating and restoring wallets
 
 #### Creating wallet - (any command)
@@ -177,32 +215,42 @@ cat ~/.zcn/new_wallet.json
 
 #### Recovering wallet - `recoverwallet`
 
-Recovering wallet is useful when restoring a lost wallet or when loading the wallet on a different computer.
+`recoverwallet` is used when restoring a lost wallet or when loading the wallet from a different computer.
 
-It is critical that the wallet's mnemonics is backed up as this is needed in recovery.
+Given a wallet's mnemonics, you can recover and recreate your wallet.
+
+`recoverwallet` does two
 
 | Parameter | Required | Description | Default | Valid Values |
 | ----- | --------| ----------- | ---------- | ----- |
 | `--mnemonic` | Yes | The mnemonics of the wallet to recover | | |
 
-To recover a wallet, use `recoverwallet` command.
-
+Sample command
 ```sh
 ./zwallet recoverwallet --wallet recovered_wallet.json --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell"
 ```
 Sample output
 ```
-No wallet in path  <home_dir>/.zcn/wallet.json found. Creating wallet...
-ZCN wallet created!!
-Creating related read pool for storage smart-contract...
-Read pool created successfully
 Wallet recovered!!
 ```
-
 
 Verify recovered wallet
 ```sh
 cat ~/.zcn/recovered_wallet.json
+```
+
+#### Registering wallet - `register`
+
+`register` is used when needed to register a given wallet to the blockchain. This could be that the blockchain network is reset and you wished to register the same wallet at `~/.zcn/wallet.json`.
+
+Sample command
+```sh
+./zwallet register
+```
+
+Sample output
+```
+Wallet recovered!!
 ```
 
 #### Creating multisig wallet - `createmswallet`
@@ -1006,7 +1054,7 @@ destinations:
     last unlock: 2021-05-08 00:11:00 +1000 AEST
 client_id:    e6bca3f65f3ac102cd972ee2a85c4ee8318fd63cce91f14a76e81d024451213e
 ```
-#### Unlock tokens of a vesting pool - `vp-unlock`
+#### Unlocking tokens of a vesting pool - `vp-unlock`
 
 Unlocking tokens from a vesting pool can be done by both owner and destination wallet
 - owner can unlock tokens not yet vested
