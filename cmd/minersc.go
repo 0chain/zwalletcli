@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -207,41 +208,68 @@ var minerscSharders = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var (
-			flags = cmd.Flags()
-			err   error
-			info  = new(zcncore.MinerSCNodes)
-			cb    = NewJSONInfoCB(info)
-		)
-		if err = zcncore.GetSharders(cb); err != nil {
+		flags := cmd.Flags()
+
+		mb, err := zcncore.GetLatestFinalizedMagicBlock(context.Background(), 1)
+		if err != nil {
 			log.Fatal(err)
 		}
 
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
-		}
+		var all *zcncore.MinerSCNodes
 
-		if len(info.Nodes) == 0 {
-			fmt.Println("no sharders in Miner SC")
-			return
+		if flags.Changed("all") {
+			if ok, err := flags.GetBool("all"); err != nil {
+				log.Fatal(err)
+			} else if ok {
+				all = new(zcncore.MinerSCNodes)
+				cb := NewJSONInfoCB(all)
+				if err = zcncore.GetSharders(cb); err != nil {
+					log.Fatal(err)
+				}
+				if err = cb.Waiting(); err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
 
 		if flags.Changed("json") {
-			var j bool
-			if j, err = flags.GetBool("json"); err != nil {
+			if ok, err := flags.GetBool("json"); err != nil {
 				log.Fatal(err)
-			}
-			if j {
-				util.PrintJSON(info)
+			} else if ok {
+				if mb != nil && mb.Sharders != nil {
+					fmt.Println("MagicBlock Sharders")
+					util.PrettyPrintJSON(mb.Sharders.Nodes)
+					fmt.Println()
+				}
+				if all != nil {
+					fmt.Println("Registered Sharders")
+					util.PrettyPrintJSON(all.Nodes)
+				}
 				return
 			}
 		}
 
-		for _, node := range info.Nodes {
-			fmt.Println("- ID:        ", node.Miner.ID)
-			fmt.Println("- Host:      ", node.Miner.Host)
-			fmt.Println("- Port:      ", node.Miner.Port)
+		if mb != nil && mb.Sharders != nil {
+			fmt.Println("MagicBlock Sharders")
+			for _, node := range mb.Sharders.Nodes {
+				fmt.Println("ID:", node.ID)
+				fmt.Println("  - N2NHost:", node.N2NHost)
+				fmt.Println("  - Host:", node.Host)
+				fmt.Println("  - Port:", node.Port)
+			}
+			fmt.Println()
 		}
+
+		if all != nil {
+			fmt.Println("Registered Sharders")
+			for _, node := range all.Nodes {
+				fmt.Println("ID:", node.Miner.ID)
+				fmt.Println("  - N2NHost:", node.Miner.N2NHost)
+				fmt.Println("  - Host:", node.Miner.Host)
+				fmt.Println("  - Port:", node.Miner.Port)
+			}
+		}
+
 	},
 }
 
@@ -553,6 +581,7 @@ func init() {
 
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
+	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
 
 	minerscUpdateSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
 	minerscUpdateSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
