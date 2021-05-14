@@ -210,66 +210,63 @@ var minerscSharders = &cobra.Command{
 
 		flags := cmd.Flags()
 
-		mb, err := zcncore.GetLatestFinalizedMagicBlock(context.Background(), 1)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var all *zcncore.MinerSCNodes
-
-		if flags.Changed("all") {
-			if ok, err := flags.GetBool("all"); err != nil {
-				log.Fatal(err)
-			} else if ok {
-				all = new(zcncore.MinerSCNodes)
-				cb := NewJSONInfoCB(all)
-				if err = zcncore.GetSharders(cb); err != nil {
-					log.Fatal(err)
-				}
-				if err = cb.Waiting(); err != nil {
-					log.Fatal(err)
-				}
-			}
-		}
+		var err error
+		var jsonFlag, allFlag bool
 
 		if flags.Changed("json") {
-			if ok, err := flags.GetBool("json"); err != nil {
+			jsonFlag, err = flags.GetBool("json")
+			if err != nil {
 				log.Fatal(err)
-			} else if ok {
-				if mb != nil && mb.Sharders != nil {
-					fmt.Println("MagicBlock Sharders")
-					util.PrettyPrintJSON(mb.Sharders.Nodes)
-					fmt.Println()
-				}
-				if all != nil {
-					fmt.Println("Registered Sharders")
-					util.PrettyPrintJSON(all.Nodes)
-				}
-				return
 			}
+		}
+		if flags.Changed("all") {
+			allFlag, err = flags.GetBool("all")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		mb, err := zcncore.GetLatestFinalizedMagicBlock(context.Background(), 1)
+		if err != nil {
+			log.Fatalf("Failed to get MagicBlock: %v", err)
 		}
 
 		if mb != nil && mb.Sharders != nil {
 			fmt.Println("MagicBlock Sharders")
-			for _, node := range mb.Sharders.Nodes {
-				fmt.Println("ID:", node.ID)
-				fmt.Println("  - N2NHost:", node.N2NHost)
-				fmt.Println("  - Host:", node.Host)
-				fmt.Println("  - Port:", node.Port)
+			if jsonFlag {
+				util.PrettyPrintJSON(mb.Sharders.Nodes)
+			} else {
+				for _, node := range mb.Sharders.Nodes {
+					fmt.Println("ID:", node.ID)
+					fmt.Println("  - N2NHost:", node.N2NHost)
+					fmt.Println("  - Host:", node.Host)
+					fmt.Println("  - Port:", node.Port)
+				}
 			}
 			fmt.Println()
 		}
 
-		if all != nil {
+		if allFlag {
+			sharders := new(zcncore.MinerSCNodes)
+			callback := NewJSONInfoCB(sharders)
+			if err = zcncore.GetSharders(callback); err != nil {
+				log.Fatalf("Failed to get registered sharders: %v", err)
+			}
+			if err = callback.Waiting(); err != nil {
+				log.Fatalf("Failed to get registered sharders: %v", err)
+			}
 			fmt.Println("Registered Sharders")
-			for _, node := range all.Nodes {
-				fmt.Println("ID:", node.Miner.ID)
-				fmt.Println("  - N2NHost:", node.Miner.N2NHost)
-				fmt.Println("  - Host:", node.Miner.Host)
-				fmt.Println("  - Port:", node.Miner.Port)
+			if jsonFlag {
+				util.PrettyPrintJSON(sharders.Nodes)
+			} else {
+				for _, node := range sharders.Nodes {
+					fmt.Println("ID:", node.Miner.ID)
+					fmt.Println("  - N2NHost:", node.Miner.N2NHost)
+					fmt.Println("  - Host:", node.Miner.Host)
+					fmt.Println("  - Port:", node.Miner.Port)
+				}
 			}
 		}
-
 	},
 }
 
