@@ -1,6 +1,4 @@
 @startuml
-left to right direction
-
 card "<size:42><&terminal></size> zwalletcli" as cli
 
 folder filesystem {
@@ -15,8 +13,6 @@ cloud "0chain network" {
        ===
        Miner2
        ===
-       Miner3
-       ===
        ...
   ]
 
@@ -25,28 +21,23 @@ cloud "0chain network" {
        ===
        Sharder2
        ===
-       Sharder3
-       ===
        ...
   ]
 
   node "0dns" as 0dns
-
-  miners -> sharders
-  sharders -> miners
 }
 
-cli -> config: use
-cli -> wallet: use
-cli -> 0dns: discover nodes
-cli -> miners
-cli -> sharders: verify, get data
+cli ---> config: start with
+cli ---> wallet: read
+cli ---> 0dns: discover nodes
+cli ---> miners: send txns
+cli ---> sharders: verify txns, get data
 
-note right of config: required
-note right of wallet: contains secret key
-note right of miners: processes transactions
-note right of sharders: holds blockchain data
-note right of 0dns: serves the latest miner and sharder nodes
+note bottom of config: required zwallet config
+note bottom of wallet: contains secret key
+note bottom of miners: processes transactions
+note bottom of sharders: holds blockchain data
+note bottom of 0dns: serves the latest miner and sharder node details
 
 
 @enduml

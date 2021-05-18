@@ -10,7 +10,7 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.  
 
-![alt text](docs/architecture.png "Architecture")
+![architecture](docs/architecture.png "Architecture")
 
 ## Getting started
 
@@ -197,6 +197,8 @@ That's it! You are now ready to use `zwallet`.
 
 Simply run any `zwallet` command and it will create a wallet if none exist yet.
 
+![create wallet](docs/createwallet.png "Create wallet")
+
 Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
@@ -206,6 +208,14 @@ Here is a sample with `faucet` command and this creates a wallet at default loca
 Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json` 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
+```
+
+Sample Output
+```
+No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
+ZCN wallet created!!
+Creating related read pool for storage smart-contract...
+Read pool created successfully
 ```
 
 Verify second wallet
@@ -219,11 +229,11 @@ cat ~/.zcn/new_wallet.json
 
 Given a wallet's mnemonics, you can recover and recreate your wallet.
 
-`recoverwallet` does two
-
 | Parameter | Required | Description | Default | Valid Values |
 | ----- | --------| ----------- | ---------- | ----- |
 | `--mnemonic` | Yes | The mnemonics of the wallet to recover | | |
+
+![recover wallet](docs/recoverwallet.png "Recover wallet")
 
 Sample command
 ```sh
@@ -242,6 +252,8 @@ cat ~/.zcn/recovered_wallet.json
 #### Registering wallet - `register`
 
 `register` is used when needed to register a given wallet to the blockchain. This could be that the blockchain network is reset and you wished to register the same wallet at `~/.zcn/wallet.json`.
+
+![register wallet](docs/register.png "Register wallet")
 
 Sample command
 ```sh
@@ -276,6 +288,8 @@ Note: Before a transaction or voting can happen, the group wallet and the signer
 | `--numsigners` | Yes | The number of signers of the multisig wallet | | |
 | `--threshold` | Yes | The number of signers required to vote a transaction | | |
 | `--testn` | No | Whether to have all signers vote on the test transation, otherwise just the minimum threshold  | false | |
+
+![Create multisignature wallet](docs/createmswallet.png "Create multisignature wallet")
 
 Sample command with 3 wallet signers and a threshold of 2 votes.
 ```sh

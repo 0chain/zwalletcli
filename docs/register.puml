@@ -1,0 +1,9 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet register" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections miners
+
+cli -> wallet: read wallet file
+cli -> miners: register wallet
+
+@enduml

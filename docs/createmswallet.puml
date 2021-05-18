@@ -1,0 +1,38 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet createmswallet" as cli
+collections miners
+collections sharders
+
+== Wallet registrations ==
+
+cli -> cli: generate wallets (N signers + 1 group)
+group for each wallet (group, signers)
+cli -> miners: register wallet
+end
+cli -> cli: create "register multisig" txn
+cli -> miners: send "register multisig" txn
+cli -> sharders: poll for txn confirmation
+cli -> cli: create test recipient wallet
+cli -> miners: register test recipient wallet
+
+== Wallet activation ==
+group for each wallet (group, signers, test recipient)
+cli -> cli: create pour txn to wallet
+cli -> miners: send pour txn
+cli -> sharders: poll for txn confirmation
+end
+
+== Test voting ==
+group for all signers or random N signers where N = threshold
+cli -> cli: create "multisig vote for transfer to recipient" txn
+cli -> miners: send txn
+group if number of votes already met threshold
+miners -> miners: process multisig vote after threshold met
+end
+cli -> sharders: poll for txn confirmation
+end
+
+cli -> sharders: check group wallet balance has updated
+cli -> sharders: check test recipient wallet balance has updated
+
+@enduml
