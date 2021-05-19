@@ -11,6 +11,13 @@ func PrintJSON(v interface{}) {
 	if err != nil {
 		log.Fatalf("Failed to convert data to json format : %v", err)
 	}
-	jsonString := string(b)
-	fmt.Println(jsonString)
+	fmt.Println(string(b))
+}
+
+func PrettyPrintJSON(v interface{}) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		log.Fatalf("Failed to convert data to json format : %v", err)
+	}
+	fmt.Println(string(b))
 }
