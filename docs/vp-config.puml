@@ -1,0 +1,7 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet vp-config" as cli
+collections sharders
+
+cli -> sharders: get vesting SC config
+
+@enduml

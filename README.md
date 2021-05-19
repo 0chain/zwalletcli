@@ -1065,6 +1065,8 @@ Vesting pool allows the transfer of locked tokens to desired destination after a
 
 Display the Vesting Pool smart contract config.
 
+![Vesting config](docs/vp-config.png "Vesting config")
+
 ```sh
 ./zwallet vp-config
 ```
@@ -1092,6 +1094,8 @@ Create a new vesting pool.
 | `--fee`         | No       | Amount of tokens to use as fee                               | 0.0     | valid number                                                 |
 | `--start_time`  | No       | When to start the vesting pool                               | now     | Unix time in seconds                                         |
 
+![Add vesting pool](docs/vp-add.png "Add vesting pool")
+
 Sample command
 
 ```
@@ -1108,11 +1112,13 @@ Note: The destination wallets should be registered already on the blockchain.
 
 #### Checking vesting pool list - `vp-list`
 
-Display the pool list of the wallet.
+Display the vesting pools of wallet.
 
 | Parameter     | Required | Description             | Default                        | Valid Values |
 | ------------- | -------- | ----------------------- | ------------------------------ | ------------ |
 | `--client_id` | No       | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` |              |
+
+![Wallet vesting pools](docs/vp-list.png "Wallet vesting pools")
 
 Sample command
 
@@ -1133,6 +1139,8 @@ Display vesting pool information.
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool info](docs/vp-info.png "Vesting pool info")
 
 Sample command
 
@@ -1177,6 +1185,8 @@ Pool owner can trigger a vesting pool to transfer to the destinations right away
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool trigger](docs/vp-trigger.png "Vesting pool trigger")
 
 Sample command
 
@@ -1232,6 +1242,8 @@ Unlocking tokens from a vesting pool can be done by both owner and destination w
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
 
+![Vesting pool unlock](docs/vp-unlock.png "Vesting pool unlock")
+
 Sample command by a destination wallet
 
 ```sh
@@ -1253,6 +1265,8 @@ Owner can stop vesting for a destination and unlock the rest of tokens not yet v
 | `--d`       | Yes      | Destination wallet |         | wallet client ID |
 | `--pool_id` | Yes      | ID of vesting pool |         |                  |
 
+![Vesting pool stop](docs/vp-stop.png "Vesting pool stop")
+
 Sample command
 
 ```sh
@@ -1272,6 +1286,8 @@ Deleting a vesting pool stops vesting and unlock the tokens not yet vested.
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool delete](docs/vp-delete.png "Vesting pool delete")
 
 Sample command
 
