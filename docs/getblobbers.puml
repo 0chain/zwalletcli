@@ -1,0 +1,8 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet getblobbers" as cli
+collections sharders
+
+cli -> sharders: get registered blobbers on Storage SC
+cli -> cli: print blobber nodes
+
+@enduml

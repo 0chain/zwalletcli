@@ -1,0 +1,8 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet ls-miners" as cli
+collections sharders
+
+cli -> sharders: get registered miners on Miner SC
+cli -> cli: print miners nodes
+
+@enduml

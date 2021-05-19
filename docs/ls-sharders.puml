@@ -1,0 +1,12 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet ls-sharders" as cli
+collections sharders
+
+cli -> sharders: get latest finalized magic block
+cli -> cli: print sharder nodes
+group if --all provided
+cli -> sharders: get registered sharders on Miner SC
+cli -> cli: print sharder nodes
+end
+
+@enduml

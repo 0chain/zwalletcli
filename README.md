@@ -181,7 +181,7 @@ That's it! You are now ready to use `zwallet`.
   - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
   - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
   - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
-  - [Getting node by URL - `getid`](#getting-node-by-url---getid)  
+  - [Getting node ID by URL - `getid`](#getting-node-by-url---getid)  
 - [Getting and sending tokens](#getting-and-sending-tokens)
   - [Getting tokens with Faucet smart contract - `faucet`](#getting-and-sending-tokens)
   - [Checking balance - `getbalance`](#checking-balance---getbalance)  
@@ -400,11 +400,13 @@ Creating and testing a multisig wallet is successful!
 
 #### Listing all miners - `ls-miners`
 
-The list of miners to display are retrieved using the Miner smart contract. 
+The list of miners are retrieved using the Miner smart contract. 
 
 | Parameter | Required | Description          | Default | Valid Values      |
 | --------- | -------- | -------------------- | ------- | ----------------- |
 | `--json`  | No       | Print output as JSON |         | <empty to enable> |
+
+![List miner nodes](docs/ls-miners.png "List miner nodes")
 
 ```sh
 ./zwallet ls-miners
@@ -426,28 +428,57 @@ Sample output
 
 #### Listing all sharders -`ls-sharders`
 
-The list of sharders to display are retrieved using the Miner smart contract.
+The list of sharders are retrieved using the latest finalized magic block. All registered sharders can be retrieved with the `--all` parameter.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
+| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
+
+![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
 ```sh
-./zwallet ls-sharders
+./zwallet ls-sharders --all
 ```
 
 Sample output
 
 ```
-- ID:         675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
-- Host:       one.devnet-0chain.net
-- Port:       31101
-- ID:         12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
-- Host:       one.devnet-0chain.net
-- Port:       31102
+MagicBlock Sharders
+ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31102
+ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31101
+  
+Registered Sharders
+ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31101
+ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31102
+ID: 43f4f011698db6f2078e6ceb1cd981ab3bd35d07b7ac6fdf7c77aec1feee09be
+  - N2NHost: 144.76.91.241
+  - Host: test4.devnet-0chain.net
+  - Port: 31101
+ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
+  - N2NHost: 144.76.91.241
+  - Host: test4.devnet-0chain.net
+  - Port: 31102
+
 ```
 
 #### Listing all blobbers - `getblobbers`
+
+The list of blobbers are retrieved using the Storage smart contract.
+
+![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
 ```sh
 ./zwallet getblobbers
@@ -464,11 +495,15 @@ Blobbers:
   http://one.devnet-0chain.net:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
 ```
 
-#### Getting node by URL - `getid`
+#### Getting node ID by URL - `getid`
+
+Print the ID of a blockchain node.
 
 | Parameter | Required | Description                               | Default | Valid Values |
 | --------- | -------- | ----------------------------------------- | ------- | ------------ |
 | `--url`   | Yes      | URL to the node (miner, sharder, blobber) |         |              |
+
+![Get node ID](docs/getid.png "Get node ID")
 
 The following command get the details of the sharder on a given URL
 
@@ -489,7 +524,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 #### Getting tokens with Faucet smart contract - `faucet`
 
-Faucet smart contract can be used to get tokens for testing purposes. 
+Tokens can be retrieved and added to your wallet through the Faucet smart contract. 
 
 | Parameter      | Required | Description                                                  | Default | Valid Values     |
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
@@ -497,6 +532,7 @@ Faucet smart contract can be used to get tokens for testing purposes.
 | `--input`      | Yes      | Request description                                          |         | any string       |
 | `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
 
+![Faucet](docs/faucet.png "Faucet")
 
 The following command will give 1 token to the default wallet.
 
@@ -518,7 +554,11 @@ Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b2873
 
 #### Checking balance - `getbalance`
 
+Wallet balances are retrieved from sharders.
+
 Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
+
+![Get wallet balance](docs/getbalance.png "Get wallet balance")
 
 ```sh
 ./zwallet getbalance
@@ -540,7 +580,9 @@ Note: When there is no token on the wallet yet, output will show `Get balance fa
 
 #### Sending tokens to another wallet - `send`
 
-Transfering tokens from wallet to another is done through `send`
+![Send tokens to another wallet](docs/send.png "Send tokens to another wallet")
+
+Transferring tokens from a wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
@@ -577,7 +619,9 @@ Note: To use a different wallet as sender, use `--wallet` global parameter.
 
 Note: Not all `zwallet` commands (eg. `send`) prints the transaction hash created. To see more details printed including the hashes, use `--verbose` global parameter.
 
-Sample `verify` command
+![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
+
+Sample command
 
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850

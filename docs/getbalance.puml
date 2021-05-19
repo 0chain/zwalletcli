@@ -1,0 +1,10 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet getbalance" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections sharders
+
+cli -> wallet: read wallet file
+cli -> cli: create Faucet SC txn
+cli -> sharders: get balance
+
+@enduml
