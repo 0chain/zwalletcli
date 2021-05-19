@@ -649,6 +649,8 @@ Tokens can be locked for a period of time to gain additional tokens as interest.
 
 `lockconfig` shows the global configuration for locking tokens for interest such as minimum token and minimum lock period (duration).
 
+![Get lock config](docs/lockconfig.png "Get lock config")
+
 ```sh
 ./zwallet lockconfig
 ```
@@ -686,6 +688,8 @@ Locking for interest takes out the tokens from the balance. It will be available
 | `--tokens`      | Yes                                    | Amount of tokens to lock       |         | valid number |
 | `--fee`         | No                                     | Amount of tokens to use as fee | 0.0     | valid number |
 
+![Lock tokens for interest](docs/lock.png "Lock tokens for interest")
+
 The following command locked 1 token for 5 minutes
 
 ```sh
@@ -707,6 +711,8 @@ Check balance to see the locked tokens are gone, but has started to gain some to
 #### Getting locked tokens for interest - `getlockedtokens`
 
 `getlockedtokens` show the locked tokens, how much interest it gained and how much time is left based on the lock duration specified.
+
+![Get locked tokens of wallet](docs/getlockedtokens.png "Get locked tokens of wallet")
 
 ```sh
 ./zwallet getlockedtokens
@@ -750,6 +756,8 @@ Unlocking tokens are only possible once the lock duration has passed.
 | ----------- | -------- | --------------------------------------------------- | ------- | ------------ |
 | `--pool_id` | Yes      | Pool ID of locked tokens (get at `getlockedtokens`) |         |              |
 
+![Unlock tokens of wallet](docs/unlock.png "Unlock tokens of wallet")
+
 Sample command
 
 ```sh
@@ -772,7 +780,9 @@ To find out the number of delegates and also what is the minimum and maximum tok
 
 #### Getting the staking config - `mn-config`
 
-The following config displays the config and current state.
+`mn-config` display the global info of Miner SC for staking.
+
+![Miner SC global info](docs/mn-config.png "Miner SC global info")
 
 ```sh
 ./zwallet mn-config
@@ -806,9 +816,13 @@ max_delegates:         200
 
 #### Getting a miner or sharder info for staking - `mn-info`
 
+Node stats for staking are retrieved from Miner SC.
+
 | Parameter | Required | Description                                                  | Default | Valid Values |
 | --------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--id`    | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
+
+![Node stat for staking](docs/mn-info.png "Node stat for staking")
 
 Sample command
 
@@ -885,6 +899,8 @@ Note however that if a node becomes offline, all stake pools are automatically u
 | `--id`     | Yes      | Node ID of a miner or sharder to stake for (get at `ls-miners` or `ls-sharders`) |         |              |
 | `--tokens` | Yes      | Amounts of token to stake                                    |         | valid number |
 
+![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
+
 Sample command
 
 ```sh
@@ -909,6 +925,8 @@ Note: If the locking of stakes is failing, verify the following.
 | ------------- | -------- | ----------------------- | ------------------------------ | ----------------- |
 | `--client_id` | No       | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` |                   |
 | `--json`      | No       | Print output as JSON    |                                | <empty to enable> |
+
+![Wallet stake pools](docs/mn-user-info.png "Wallet stake pools")
 
 Sample command
 
@@ -957,6 +975,8 @@ Sample reformatted JSON output
 | `--id`      | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
 | `--pool_id` | Yes      | Pool ID of a stake (get at `mn-info` or `mn-user-info`)      |         |              |
 
+![Stake pool info](docs/mn-pool-info.png "Stake pool info")
+
 Sample command
 
 ```sh
@@ -1003,6 +1023,8 @@ Reformatted output
 | `--id`      | Yes      | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) |         |              |
 | `--pool_id` | Yes      | Pool ID of a stake (get at `mn-user-info`)                   |         |              |
 
+![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
+
 ```sh
 ./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 ```
@@ -1026,6 +1048,8 @@ Staking config can only be updated by the node's delegate wallet.
 | `--max_stake`     | No       | Minimum amount of tokens allowed when staking |         | valid number |
 | `--min_stake`     | No       | Maximum amount of tokens allowed when staking |         | valid number |
 | `--num_delegates` | No       | Maximum number of staking pools               |         | valid number |
+
+![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
 
 Sample command
 
