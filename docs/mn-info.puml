@@ -1,0 +1,7 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet mn-info" as cli
+collections sharders
+
+cli -> sharders: get a miner/sharder stat info from Miner SC
+
+@enduml

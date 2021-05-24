@@ -1,0 +1,7 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet mn-config" as cli
+collections sharders
+
+cli -> sharders: get miner SC global info
+
+@enduml

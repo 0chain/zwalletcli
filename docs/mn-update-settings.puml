@@ -1,0 +1,11 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet mn-update-settings" as cli
+collections miners
+collections sharders
+
+cli -> sharders: get a miner/sharder stat info from Miner SC
+cli -> cli: create miner SC node settings txn with old stat if no new setting
+cli -> miners: send txn
+cli -> sharders: poll for txn confirmation
+
+@enduml

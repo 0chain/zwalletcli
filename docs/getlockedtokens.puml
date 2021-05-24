@@ -1,0 +1,9 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet getlockedtokens" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections sharders
+
+cli -> wallet: read wallet
+cli -> sharders: get locked tokens of wallet from interest pool SC
+
+@enduml

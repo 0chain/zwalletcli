@@ -1,0 +1,8 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet getid" as cli
+collections "sharders/miners" as nodes
+
+cli -> nodes: get "<node url>/_nh/whoami"
+cli -> cli: print node ID
+
+@enduml

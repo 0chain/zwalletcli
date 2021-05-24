@@ -1,0 +1,9 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet mn-pool-info" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections sharders
+
+cli -> wallet: read wallet
+cli -> sharders: get staked tokens on pool from miner SC
+
+@enduml

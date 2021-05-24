@@ -10,7 +10,7 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.  
 
-![alt text](docs/architecture.png "Architecture")
+![architecture](docs/architecture.png "Architecture")
 
 ## Getting started
 
@@ -181,7 +181,7 @@ That's it! You are now ready to use `zwallet`.
   - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
   - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
   - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
-  - [Getting node by URL - `getid`](#getting-node-by-url---getid)  
+  - [Getting node ID by URL - `getid`](#getting-node-by-url---getid)  
 - [Getting and sending tokens](#getting-and-sending-tokens)
   - [Getting tokens with Faucet smart contract - `faucet`](#getting-and-sending-tokens)
   - [Checking balance - `getbalance`](#checking-balance---getbalance)  
@@ -216,6 +216,8 @@ That's it! You are now ready to use `zwallet`.
 
 Simply run any `zwallet` command and it will create a wallet if none exist yet.
 
+![create wallet](docs/createwallet.png "Create wallet")
+
 Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
@@ -226,6 +228,14 @@ Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
+```
+
+Sample Output
+```
+No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
+ZCN wallet created!!
+Creating related read pool for storage smart-contract...
+Read pool created successfully
 ```
 
 Verify second wallet
@@ -243,6 +253,8 @@ Given a wallet's mnemonics, you can recover and recreate your wallet.
 | Parameter    | Required | Description                            | Default | Valid Values |
 | ------------ | -------- | -------------------------------------- | ------- | ------------ |
 | `--mnemonic` | Yes      | The mnemonics of the wallet to recover |         |              |
+
+![recover wallet](docs/recoverwallet.png "Recover wallet")
 
 Sample command
 
@@ -265,6 +277,8 @@ cat ~/.zcn/recovered_wallet.json
 #### Registering wallet - `register`
 
 `register` is used when needed to register a given wallet to the blockchain. This could be that the blockchain network is reset and you wished to register the same wallet at `~/.zcn/wallet.json`.
+
+![register wallet](docs/register.png "Register wallet")
 
 Sample command
 
@@ -301,6 +315,8 @@ Note: Before a transaction or voting can happen, the group wallet and the signer
 | `--numsigners` | Yes      | The number of signers of the multisig wallet                 |         |              |
 | `--threshold`  | Yes      | The number of signers required to vote a transaction         |         |              |
 | `--testn`      | No       | Whether to have all signers vote on the test transation, otherwise just the minimum threshold | false   |              |
+
+![Create multisignature wallet](docs/createmswallet.png "Create multisignature wallet")
 
 Sample command with 3 wallet signers and a threshold of 2 votes.
 
@@ -384,11 +400,13 @@ Creating and testing a multisig wallet is successful!
 
 #### Listing all miners - `ls-miners`
 
-The list of miners to display are retrieved using the Miner smart contract. 
+The list of miners are retrieved using the Miner smart contract. 
 
 | Parameter | Required | Description          | Default | Valid Values      |
 | --------- | -------- | -------------------- | ------- | ----------------- |
 | `--json`  | No       | Print output as JSON |         | <empty to enable> |
+
+![List miner nodes](docs/ls-miners.png "List miner nodes")
 
 ```sh
 ./zwallet ls-miners
@@ -410,28 +428,57 @@ Sample output
 
 #### Listing all sharders -`ls-sharders`
 
-The list of sharders to display are retrieved using the Miner smart contract.
+The list of sharders are retrieved using the latest finalized magic block. All registered sharders can be retrieved with the `--all` parameter.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
+| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
+
+![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
 ```sh
-./zwallet ls-sharders
+./zwallet ls-sharders --all
 ```
 
 Sample output
 
 ```
-- ID:         675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
-- Host:       one.devnet-0chain.net
-- Port:       31101
-- ID:         12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
-- Host:       one.devnet-0chain.net
-- Port:       31102
+MagicBlock Sharders
+ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31102
+ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31101
+  
+Registered Sharders
+ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31101
+ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
+  - N2NHost: one.devnet-0chain.net
+  - Host: one.devnet-0chain.net
+  - Port: 31102
+ID: 43f4f011698db6f2078e6ceb1cd981ab3bd35d07b7ac6fdf7c77aec1feee09be
+  - N2NHost: 144.76.91.241
+  - Host: test4.devnet-0chain.net
+  - Port: 31101
+ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
+  - N2NHost: 144.76.91.241
+  - Host: test4.devnet-0chain.net
+  - Port: 31102
+
 ```
 
 #### Listing all blobbers - `getblobbers`
+
+The list of blobbers are retrieved using the Storage smart contract.
+
+![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
 ```sh
 ./zwallet getblobbers
@@ -448,11 +495,15 @@ Blobbers:
   http://one.devnet-0chain.net:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
 ```
 
-#### Getting node by URL - `getid`
+#### Getting node ID by URL - `getid`
+
+Print the ID of a blockchain node.
 
 | Parameter | Required | Description                               | Default | Valid Values |
 | --------- | -------- | ----------------------------------------- | ------- | ------------ |
 | `--url`   | Yes      | URL to the node (miner, sharder, blobber) |         |              |
+
+![Get node ID](docs/getid.png "Get node ID")
 
 The following command get the details of the sharder on a given URL
 
@@ -473,7 +524,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 #### Getting tokens with Faucet smart contract - `faucet`
 
-Faucet smart contract can be used to get tokens for testing purposes. 
+Tokens can be retrieved and added to your wallet through the Faucet smart contract. 
 
 | Parameter      | Required | Description                                                  | Default | Valid Values     |
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
@@ -481,6 +532,7 @@ Faucet smart contract can be used to get tokens for testing purposes.
 | `--input`      | Yes      | Request description                                          |         | any string       |
 | `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
 
+![Faucet](docs/faucet.png "Faucet")
 
 The following command will give 1 token to the default wallet.
 
@@ -502,7 +554,11 @@ Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b2873
 
 #### Checking balance - `getbalance`
 
+Wallet balances are retrieved from sharders.
+
 Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
+
+![Get wallet balance](docs/getbalance.png "Get wallet balance")
 
 ```sh
 ./zwallet getbalance
@@ -524,7 +580,9 @@ Note: When there is no token on the wallet yet, output will show `Get balance fa
 
 #### Sending tokens to another wallet - `send`
 
-Transfering tokens from wallet to another is done through `send`
+![Send tokens to another wallet](docs/send.png "Send tokens to another wallet")
+
+Transferring tokens from a wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
@@ -561,7 +619,9 @@ Note: To use a different wallet as sender, use `--wallet` global parameter.
 
 Note: Not all `zwallet` commands (eg. `send`) prints the transaction hash created. To see more details printed including the hashes, use `--verbose` global parameter.
 
-Sample `verify` command
+![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
+
+Sample command
 
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850
@@ -588,6 +648,8 @@ Tokens can be locked for a period of time to gain additional tokens as interest.
 ### Getting lock config - `lockconfig`
 
 `lockconfig` shows the global configuration for locking tokens for interest such as minimum token and minimum lock period (duration).
+
+![Get lock config](docs/lockconfig.png "Get lock config")
 
 ```sh
 ./zwallet lockconfig
@@ -626,6 +688,8 @@ Locking for interest takes out the tokens from the balance. It will be available
 | `--tokens`      | Yes                                    | Amount of tokens to lock       |         | valid number |
 | `--fee`         | No                                     | Amount of tokens to use as fee | 0.0     | valid number |
 
+![Lock tokens for interest](docs/lock.png "Lock tokens for interest")
+
 The following command locked 1 token for 5 minutes
 
 ```sh
@@ -647,6 +711,8 @@ Check balance to see the locked tokens are gone, but has started to gain some to
 #### Getting locked tokens for interest - `getlockedtokens`
 
 `getlockedtokens` show the locked tokens, how much interest it gained and how much time is left based on the lock duration specified.
+
+![Get locked tokens of wallet](docs/getlockedtokens.png "Get locked tokens of wallet")
 
 ```sh
 ./zwallet getlockedtokens
@@ -690,6 +756,8 @@ Unlocking tokens are only possible once the lock duration has passed.
 | ----------- | -------- | --------------------------------------------------- | ------- | ------------ |
 | `--pool_id` | Yes      | Pool ID of locked tokens (get at `getlockedtokens`) |         |              |
 
+![Unlock tokens of wallet](docs/unlock.png "Unlock tokens of wallet")
+
 Sample command
 
 ```sh
@@ -712,7 +780,9 @@ To find out the number of delegates and also what is the minimum and maximum tok
 
 #### Getting the staking config - `mn-config`
 
-The following config displays the config and current state.
+`mn-config` display the global info of Miner SC for staking.
+
+![Miner SC global info](docs/mn-config.png "Miner SC global info")
 
 ```sh
 ./zwallet mn-config
@@ -746,9 +816,13 @@ max_delegates:         200
 
 #### Getting a miner or sharder info for staking - `mn-info`
 
+Node stats for staking are retrieved from Miner SC.
+
 | Parameter | Required | Description                                                  | Default | Valid Values |
 | --------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--id`    | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
+
+![Node stat for staking](docs/mn-info.png "Node stat for staking")
 
 Sample command
 
@@ -825,6 +899,8 @@ Note however that if a node becomes offline, all stake pools are automatically u
 | `--id`     | Yes      | Node ID of a miner or sharder to stake for (get at `ls-miners` or `ls-sharders`) |         |              |
 | `--tokens` | Yes      | Amounts of token to stake                                    |         | valid number |
 
+![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
+
 Sample command
 
 ```sh
@@ -849,6 +925,8 @@ Note: If the locking of stakes is failing, verify the following.
 | ------------- | -------- | ----------------------- | ------------------------------ | ----------------- |
 | `--client_id` | No       | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` |                   |
 | `--json`      | No       | Print output as JSON    |                                | <empty to enable> |
+
+![Wallet stake pools](docs/mn-user-info.png "Wallet stake pools")
 
 Sample command
 
@@ -897,6 +975,8 @@ Sample reformatted JSON output
 | `--id`      | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
 | `--pool_id` | Yes      | Pool ID of a stake (get at `mn-info` or `mn-user-info`)      |         |              |
 
+![Stake pool info](docs/mn-pool-info.png "Stake pool info")
+
 Sample command
 
 ```sh
@@ -943,6 +1023,8 @@ Reformatted output
 | `--id`      | Yes      | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) |         |              |
 | `--pool_id` | Yes      | Pool ID of a stake (get at `mn-user-info`)                   |         |              |
 
+![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
+
 ```sh
 ./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 ```
@@ -967,6 +1049,8 @@ Staking config can only be updated by the node's delegate wallet.
 | `--min_stake`     | No       | Maximum amount of tokens allowed when staking |         | valid number |
 | `--num_delegates` | No       | Maximum number of staking pools               |         | valid number |
 
+![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
+
 Sample command
 
 ```sh
@@ -980,6 +1064,8 @@ Vesting pool allows the transfer of locked tokens to desired destination after a
 #### Checking vesting pool config - `vp-config`
 
 Display the Vesting Pool smart contract config.
+
+![Vesting config](docs/vp-config.png "Vesting config")
 
 ```sh
 ./zwallet vp-config
@@ -1008,6 +1094,8 @@ Create a new vesting pool.
 | `--fee`         | No       | Amount of tokens to use as fee                               | 0.0     | valid number                                                 |
 | `--start_time`  | No       | When to start the vesting pool                               | now     | Unix time in seconds                                         |
 
+![Add vesting pool](docs/vp-add.png "Add vesting pool")
+
 Sample command
 
 ```
@@ -1024,11 +1112,13 @@ Note: The destination wallets should be registered already on the blockchain.
 
 #### Checking vesting pool list - `vp-list`
 
-Display the pool list of the wallet.
+Display the vesting pools of wallet.
 
 | Parameter     | Required | Description             | Default                        | Valid Values |
 | ------------- | -------- | ----------------------- | ------------------------------ | ------------ |
 | `--client_id` | No       | Client ID of the wallet | Wallet at `~/.zcn/wallet.json` |              |
+
+![Wallet vesting pools](docs/vp-list.png "Wallet vesting pools")
 
 Sample command
 
@@ -1049,6 +1139,8 @@ Display vesting pool information.
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool info](docs/vp-info.png "Vesting pool info")
 
 Sample command
 
@@ -1093,6 +1185,8 @@ Pool owner can trigger a vesting pool to transfer to the destinations right away
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool trigger](docs/vp-trigger.png "Vesting pool trigger")
 
 Sample command
 
@@ -1148,6 +1242,8 @@ Unlocking tokens from a vesting pool can be done by both owner and destination w
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
 
+![Vesting pool unlock](docs/vp-unlock.png "Vesting pool unlock")
+
 Sample command by a destination wallet
 
 ```sh
@@ -1169,6 +1265,8 @@ Owner can stop vesting for a destination and unlock the rest of tokens not yet v
 | `--d`       | Yes      | Destination wallet |         | wallet client ID |
 | `--pool_id` | Yes      | ID of vesting pool |         |                  |
 
+![Vesting pool stop](docs/vp-stop.png "Vesting pool stop")
+
 Sample command
 
 ```sh
@@ -1188,6 +1286,8 @@ Deleting a vesting pool stops vesting and unlock the tokens not yet vested.
 | Parameter   | Required | Description        | Default | Valid Values |
 | ----------- | -------- | ------------------ | ------- | ------------ |
 | `--pool_id` | Yes      | ID of vesting pool |         |              |
+
+![Vesting pool delete](docs/vp-delete.png "Vesting pool delete")
 
 Sample command
 

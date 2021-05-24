@@ -1,0 +1,9 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet vp-list" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections sharders
+
+cli -> wallet: read wallet
+cli -> sharders: get vesting pools of wallet from vesting SC
+
+@enduml

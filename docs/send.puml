@@ -1,0 +1,12 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet send" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections miners
+collections sharders
+
+cli -> wallet: read wallet as token sender
+cli -> cli: create send txn
+cli -> miners: send txn
+cli -> sharders: poll for txn confirmation
+
+@enduml

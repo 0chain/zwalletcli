@@ -1,0 +1,7 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet verify" as cli
+collections sharders
+
+cli -> sharders: poll for txn using hash
+
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+participant "<size:20><&terminal></size> ./zwallet recoverwallet" as cli
+participant "<size:20><&file></size> \~/.zcn/wallet.json" as wallet
+collections miners
+collections sharders
+
+cli -> cli: create wallet from mnemonics
+cli -> wallet: create wallet file
+cli -> miners: register wallet
+cli -> cli: create "create pool" SC txn
+cli -> miners: send "create pool" SC txn
+cli -> sharders: poll for txn confirmation
+
+@enduml
