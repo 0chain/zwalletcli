@@ -76,31 +76,21 @@ The wallet information is stored on `/.zcn/wallet.json`. Initially, there is no 
 
 When you execute any `zwallet` command, it will automatically create a wallet file locally if none exist.
 
-Run the `ls-miners` command and see that it creates a wallet first before completing the command requested which is listing the miner nodes.
+Run the `register` command which register your wallet to the blockchain.
 
 ```sh
-./zwallet ls-miners
+./zwallet register
 ```
 
 Sample output
 
 ```
-No wallet in path  <home dir>/.zcn/wallet.json found. Creating wallet...
-ZCN wallet created!!
 Creating related read pool for storage smart-contract...
 Read pool created successfully
-- ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
-- Host:       one.devnet-0chain.net
-- Port:       31203
-- ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
-- Host:       one.devnet-0chain.net
-- Port:       31201
-- ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
-- Host:       one.devnet-0chain.net
-- Port:       31202
+Wallet registered
 ```
 
-2. Get some tokens
+2. Get some tokens from faucet
 
 Faucet smart contract is available and can be used to get tokens to your wallet.
 
@@ -130,7 +120,7 @@ Sample output
 Balance: 1 (1.76 USD)
 ```
 
-4. Lock tokens to get interest
+4. Lock some tokens to gain interest
 
 Tokens can be locked to gain interest.
 
@@ -153,6 +143,66 @@ Check balance right after and see that the locked tokens is deducted but has alr
 
 Balance: 0.5000004743 (0.8800008347680001 USD)
 ```
+
+> Note: Tokens are not released after lock duration. To get them back to wallet, need to run `./zwallet unlock`. More info about this [here](#unlocking-tokens---unlock).
+
+5. Stake some tokens on a node to earn tokens
+
+Beside gaining interest from your tokens, you can also stake some tokens on a blockchain node. 
+Any miner and sharder can be staked on provided the node can still support another stake.
+
+In order to stake on a node, it is required to get a node ID.
+Both `ls-miners` and `ls-sharders` will list the nodes.
+
+Run `ls-miners` to see all miners on the network.
+```
+./zwallet ls-miners
+```
+
+Sample output
+```
+- ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
+- Host:       one.devnet-0chain.net
+- Port:       31203
+- ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
+- Host:       one.devnet-0chain.net
+- Port:       31201
+- ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
+- Host:       one.devnet-0chain.net
+- Port:       31202
+```
+
+With the selected node, run the command `mn-lock` to stake tokens on it.
+
+```sh
+./zwallet mn-lock --id cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2 --tokens 0.2
+```
+
+The output would print the stake pool id.
+
+```sh
+locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+> Note: If a given node has reached maximum number of delegates (stakes), it can no longer accept a new one. To find out if a node can support more stake, run `./zwallet mn-info`. Follow details [here](#getting-a-miner-or-sharder-info-for-staking---mn-info).
+
+> Note: Stake will not immediately become active. It will be activated on the next View Change cycle of the network. To find out more about staking, go [here](#staking-on-miners-and-sharders)
+
+To check if the stake is active, you can run `mn-pool-info`. Ideally, it should be activated in 5 minutes.
+
+```sh
+./zwallet mn-pool-info --id cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2 --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+```json
+{"stats":{"delegate_id":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85","balance":2000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829"}}}
+```
+
+Once it is active, check your balance to see stakes earnings coming in.
+
+6. Vesting tokens to another wallet
+
+7. Dispensing tokens with a multisig wallet
 
 
 That's it! You are now ready to use `zwallet`.
@@ -306,9 +356,9 @@ The Multisig smart contract allows the registration of new multisig wallets, and
 
 - RegisterVote - votes for a proposal. This creates a proposal if does not exist and can be used by other signers to add vote. When the threshold number of votes are registered, transaction will be automatically processed. Any extra votes will be ignored.
 
-Note: Proposals have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
+> Note: Proposals have an expiry of 7 days from the time of creation. At this point, it cannot be changed. Any vote coming after the expiry may create a new proposal.
 
-Note: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated, not just registered. To activate, the wallets must have received tokens.
+> Note: Before a transaction or voting can happen, the group wallet and the signer wallets have to be activated, not just registered. To activate, the wallets must have received tokens.
 
 | Parameter      | Required | Description                                                  | Default | Valid Values |
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
@@ -556,7 +606,7 @@ Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b2873
 
 Wallet balances are retrieved from sharders.
 
-Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
+> Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
 
 ![Get wallet balance](docs/getbalance.png "Get wallet balance")
 
@@ -576,7 +626,7 @@ To check the balance of another wallet, use `--wallet` global parameter.
 ./zwallet getbalance --wallet another_wallet.json
 ```
 
-Note: When there is no token on the wallet yet, output will show `Get balance failed.`
+> Note: When there is no token on the wallet yet, output will show `Get balance failed.`
 
 #### Sending tokens to another wallet - `send`
 
@@ -603,7 +653,7 @@ Output
 Send tokens success
 ```
 
-Note: To use a different wallet as sender, use `--wallet` global parameter.
+To use a different wallet as sender, use `--wallet` global parameter.
 
 ```sh
 ./zwallet send --to_client_id e7ebb698213b6bda097c0a14ccbe574356e99e9b666e4baeae540da1d9b51e7e --tokens .2 --desc "gift" --wallet another_wallet.json
@@ -633,7 +683,7 @@ Output
 Transaction verification success
 ```
 
-Note: To see more details about the transaction on `verify`, use `--verbose` global parameter.
+To see more details about the transaction on `verify`, use `--verbose` global parameter.
 
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
@@ -744,7 +794,7 @@ Formatted output
 }
 ```
 
-Note: `pool_id` is required when unlocking the tokens.
+> Note: `pool_id` is required when unlocking the tokens.
 
 #### Unlocking tokens - `unlock`
 
@@ -776,7 +826,7 @@ Miner smart contract allows staking on the miner and sharder nodes.
 
 The maximum number of stake pools per node is limited to the number of delegates allowed.
 
-To find out the number of delegates and also what is the minimum and maximum tokens that can be staked, query the config.
+To find out the number of delegates and also what is the minimum and maximum tokens that can be staked, query the staking config.
 
 #### Getting the staking config - `mn-config`
 
@@ -913,7 +963,7 @@ The output would print the stake pool id.
 locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 ```
 
-Note: If the locking of stakes is failing, verify the following.
+If the locking of stakes is failing, verify the following.
 
 1. Wallet has enough tokens
 2. Node ID is valid
@@ -1108,7 +1158,7 @@ Sample output
 Vesting pool added successfully: 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
 ```
 
-Note: The destination wallets should be registered already on the blockchain.
+> Note: The destination wallets should be registered already on the blockchain.
 
 #### Checking vesting pool list - `vp-list`
 
