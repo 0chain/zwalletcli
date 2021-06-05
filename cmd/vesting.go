@@ -247,6 +247,8 @@ var vestingPoolAddCmd = &cobra.Command{
 				log.Fatalf("can't get 'lock' flag: %v", err)
 			}
 			lock = zcncore.ConvertToValue(lockf)
+		} else {
+			log.Fatal("missing required 'lock' flag")
 		}
 
 		var (
@@ -543,7 +545,7 @@ func init() {
 	addFlags.StringSlice("d", nil, `list of colon separated 'destination:amount' values,
 use -d flag many times to provide few destinations, for example 'dst:1.2'`)
 	addFlags.Float64("fee", 0.0, "transaction fee, optional")
-	addFlags.Float64("lock", 0.0, "lock tokens for the pool, optional")
+	addFlags.Float64("lock", 0.0, "lock tokens for the pool")
 
 	vestingPoolDeleteCmd.PersistentFlags().String("pool_id", "",
 		"pool identifier, required")
