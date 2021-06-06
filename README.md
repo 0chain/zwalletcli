@@ -119,8 +119,6 @@ Run the `register` command which register your wallet to the blockchain.
 ./zwallet register
 ```
 
-Sample output
-
 ```
 Creating related read pool for storage smart-contract...
 Read pool created successfully
@@ -137,8 +135,6 @@ Run the `faucet` command to receive 1 token.
 ./zwallet faucet --methodName pour --input "need token"
 ```
 
-Sample output
-
 ```
 Execute faucet smart contract success with txn :  915cfc6fa81eb3622c7082436a8ff752420e89dee16069a625d5206dc93ac3ca
 ```
@@ -153,21 +149,17 @@ Run the `getblance` command.
 ./zwallet getbalance
 ```
 
-Sample output
-
 ```
 Balance: 5 (5.00 USD)
 ```
 
-4. Lock some tokens to gain interest
+4. Lock tokens to gain interest
 
 Run the `lock` command to lock some of your tokens to earn interest.  The following command lock `0.5` token for 5 minutes. 
 
 ```sh
 ./zwallet lock --tokens 0.5 --durationMin 5 
 ```
-
-Sample output
 
 ```
 Tokens (0.500000) locked successfully
@@ -177,15 +169,17 @@ Check balance right after and see that the locked tokens is deducted but has alr
 
 ```sh
 ./zwallet getbalance
+```
 
+```
 Balance: 4.5000004743 (4.5000004743 USD)
 ```
 
 > Note: Tokens are not automatically released after lock duration. To get them back to wallet, need to run the `unlock` command. More info about this [here](#unlocking-tokens---unlock).
 
-5. Stake some tokens on a node to earn tokens
+5. Stake tokens on a node to earn tokens
 
-You can also stake some tokens on a blockchain node to earn more tokens. 
+You can stake tokens on a blockchain node to earn more tokens. 
 Any miner or sharder can be staked on provided the node is not yet full.
 
 In order to stake on a node, find out node's ID.
@@ -196,7 +190,6 @@ For example, run `ls-miners` command to see miners on the network.
 ./zwallet ls-miners
 ```
 
-Sample output
 ```
 - ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
 - Host:       one.devnet-0chain.net
@@ -239,15 +232,17 @@ Once it is active, check your balance to see earnings coming in.
 
 6. Vesting tokens to another wallet
 
-Vesting allows the transfer of tokens to one or more wallets. Tokens will be slowly moved to the wallet destinations until the duration set has elapsed.
+Vesting allows the transfer of tokens to one or more wallets. Tokens will be moved slowly to the wallet destinations until the time duration elapsed.
 
-First, create another wallet.
+A good use case for vesting is when paying tokens to employees.
+
+To vest tokens, first create another wallet which will be the token destinations.
 
 ```sh
 ./zwallet register --wallet vesting_wallet.json
 ```
 
-Then get the client ID of that wallet
+Then get the client ID of that wallet.
 ```sh
 cat ~/.zcn/vesting_wallet.json
 ```
@@ -258,19 +253,17 @@ Run the `vp-add` command to vest 2 tokens to that address in 5 minutes. Replace 
 ./zwallet vp-add --duration 5m --lock 2 --d 64f8afa591ecccaf271ece3973f8f749effb32f56e70e8f21422db26c37e0a67:2
 ```
 
-Sample output
-
 ```
 Vesting pool added successfully: 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:c40fbad99c1d5201394e001c0dbe1533957e593885ecfeb62735ca3d9b1e572c
 ```
 
-View the pool info and see tokens are now vested and can be unlocked by the destination.
+View the pool info and see that part of the tokens are now vested. 
+Those can be unlocked by the destination.
 
 ```
 ./zwallet vp-info --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:c40fbad99c1d5201394e001c0dbe1533957e593885ecfeb62735ca3d9b1e572c
 ```
 
-Sample output
 ```
 pool_id:      2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:c40fbad99c1d5201394e001c0dbe1533957e593885ecfeb62735ca3d9b1e572c
 balance:      2
@@ -292,29 +285,125 @@ destinations:
 client_id:    e51a5ee39a405c388a17232f3094c3773d8c97b3e49e701bdf04806494149ae2
 ```
 
-After 5 minutes, the token should now be unlockable by destination wallet.
+After 5 minutes, all tokens should now be unlockable by destination wallet. 
+Use `vp-unlock` on the destination wallet to move tokens into the wallet.
 
 ```
 ./zwallet vp-unlock --wallet vesting_wallet.json --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:c40fbad99c1d5201394e001c0dbe1533957e593885ecfeb62735ca3d9b1e572c
 ```
 
-Output
 ```
 Tokens unlocked successfully.
 ```
 
-Check balance of destination wallet.
+Confirm balance of destination wallet.
 
 ```
 ./zwallet getbalance --wallet vesting_wallet.json
 ```
 
-Output
 ```
 Balance: 2 (1.401328 USD)
 ```
 
-7. Dispensing tokens with a multisig wallet
+7. Dispensing tokens from a multisig wallet
+
+The CLI can be used to show that 0chain supports multisig wallet. 
+With multisig wallet, moving tokens need multiple approvals from its signatories.
+This is perfect for dispensing funds of organization.
+
+The `createmswallet` command creates a multisig wallet with the given number of signers and approval count threshold for transactions.
+Once the multisig wallet is created, the command will do a token transfer from the multisig wallet.
+Signers of the wallet will vote for the transaction.
+Once enough votes are received, the transaction will automatically be transfered.
+
+Sample command with 3 wallet signers and a threshold of 2 votes.
+
+```sh
+./zwallet createmswallet --numsigners 3 --threshold 2
+```
+
+First part of output shows 4 wallets are registered (3 signers + multisig wallet)
+
+```
+ registering 4 wallets 
+
+Successfully registered group wallet
+
+Successfully registered signer wallet number 1 
+
+
+Successfully registered signer wallet number 2 
+
+
+Successfully registered signer wallet number 3 
+```
+
+Next part of output shows multisig wallet is registered.
+
+```
+Multisig wallet SC registration requested. verifying status
+MultisigSC  wallet SC registration request success
+```
+
+Next part shows start of vote.
+Recipient wallet will be registered.
+Then all wallets will be activated by pouring tokens into them.
+
+```
+testing voteRecipient test wallet:
+{"client_id":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","client_key":"f1b19476ec60b413bca66341537873318548701d16a8c0f49b7f6a88c0bf6c1f3852ea8dee5fde0eddb1e9ceb8c21c171f86e1ee39fee5d8aa3b177b5e7f9c24","keys":[{"public_key":"f1b19476ec60b413bca66341537873318548701d16a8c0f49b7f6a88c0bf6c1f3852ea8dee5fde0eddb1e9ceb8c21c171f86e1ee39fee5d8aa3b177b5e7f9c24","private_key":"7c11b4e4b9c658ffa2d3a890a28dcf9b6fa12214366e3fe5655a161ec86b650c"}],"mnemonics":"bring prize miracle rib again safe viable inhale pen member novel zoo outside quit shrug room perfect crisp canoe alien abandon old exchange kiwi","version":"1.0","date_created":"2021-05-07 21:56:41.788221 +1000 AEST m=+9.371315501"}
+
+Activating group wallet by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 1 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 2 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+
+Activating signer wallet 3 by pouring test tokens
+submitted transaction
+Pour request success
+
+Balance: 1
+Checking balance on group wallet with clientID 558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e before the vote
+Balance: 1
+```
+
+Last part shows the votes from signers to transfer from multisig wallet, and finally balances are checked to confirm transfer occurred.
+```
+Created Vote#1 from signer #0:
+{"proposal_id":"testing MSVoting","transfer":{"from":"558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e","to":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","amount":1000000000},"signature":"6fdbda2a3a338183d9082dc786b83f8a9d146997bb8d4bb79d4a73c24b74e395"}
+
+Multisig Vote registration requested. verifying status
+Multisig Voting success
+
+Created Vote#2 from signer #1:
+{"proposal_id":"testing MSVoting","transfer":{"from":"558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e","to":"96b3dc0e88a552da07fdf75a653d4a2c7f629e001c904b3fb0492f2e69db0717","amount":1000000000},"signature":"1318d95df3b32f47f7adf38e6d3bd142f400e6fb5cdf7968e1ac2e02b967a208"}
+
+Multisig Vote registration requested. verifying status
+Multisig Voting success
+
+
+Checking balance on group wallet 558199083b7ea6f823dd7643b448751edec0b172336cc7081b426685f68fe58e after the vote
+Balance: 0.9
+
+Checking balance on recipient wallet after the vote
+Balance: 0.1
+
+Creating and testing a multisig wallet is successful!
+```
 
 That's it! You are now ready to use `zwallet`.
 
