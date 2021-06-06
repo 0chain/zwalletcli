@@ -988,13 +988,17 @@ Unlock tokens success
 
 Stake holders earn from interests, block rewards, and block fees.
 
+When staking on miners, holders earn the block rewards and fees when the node generate the blocks.
+When staking on sharders, holders earn when node is part of block.
+
 **Interests** 
+> Note: Interest frequency depends on `reward_round_frequency` config. Interest is given per round as a default.
 ```
 formula:
-  interest_rewards = stake_capacity * interest_rate
+  interest_rewards = stakeholder_stakes * interest_rate
 
 where :
-  stake_capcity         = ?
+  stakeholder_stakes    = total staked tokens by holder
   interest_rate         = interest_rate_config, if round = [1, epoch_config)
                         = (interest_rate_config - interest_decline_rate) ^ (round / epoch_config), if round > epoch_config
   interest_rate_config  = configured interest rate
@@ -1003,10 +1007,14 @@ where :
 ```
 
 **Block rewards**
+> Fees depends on node. Staking on miner receives tokens from generator fees while staking on sharder on sharder fees.
 ```
 formula:
-  generator_rewards = (block_reward * share_ratio) * service_charge
-  sharder_rewards   = (block_reward - (block_reward * share_ratio)) * service_charge
+  generator_rewards         = (block_reward * share_ratio) * (1 - service_charge)
+  miner_stakeholder_rewards = generator_rewards * (stakeholder_stakes / node_total_stakes)
+  
+  sharder_rewards             = (block_reward - (block_reward * share_ratio)) * (1 - service_charge)
+  sharder_stakeholder_rewards = (sharder_rewards / block_sharders) * (stakeholder_stakes / node_total_stakes)
 
 where: 
   block_reward        = block_reward_config * reward_rate 
@@ -1018,18 +1026,29 @@ where:
   reward_decline_rate = configured decline rate of rewards per epoch
   service_charge      = node config for service charge
   share_ratio         = configured share ratio between generator and sharders
+  stakeholder_stakes  = total staked tokens by holder
+  node_total_stakes   = total staked tokens in node
+  block_sharders      = total sharders in the block
 ```
 
 **Block fees**
+
+> Fees depends on node. Staking on miner receives tokens from generator rewards while staking on sharder on sharder rewards.  
 ```
 formula:
-  generator_fees = (block_fees * share_ratio) * service_charge
-  sharders_fees  = (block_fees - block_fees * share_ratio) * service_charge
+  generator_fees           = (block_fees * share_ratio) * (1 - service_charge)
+  miner_stakeholder_fees   = generator_fees * (stakeholder_stakes / node_total_stakes) 
 
+  sharders_fees            = (block_fees - block_fees * share_ratio) * (1 - service_charge)
+  sharder_stakeholder_fees = (sharders_fees / block_sharders) * (stakeholder_stakes / node_total_stakes)
+    
 where: 
-  block_fees     = ?
-  service_charge = node config for service charge
-  share_ratio    = configured share ratio between generator and sharders
+  block_fees         = sum of all transaction fees in the block
+  service_charge     = node config for service charge
+  share_ratio        = configured share ratio between generator and sharders
+  stakeholder_stakes = total staked tokens by holder
+  node_total_stakes  = total staked tokens in node
+  block_sharders     = total sharders in the block
 ```
 
 > Note: There is a `max_mint` config that when reached, no more mints given as block rewards and interests.
@@ -1145,9 +1164,12 @@ Reformatted output
 
 #### Locking a stake on a node - `mn-lock`
 
-Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime although have to wait for the next view change cycle.
+Staking tokens on a node earns additional tokens. 
+When tokens are locked in, the staking is not immediately becomes active.
+It waits for the next view change cycle to become active.
+But tokens locked for staking are unlockable anytime.
 
-Note however that if a node becomes offline, all stake pools are automatically unlocked and tokens are returned to wallets.
+> Note: If a node becomes offline, all stake pools are automatically unlocked and tokens are returned to wallets.
 
 | Parameter  | Required | Description                                                  | Default | Valid Values |
 | ---------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
@@ -1170,9 +1192,10 @@ locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 
 If the locking of stakes is failing, verify the following.
 
-1. Wallet has enough tokens
-2. Node ID is valid
-3. Node has available delegate
+1. Wallet has enough tokens (see `getbalance`)
+2. Node ID is valid (see `ls-miners` or `ls-sharders`)
+3. Node has available delegate for new stake holder (see `mn-info`)
+4. Maximum delegate of stake holders has not been reached (see `mn-config`)
 
 ### Getting the stake pools of a wallet - `mn-user-info`
 
