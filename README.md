@@ -986,11 +986,56 @@ Unlock tokens success
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
 
-The maximum number of stake pools per node is limited to the number of delegates allowed. To find out the number of delegates and the minimum and maximum tokens allowed, query the staking config.
+Stake holders earn from interests, block rewards, and block fees.
 
+**Interests** 
+```
+formula:
+  interest_rewards = stake_capacity * interest_rate
+
+where :
+  stake_capcity         = ?
+  interest_rate         = interest_rate_config, if round = [1, epoch_config)
+                        = (interest_rate_config - interest_decline_rate) ^ (round / epoch_config), if round > epoch_config
+  interest_rate_config  = configured interest rate
+  epoch_config          = configured epoch length in rounds
+  interest_decline_rate = configured decline rate of interest per epoch
+```
+
+**Block rewards**
+```
+formula:
+  generator_rewards = (block_reward * share_ratio) * service_charge
+  sharder_rewards   = (block_reward - (block_reward * share_ratio)) * service_charge
+
+where: 
+  block_reward        = block_reward_config * reward_rate 
+  reward_rate         = reward_rate_config, if round = [1, epoch_config)
+                      = (reward_rate_config - reward_decline_rate) ^ (round / epoch_config), if round > epoch_config
+  block_reward_config = configured block reward
+  reward_rate_config  = configured reward rate
+  epoch_config        = configured epoch length in rounds
+  reward_decline_rate = configured decline rate of rewards per epoch
+  service_charge      = node config for service charge
+  share_ratio         = configured share ratio between generator and sharders
+```
+
+**Block fees**
+```
+formula:
+  generator_fees = (block_fees * share_ratio) * service_charge
+  sharders_fees  = (block_fees - block_fees * share_ratio) * service_charge
+
+where: 
+  block_fees     = ?
+  service_charge = node config for service charge
+  share_ratio    = configured share ratio between generator and sharders
+```
+
+> Note: There is a `max_mint` config that when reached, no more mints given as block rewards and interests.
 #### Getting the staking config - `mn-config`
 
-`mn-config` display the global info of Miner SC for staking.
+The `mn-config` command displays the Miner SC staking config.
 
 ![Miner SC global info](docs/mn-config.png "Miner SC global info")
 
