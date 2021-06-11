@@ -15,4 +15,4 @@ require (
 go 1.13
 
 // temporary, for development
-replace github.com/0chain/gosdk => ../gosdk
+//replace github.com/0chain/gosdk => ../gosdk
