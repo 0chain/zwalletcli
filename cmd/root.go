@@ -19,7 +19,7 @@ var cfgFile string
 var networkFile string
 var walletFile string
 var cDir string
-var bVerbose bool
+var bSilent bool
 
 var clientConfig string
 var minSubmit int
@@ -41,7 +41,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&networkFile, "network", "", "network file to overwrite the network details (if required, default is network.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
-	rootCmd.PersistentFlags().BoolVar(&bVerbose, "verbose", false, "prints sdk log in stderr (default false)")
+	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
 }
 
 func Execute() {
@@ -109,7 +109,8 @@ func initConfig() {
 		walletFilePath = configDir + "/wallet.json"
 	}
 	//set the log file
-	zcncore.SetLogFile("cmdlog.log", bVerbose)
+	zcncore.SetLogFile("cmdlog.log", !bSilent)
+
 	err := zcncore.InitZCNSDK(blockWorker, signScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
