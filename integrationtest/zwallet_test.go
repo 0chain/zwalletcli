@@ -3,7 +3,9 @@ package integrationtest
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -17,7 +19,7 @@ const (
 	remotePath   = "/"
 	fileName     = "1.txt"
 	allocationID = "f212f81ec0208c3cbc21ca0524c13e27ff62f37763a10d7a6cc8c60eb1302f1b"
-	clientID     = "0ae17e887ea887f7293d59741db68dabcbef28996a0fd7c2c7d49f020a7ac4e0"
+	toClientID   = "0ae17e887ea887f7293d59741db68dabcbef28996a0fd7c2c7d49f020a7ac4e0"
 )
 
 var (
@@ -83,7 +85,7 @@ func Test_RecoverWallet(t *testing.T) {
 }
 
 func Test_SendToken(t *testing.T) {
-	cmd := exec.Command("./zwallet", "send", "--to_client_id", clientID, "--token", ".2", "--desc", "'gift'", "--fee", "0.1")
+	cmd := exec.Command("./zwallet", "send", "--to_client_id", toClientID, "--token", ".2", "--desc", "'gift'", "--fee", "0.1")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
 	fmt.Println("-------------------------")
@@ -162,7 +164,6 @@ func Test_UnlockingTokens(t *testing.T) {
 
 	var msg string
 	fmt.Sscanf(string(out), "\nLocked tokens:\n %s\n", &msg)
-	fmt.Println(msg)
 	m := Message{}
 	err = json.Unmarshal([]byte(msg), &m)
 	if err != nil {
@@ -185,23 +186,6 @@ func Test_GetBlobbers(t *testing.T) {
 	cmd := exec.Command("./zwallet", "getblobbers")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
-	fmt.Println("-------------------------")
-	fmt.Println(string(out))
-	fmt.Println("-------------------------")
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Printf("%s", out)
-	}
-}
-
-func Test_GetID(t *testing.T) {
-	cmd := exec.Command("./zwallet", "getid", "--url", "http://198.18.0.81:7171")
-	cmd.Dir = dirPath
-	out, err := cmd.Output()
-	fmt.Println("-------------------------")
-	fmt.Println(string(out))
-	fmt.Println("-------------------------")
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -213,9 +197,6 @@ func Test_ListSharders(t *testing.T) {
 	cmd := exec.Command("./zwallet", "ls-sharders")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
-	fmt.Println("-------------------------")
-	fmt.Println(string(out))
-	fmt.Println("-------------------------")
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -227,9 +208,6 @@ func Test_ListMiners(t *testing.T) {
 	cmd := exec.Command("./zwallet", "ls-miners")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
-	fmt.Println("-------------------------")
-	fmt.Println(string(out))
-	fmt.Println("-------------------------")
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -365,8 +343,38 @@ func Test_UpdateStakeConfig(t *testing.T) {
 	require.Contains(t, string(out), "settings updated")
 }
 
+func getClientID() string {
+	type Wallet struct {
+		ClientID  string `json:"client_id"`
+		ClientKey string `json:"client_key"`
+		Keys      []struct {
+			PublicKey  string `json:"public_key"`
+			PrivateKey string `json:"private_key"`
+		} `json:"keys"`
+		Mnemonics   string `json:"mnemonics"`
+		Version     string `json:"version"`
+		DateCreated string `json:"date_created"`
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	walletString, err := ioutil.ReadFile(homeDir + "/.zcn/wallet.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	wallet := Wallet{}
+	err = json.Unmarshal([]byte(walletString), &wallet)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return wallet.ClientID
+}
+
 func Test_AddVestingPool(t *testing.T) {
-	cmd := exec.Command("./zwallet", "vp-add", "--duration", "5m", "--lock", "5", "--d", "9842dc9200d738504c71bee02570d09233675b381d67df501cba29c1d97e221c:1")
+	clientID := getClientID()
+	cmd := exec.Command("./zwallet", "vp-add", "--duration", "5m", "--lock", "5", "--d", clientID+":1")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
 	if err != nil {
@@ -457,6 +465,7 @@ func Test_UnlockVestingPool(t *testing.T) {
 }
 
 func Test_StopVesting(t *testing.T) {
+	clientID := getClientID()
 	cmd := exec.Command("./zwallet", "vp-list")
 	cmd.Dir = dirPath
 	out, err := cmd.Output()
@@ -468,7 +477,7 @@ func Test_StopVesting(t *testing.T) {
 	s := strings.Split(string(out), "\n")
 	fmt.Sscanf(s[0], "- %s", &poolId)
 
-	cmd = exec.Command("./zwallet", "vp-stop", "--d", "9842dc9200d738504c71bee02570d09233675b381d67df501cba29c1d97e221c", "--pool_id", poolId)
+	cmd = exec.Command("./zwallet", "vp-stop", "--d", clientID, "--pool_id", poolId)
 	cmd.Dir = dirPath
 	out, err = cmd.Output()
 	if err != nil {
@@ -476,7 +485,7 @@ func Test_StopVesting(t *testing.T) {
 	} else {
 		fmt.Printf("%s", out)
 	}
-	require.Contains(t, string(out), "Stop vesting for 9842dc9200d738504c71bee02570d09233675b381d67df501cba29c1d97e221c")
+	require.Contains(t, string(out), "Stop vesting for "+clientID)
 }
 
 func Test_DeleteVestingPool(t *testing.T) {
