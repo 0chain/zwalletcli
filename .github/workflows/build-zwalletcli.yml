@@ -33,7 +33,7 @@ jobs:
 
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
     - name: Install
       run: make install
 
@@ -71,3 +71,4 @@ jobs:
         release_name: ${{ github.event.inputs.version_tag }}
         draft: false
         prerelease: false
+        
