@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -30,9 +33,6 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-
-    - name: Checkout code
-      uses: actions/checkout@v2
 
     - name: Install
       run: make install
