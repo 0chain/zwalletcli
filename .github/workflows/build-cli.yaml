@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - dev
+      - feat/build-cli
     tags:
       - 'v*.*.*'
 
