@@ -6,13 +6,15 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
+	"github.com/0chain/gosdk/core/conf"
+	"github.com/0chain/gosdk/core/transaction"
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -22,9 +24,6 @@ var cDir string
 var bSilent bool
 
 var clientConfig string
-var minSubmit int
-var minCfm int
-var CfmChainLength int
 
 var rootCmd = &cobra.Command{
 	Use:   "zwallet",
@@ -67,39 +66,27 @@ func getConfigDir() string {
 }
 
 func initConfig() {
-	nodeConfig := viper.New()
-	networkConfig := viper.New()
 	var configDir string
 	if cDir != "" {
 		configDir = cDir
 	} else {
 		configDir = getConfigDir()
 	}
-	nodeConfig.AddConfigPath(configDir)
-	if &cfgFile != nil && len(cfgFile) > 0 {
-		nodeConfig.SetConfigFile(configDir + "/" + cfgFile)
-	} else {
-		nodeConfig.SetConfigFile(configDir + "/" + "config.yaml")
-	}
 
-	networkConfig.AddConfigPath(configDir)
-	if &networkFile != nil && len(networkFile) > 0 {
-		networkConfig.SetConfigFile(configDir + "/" + networkFile)
-	} else {
-		networkConfig.SetConfigFile(configDir + "/" + "network.yaml")
+	if cfgFile == "" {
+		cfgFile = "config.yaml"
 	}
-
-	if err := nodeConfig.ReadInConfig(); err != nil {
+	cfg, err := conf.LoadConfigFile(filepath.Join(configDir, cfgFile))
+	if err != nil {
 		ExitWithError("Can't read config:", err)
 	}
 
-	blockWorker := nodeConfig.GetString("block_worker")
-	signScheme := nodeConfig.GetString("signature_scheme")
-	chainID := nodeConfig.GetString("chain_id")
-	minSubmit = nodeConfig.GetInt("min_submit")
-	minCfm = nodeConfig.GetInt("min_confirmation")
-	CfmChainLength = nodeConfig.GetInt("confirmation_chain_length")
-	//chainID := nodeConfig.GetString("chain_id")
+	transaction.SetConfig(&cfg)
+
+	if networkFile == "" {
+		networkFile = "network.yaml"
+	}
+	network, _ := conf.LoadNetworkFile(filepath.Join(configDir, networkFile))
 
 	//TODO: move the private key storage to the keychain or secure storage
 	var walletFilePath string
@@ -111,21 +98,17 @@ func initConfig() {
 	//set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
-	err := zcncore.InitZCNSDK(blockWorker, signScheme,
-		zcncore.WithChainID(chainID),
-		zcncore.WithMinSubmit(minSubmit),
-		zcncore.WithMinConfirmation(minCfm),
-		zcncore.WithConfirmationChainLength(CfmChainLength))
+	err = zcncore.InitZCNSDK(cfg.BlockWorker, cfg.SignatureScheme,
+		zcncore.WithChainID(cfg.ChainID),
+		zcncore.WithMinSubmit(cfg.MinSubmit),
+		zcncore.WithMinConfirmation(cfg.MinConfirmation),
+		zcncore.WithConfirmationChainLength(cfg.ConfirmationChainLength))
 	if err != nil {
 		ExitWithError(err.Error())
 	}
 
-	if err := networkConfig.ReadInConfig(); err == nil {
-		miners := networkConfig.GetStringSlice("miners")
-		sharders := networkConfig.GetStringSlice("sharders")
-		if len(miners) > 0 && len(sharders) > 0 {
-			zcncore.SetNetwork(miners, sharders)
-		}
+	if network.IsValid() {
+		zcncore.SetNetwork(network.Miners, network.Sharders)
 	}
 
 	// is freshly created wallet?
