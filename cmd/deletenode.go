@@ -9,7 +9,7 @@ import (
 )
 
 var minerscDeleteNode = &cobra.Command{
-	Use:   "minersc-delete-node",
+	Use:   "mn-delete-node",
 	Short: "Delete a miner or sharder node from Miner SC.",
 	Long:  "Delete a miner or sharder node from Miner SC.",
 	Args:  cobra.MinimumNArgs(0),
