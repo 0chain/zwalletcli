@@ -57,7 +57,7 @@ var minerscUpdateSettings = &cobra.Command{
 		}
 
 		// remove not settings fields
-		miner = &zcncore.MinerSCMinerInfo{SimpleMienrSCMinerInfo: &zcncore.SimpleMienrSCMinerInfo{
+		miner = &zcncore.MinerSCMinerInfo{SimpleMinerSCMinerInfo: &zcncore.SimpleMinerSCMinerInfo{
 			NumberOfDelegates: miner.NumberOfDelegates,
 			MinStake:          miner.MinStake,
 			MaxStake:          miner.MaxStake,
