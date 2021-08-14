@@ -42,8 +42,7 @@ var minerscDeleteNode = &cobra.Command{
 		// remove not settings fields
 		miner := &zcncore.MinerSCMinerInfo{SimpleMinerSCMinerInfo: &zcncore.SimpleMinerSCMinerInfo{
 			ID: id,
-		},
-		}
+		}}
 
 		txn, err := zcncore.NewTransaction(statusBar, 0)
 		if err != nil {
@@ -75,7 +74,12 @@ var minerscDeleteNode = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Println("settings updated")
+		if sharder {
+			fmt.Printf("sharder %s sussesfully removed from the network", id)
+		} else {
+			fmt.Printf("minner %s sussesfully removed from the network", id)
+		}
+
 	},
 }
 
