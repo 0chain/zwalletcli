@@ -57,7 +57,7 @@ var minerscUpdateSettings = &cobra.Command{
 		}
 
 		// remove not settings fields
-		miner = &zcncore.MinerSCMinerInfo{SimpleMienrSCMinerInfo: &zcncore.SimpleMienrSCMinerInfo{
+		miner = &zcncore.MinerSCMinerInfo{SimpleMinerSCMinerInfo: &zcncore.SimpleMinerSCMinerInfo{
 			NumberOfDelegates: miner.NumberOfDelegates,
 			MinStake:          miner.MinStake,
 			MaxStake:          miner.MaxStake,
@@ -93,7 +93,7 @@ var minerscUpdateSettings = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		if err = txn.MinerSCSettings(miner); err != nil {
+		if err = txn.MinerSCMinerSettings(miner); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
