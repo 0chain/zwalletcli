@@ -32,8 +32,8 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 			}
 
 		}
-		if flags.Changed("interest_rate") {
-			if conf.Fields["interest_rate"], err = flags.GetFloat64("interest_rate"); err != nil {
+		if flags.Changed("apr") {
+			if conf.Fields["apr"], err = flags.GetFloat64("apr"); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -45,8 +45,8 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 			}
 		}
 
-		if flags.Changed("min_duration") {
-			if conf.Fields["min_duration"], err = flags.GetDuration("min_duration"); err != nil {
+		if flags.Changed("min_lock_period") {
+			if conf.Fields["min_lock_period"], err = flags.GetDuration("min_lock_period"); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -76,14 +76,14 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Println("vesting smart contract settings updated")
+		fmt.Println("interest pool smart contract settings updated")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(updateInterestPoolConfigCmd)
-	updateInterestPoolConfigCmd.PersistentFlags().Int("min_lock", 0, "minimum tokens that can be locked")
-	updateInterestPoolConfigCmd.PersistentFlags().Int("interest_rate", 0, "apr, interest rate")
-	updateInterestPoolConfigCmd.PersistentFlags().Float64("min_lock_period", 0.0, "minimum lock period")
-	updateInterestPoolConfigCmd.PersistentFlags().Duration("max_mint", 0.0, "minimum tokes interest sc can mint")
+	updateInterestPoolConfigCmd.PersistentFlags().Float64("min_lock", 0, "minimum tokens that can be locked")
+	updateInterestPoolConfigCmd.PersistentFlags().Float64("apr", 0, "apr, apr")
+	updateInterestPoolConfigCmd.PersistentFlags().Duration("min_lock_period", 0.0, "minimum lock period")
+	updateInterestPoolConfigCmd.PersistentFlags().Float64("max_mint", 0.0, "minimum tokes interest sc can mint")
 }

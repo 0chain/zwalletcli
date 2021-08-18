@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-var getInterestPoolConfigCmd = &cobra.Command{
+var getFaucetConfigCmd = &cobra.Command{
 	Use:   "ip-config",
 	Short: "Show interest pool configurations.",
 	Long:  `Show interest pool configurations.`,
@@ -19,7 +19,7 @@ var getInterestPoolConfigCmd = &cobra.Command{
 			cb     = NewJSONInfoCB(fields)
 			err    error
 		)
-		if err = zcncore.GetInterestPoolSCConfig(cb); err != nil {
+		if err = zcncore.GetFaucetSCConfig(cb); err != nil {
 			log.Fatal(err)
 		}
 		if err = cb.Waiting(); err != nil {
@@ -33,5 +33,5 @@ var getInterestPoolConfigCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(getInterestPoolConfigCmd)
+	rootCmd.AddCommand(getFaucetConfigCmd)
 }
