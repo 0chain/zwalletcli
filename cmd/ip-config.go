@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"log"
@@ -26,9 +25,7 @@ var getInterestPoolConfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		for key, value := range fields.Fields {
-			fmt.Println(key, value)
-		}
+		printMap(fields.Fields)
 	},
 }
 

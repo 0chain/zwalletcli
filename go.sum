@@ -19,10 +19,12 @@ cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiy
 cloud.google.com/go/storage v1.5.0/go.mod h1:tpKbwo567HUNpVclU5sGELwQWBDZ8gh0ZeosJ0Rtdos=
 collectd.org v0.3.0/go.mod h1:A/8DzQBkF6abtvrT2j/AU/4tiBgJWYyh0y/oB/4MlWE=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
-github.com/0chain/gosdk v1.2.82-0.20210818100103-19c053f00d6e h1:Q/00cnWUcl9pHEw62Qst7kqAIaq3yM2vAS/fmoNtYvM=
-github.com/0chain/gosdk v1.2.82-0.20210818100103-19c053f00d6e/go.mod h1:Q+jKgS1tNJ9te1U2g91XB5sQ+sh/v2v8lRIzvgFXNUQ=
-github.com/0chain/gosdk v1.2.82-0.20210818152734-089fc5941a27 h1:RlbUUQor07oltI1Y6i5cKFGV6jT6j0KtSlK+P1mqMhk=
-github.com/0chain/gosdk v1.2.82-0.20210818152734-089fc5941a27/go.mod h1:Q+jKgS1tNJ9te1U2g91XB5sQ+sh/v2v8lRIzvgFXNUQ=
+github.com/0chain/gosdk v1.2.82-0.20210818170559-f329a1c0fbf8 h1:z3289clRLfQ9Ym/GRIFiY025mFItbqzrYDmWpQpfrWY=
+github.com/0chain/gosdk v1.2.82-0.20210818170559-f329a1c0fbf8/go.mod h1:Q+jKgS1tNJ9te1U2g91XB5sQ+sh/v2v8lRIzvgFXNUQ=
+github.com/0chain/gosdk v1.2.82-0.20210819095859-95ec34bb38a9 h1:JgpzjO+aPkI2Mv7my9YoiLAzmlb6EzYEErtWHQvIPKs=
+github.com/0chain/gosdk v1.2.82-0.20210819095859-95ec34bb38a9/go.mod h1:Q+jKgS1tNJ9te1U2g91XB5sQ+sh/v2v8lRIzvgFXNUQ=
+github.com/0chain/gosdk v1.2.82-0.20210819122036-6c47bc14e8f9 h1:ELiJybt3jx7avgNEogXAZ9a8kc2z/oW/SXhH56y4Itc=
+github.com/0chain/gosdk v1.2.82-0.20210819122036-6c47bc14e8f9/go.mod h1:Q+jKgS1tNJ9te1U2g91XB5sQ+sh/v2v8lRIzvgFXNUQ=
 github.com/Azure/azure-pipeline-go v0.2.1/go.mod h1:UGSo8XybXnIGZ3epmeBw7Jdz+HiUVpqIlpz/HKHylF4=
 github.com/Azure/azure-pipeline-go v0.2.2/go.mod h1:4rQ/NZncSvGqNkkOsNpOU1tgoNuIlp9AfUH5G1tvCHc=
 github.com/Azure/azure-storage-blob-go v0.7.0/go.mod h1:f9YQKtsG1nMisotuTPpO0tjNuEjKRYAcJU8/ydDI++4=

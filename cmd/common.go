@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"sort"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -122,4 +123,17 @@ func PrintError(v ...interface{}) {
 func ExitWithError(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
 	os.Exit(1)
+}
+
+func printMap(outMap map[string]interface{}) {
+	keys := make([]string, 0, len(outMap))
+	for k := range outMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Println(k, "\t", outMap[k])
+	}
+
 }

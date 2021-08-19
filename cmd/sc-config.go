@@ -6,19 +6,19 @@ import (
 	"log"
 )
 
-var getFaucetConfigCmd = &cobra.Command{
-	Use:   "fc-config",
-	Short: "Show facuet configurations.",
-	Long:  `Show facuet configurations.`,
+// scConfig shows SC configurations
+var scConfig = &cobra.Command{
+	Use:   "sc-config",
+	Short: "Show storage SC configuration.",
+	Long:  `Show storage SC configuration.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-
 		var (
 			fields = new(zcncore.InputMap)
 			cb     = NewJSONInfoCB(fields)
 			err    error
 		)
-		if err = zcncore.GetFaucetSCConfig(cb); err != nil {
+		if err = zcncore.GetStorageSCConfig(cb); err != nil {
 			log.Fatal(err)
 		}
 		if err = cb.Waiting(); err != nil {
@@ -30,5 +30,5 @@ var getFaucetConfigCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(getFaucetConfigCmd)
+	rootCmd.AddCommand(scConfig)
 }

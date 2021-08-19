@@ -22,7 +22,7 @@ var updateFaucetCmd = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-
+		conf.Fields = make(map[string]interface{})
 		if flags.Changed("pour_amount") {
 			var pourAmount float64
 			pourAmount, err = flags.GetFloat64("pour_amount")
