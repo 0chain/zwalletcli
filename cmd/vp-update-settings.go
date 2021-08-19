@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/core/common"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"sync"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var updateVestingPoolConfigCmd = &cobra.Command{
@@ -15,50 +15,23 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 	Long:  `Update the vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		var err error
 
-		var (
-			flags     = cmd.Flags()
-			err       error
-			conf      = new(zcncore.InputMap)
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		conf.Fields = make(map[string]interface{})
-		if flags.Changed("min_lock") {
-			var minLock float64
-			if minLock, err = flags.GetFloat64("min_lock"); err != nil {
-				log.Fatal(err)
-			}
-			conf.Fields["min_lock"] = common.Balance(zcncore.ConvertToValue(minLock))
-		}
-		if flags.Changed("max_destinations") {
-			if conf.Fields["max_destinations"], err = flags.GetInt("max_destinations"); err != nil {
-				log.Fatal(err)
-			}
-		}
-		if flags.Changed("max_description_length") {
-			if conf.Fields["max_description_length"], err = flags.GetInt("max_description_length"); err != nil {
-				log.Fatal(err)
-			}
+		input := new(zcncore.InputMap)
+		input.Fields, err = setupInputMap(cmd.Flags())
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		if flags.Changed("min_duration") {
-			if conf.Fields["min_duration"], err = flags.GetDuration("min_duration"); err != nil {
-				log.Fatal(err)
-			}
-		}
-		if flags.Changed("max_duration") {
-			if conf.Fields["max_duration"], err = flags.GetDuration("max_duration"); err != nil {
-				log.Fatal(err)
-			}
-		}
-
+		var wg sync.WaitGroup
+		statusBar := &ZCNStatus{wg: &wg}
 		txn, err := zcncore.NewTransaction(statusBar, 0)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
-		if err = txn.VestingUpdateConfig(conf); err != nil {
+		if err = txn.VestingUpdateConfig(input); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
@@ -78,7 +51,7 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Println("vesting smart contract settings updated")
+		fmt.Printf("vesting smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 	},
 }
 

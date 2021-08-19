@@ -2,12 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"sync"
+
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
 )
 
 var updateStoragScConfigCmd = &cobra.Command{
@@ -16,55 +15,21 @@ var updateStoragScConfigCmd = &cobra.Command{
 	Long:  `Update the Faucet smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			flags = cmd.Flags()
-			err   error
+		var err error
 
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-
-		var keys []string
-		if flags.Changed("keys") {
-			keys, err = flags.GetStringSlice("keys")
-			if err != nil {
-				log.Fatal(err)
-			}
+		input := new(zcncore.InputMap)
+		input.Fields, err = setupInputMap(cmd.Flags())
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		var values []string
-		if flags.Changed("values") {
-			values, err = flags.GetStringSlice("values")
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		var input = new(zcncore.InputMap)
-		input.Fields = make(map[string]interface{})
-		if len(keys) != len(values) {
-			log.Fatal("number keys must equal the number values")
-		}
-		for i := 0; i < len(keys); i++ {
-			v := strings.TrimSpace(values[i])
-			k := strings.TrimSpace(keys[i])
-			switch v {
-			case "true":
-				input.Fields[k], err = strconv.ParseBool(v)
-			case "false":
-				input.Fields[k], err = strconv.ParseBool(v)
-			default:
-				input.Fields[k], err = strconv.ParseFloat(v, 64)
-			}
-			if err != nil {
-				log.Fatal(values[i] + "cannot be converted to boolean or numeric value")
-			}
-		}
-
+		var wg sync.WaitGroup
+		statusBar := &ZCNStatus{wg: &wg}
 		txn, err := zcncore.NewTransaction(statusBar, 0)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		if err = txn.StorageScUpdateConfig(input); err != nil {
 			log.Fatal(err)

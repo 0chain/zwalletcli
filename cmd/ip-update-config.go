@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/core/common"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"sync"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var updateInterestPoolConfigCmd = &cobra.Command{
@@ -15,48 +15,23 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 	Long:  `Update the interest pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		var err error
 
-		var (
-			flags     = cmd.Flags()
-			err       error
-			conf      = new(zcncore.InputMap)
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		conf.Fields = make(map[string]interface{})
-		if flags.Changed("min_lock") {
-			if minLock, err := flags.GetFloat64("min_lock"); err != nil {
-				log.Fatal(err)
-			} else {
-				conf.Fields["min_lock"] = common.Balance(zcncore.ConvertToValue(minLock))
-			}
-
-		}
-		if flags.Changed("apr") {
-			if conf.Fields["apr"], err = flags.GetFloat64("apr"); err != nil {
-				log.Fatal(err)
-			}
-		}
-		if flags.Changed("max_mint") {
-			if maxMint, err := flags.GetFloat64("max_mint"); err != nil {
-				log.Fatal(err)
-			} else {
-				conf.Fields["max_mint"] = common.Balance(zcncore.ConvertToValue(maxMint))
-			}
+		input := new(zcncore.InputMap)
+		input.Fields, err = setupInputMap(cmd.Flags())
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		if flags.Changed("min_lock_period") {
-			if conf.Fields["min_lock_period"], err = flags.GetDuration("min_lock_period"); err != nil {
-				log.Fatal(err)
-			}
-		}
-
+		var wg sync.WaitGroup
+		statusBar := &ZCNStatus{wg: &wg}
 		txn, err := zcncore.NewTransaction(statusBar, 0)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
-		if err = txn.InterestPoolUpdateConfig(conf); err != nil {
+		if err = txn.InterestPoolUpdateConfig(input); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
@@ -76,7 +51,7 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Println("interest pool smart contract settings updated")
+		fmt.Printf("interest pool smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 	},
 }
 
