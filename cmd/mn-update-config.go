@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var updateInterestPoolConfigCmd = &cobra.Command{
-	Use:   "ip-update-config",
-	Short: "Update the interest pool configurations.",
-	Long:  `Update the interest pool configurations.`,
+var updateMinerScConfigCmd = &cobra.Command{
+	Use:   "sc-update-config",
+	Short: "Update the miner smart contract",
+	Long:  `Update the miner smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
@@ -31,7 +31,7 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 		}
 
 		wg.Add(1)
-		if err = txn.InterestPoolUpdateConfig(input); err != nil {
+		if err = txn.MinerScUpdateConfig(input); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
@@ -51,12 +51,12 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Printf("interest pool smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
+		fmt.Printf("storagesc smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(updateInterestPoolConfigCmd)
-	updateInterestPoolConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateInterestPoolConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	rootCmd.AddCommand(updateMinerScConfigCmd)
+	updateMinerScConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
+	updateMinerScConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
 }

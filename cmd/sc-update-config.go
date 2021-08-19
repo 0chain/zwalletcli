@@ -11,8 +11,8 @@ import (
 
 var updateStoragScConfigCmd = &cobra.Command{
 	Use:   "sc-update-config",
-	Short: "Update the Faucet smart contract",
-	Long:  `Update the Faucet smart contract.`,
+	Short: "Update the storage smart contract",
+	Long:  `Update the storage smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
