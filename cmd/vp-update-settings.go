@@ -18,7 +18,7 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 		var err error
 
 		input := new(zcncore.InputMap)
-		input.Fields, err = setupInputMap(cmd.Flags())
+		input.Fields = setupInputMap(cmd.Flags())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,9 +57,6 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateVestingPoolConfigCmd)
-	updateVestingPoolConfigCmd.PersistentFlags().Int("max_description_length", 0, "max length for descriptions")
-	updateVestingPoolConfigCmd.PersistentFlags().Int("max_destinations", 0, "max destinations allowed")
-	updateVestingPoolConfigCmd.PersistentFlags().Float64("min_lock", 0.0, "minimum lock for vesting")
-	updateVestingPoolConfigCmd.PersistentFlags().Duration("min_duration", 0.0, "minimum duration for vesting")
-	updateVestingPoolConfigCmd.PersistentFlags().Duration("max_duration", 0.0, "max duration for vesting")
+	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
+	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
 }

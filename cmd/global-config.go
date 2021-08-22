@@ -7,10 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var mnConfigCmd = &cobra.Command{
-	Use:   "mn-config",
-	Short: "Show miner SC configuration.",
-	Long:  `Show miner SC configuration.`,
+var mnGlobalsCmd = &cobra.Command{
+	Use:   "global-config",
+	Short: "Show global configurations.",
+	Long:  `Show global configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -18,7 +18,7 @@ var mnConfigCmd = &cobra.Command{
 			cb     = NewJSONInfoCB(fields)
 			err    error
 		)
-		if err = zcncore.GetMinerSCConfig(cb); err != nil {
+		if err = zcncore.GetMinerSCGlobals(cb); err != nil {
 			log.Fatal(err)
 		}
 		if err = cb.Waiting(); err != nil {
@@ -30,5 +30,5 @@ var mnConfigCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(mnConfigCmd)
+	rootCmd.AddCommand(mnGlobalsCmd)
 }

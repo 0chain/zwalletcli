@@ -521,50 +521,6 @@ var minerscUnlock = &cobra.Command{
 	},
 }
 
-var minerConfig = &cobra.Command{
-	Use:   "mn-config",
-	Short: "Get miner SC global info.",
-	Long:  "Get miner SC global info.",
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		var (
-			conf = new(zcncore.MinerSCConfig)
-			cb   = NewJSONInfoCB(conf)
-			err  error
-		)
-
-		if err = zcncore.GetMinerSCConfig(cb); err != nil {
-			log.Fatal(err)
-		}
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println("view_change:          ", conf.ViewChange)
-		fmt.Println("max_n:                ", conf.MaxN)
-		fmt.Println("min_n:                ", conf.MinN)
-		fmt.Println("max_s:                ", conf.MaxS)
-		fmt.Println("min_s:                ", conf.MinS)
-		fmt.Println("t_percent:            ", conf.TPercent)
-		fmt.Println("k_percent:            ", conf.KPercent)
-		fmt.Println("last_round:           ", conf.LastRound)
-		fmt.Println("max_stake:            ", conf.MaxStake)
-		fmt.Println("min_stake:            ", conf.MinStake)
-		fmt.Println("interest_rate:        ", conf.InterestRate)
-		fmt.Println("reward_rate:          ", conf.RewardRate)
-		fmt.Println("share_ratio:          ", conf.ShareRatio)
-		fmt.Println("block_reward:         ", conf.BlockReward)
-		fmt.Println("max_charge:           ", conf.MaxCharge)
-		fmt.Println("epoch:                ", conf.Epoch)
-		fmt.Println("reward_decline_rate:  ", conf.RewardDeclineRate)
-		fmt.Println("interest_decline_rate:", conf.InterestDeclineRate)
-		fmt.Println("max_mint:             ", conf.MaxMint)
-		fmt.Println("minted:               ", conf.Minted)
-		fmt.Println("max_delegates:        ", conf.MaxDelegates)
-	},
-}
-
 func init() {
 	rootCmd.AddCommand(minerscUpdateSettings)
 	rootCmd.AddCommand(minerscInfo)
@@ -572,7 +528,6 @@ func init() {
 	rootCmd.AddCommand(minerscPoolInfo)
 	rootCmd.AddCommand(minerscLock)
 	rootCmd.AddCommand(minerscUnlock)
-	rootCmd.AddCommand(minerConfig)
 	rootCmd.AddCommand(minerscMiners)
 	rootCmd.AddCommand(minerscSharders)
 

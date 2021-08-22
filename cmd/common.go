@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -130,7 +129,7 @@ func ExitWithError(v ...interface{}) {
 	os.Exit(1)
 }
 
-func setupInputMap(flags *pflag.FlagSet) (map[string]interface{}, error) {
+func setupInputMap(flags *pflag.FlagSet) map[string]string {
 	var err error
 	var keys []string
 	if flags.Changed("keys") {
@@ -148,29 +147,19 @@ func setupInputMap(flags *pflag.FlagSet) (map[string]interface{}, error) {
 		}
 	}
 
-	input := make(map[string]interface{})
+	input := make(map[string]string)
 	if len(keys) != len(values) {
 		log.Fatal("number keys must equal the number values")
 	}
 	for i := 0; i < len(keys); i++ {
 		v := strings.TrimSpace(values[i])
 		k := strings.TrimSpace(keys[i])
-		switch v {
-		case "true":
-			input[k], err = strconv.ParseBool(v)
-		case "false":
-			input[k], err = strconv.ParseBool(v)
-		default:
-			input[k], err = strconv.ParseFloat(v, 64)
-		}
-		if err != nil {
-			log.Fatal(values[i] + "cannot be converted to boolean or numeric value")
-		}
+		input[k] = v
 	}
-	return input, nil
+	return input
 }
 
-func printMap(outMap map[string]interface{}) {
+func printMap(outMap map[string]string) {
 	keys := make([]string, 0, len(outMap))
 	for k := range outMap {
 		keys = append(keys, k)
@@ -180,5 +169,4 @@ func printMap(outMap map[string]interface{}) {
 	for _, k := range keys {
 		fmt.Println(k, "\t", outMap[k])
 	}
-
 }

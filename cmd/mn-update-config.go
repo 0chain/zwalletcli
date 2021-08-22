@@ -10,7 +10,7 @@ import (
 )
 
 var updateMinerScConfigCmd = &cobra.Command{
-	Use:   "sc-update-config",
+	Use:   "mn-update-config",
 	Short: "Update the miner smart contract",
 	Long:  `Update the miner smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
@@ -18,7 +18,7 @@ var updateMinerScConfigCmd = &cobra.Command{
 		var err error
 
 		input := new(zcncore.InputMap)
-		input.Fields, err = setupInputMap(cmd.Flags())
+		input.Fields = setupInputMap(cmd.Flags())
 		if err != nil {
 			log.Fatal(err)
 		}

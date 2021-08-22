@@ -18,7 +18,7 @@ var updateStoragScConfigCmd = &cobra.Command{
 		var err error
 
 		input := new(zcncore.InputMap)
-		input.Fields, err = setupInputMap(cmd.Flags())
+		input.Fields = setupInputMap(cmd.Flags())
 		if err != nil {
 			log.Fatal(err)
 		}
