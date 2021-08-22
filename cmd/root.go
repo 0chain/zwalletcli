@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/core/conf"
-	"github.com/0chain/gosdk/core/transaction"
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/mitchellh/go-homedir"
@@ -81,7 +80,7 @@ func initConfig() {
 		ExitWithError("Can't read config:", err)
 	}
 
-	transaction.SetConfig(&cfg)
+	conf.InitClientConfig(&cfg)
 
 	if networkFile == "" {
 		networkFile = "network.yaml"
@@ -98,6 +97,11 @@ func initConfig() {
 	//set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
+	if network.IsValid() {
+		zcncore.SetNetwork(network.Miners, network.Sharders)
+		conf.InitChainNetwork(&network)
+	}
+
 	err = zcncore.InitZCNSDK(cfg.BlockWorker, cfg.SignatureScheme,
 		zcncore.WithChainID(cfg.ChainID),
 		zcncore.WithMinSubmit(cfg.MinSubmit),
@@ -105,10 +109,6 @@ func initConfig() {
 		zcncore.WithConfirmationChainLength(cfg.ConfirmationChainLength))
 	if err != nil {
 		ExitWithError(err.Error())
-	}
-
-	if network.IsValid() {
-		zcncore.SetNetwork(network.Miners, network.Sharders)
 	}
 
 	// is freshly created wallet?
