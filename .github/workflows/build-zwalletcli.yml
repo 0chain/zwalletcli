@@ -65,7 +65,4 @@ jobs:
         release_name: ${{ github.event.inputs.version_tag }}
         draft: false
         prerelease: false
-<<<<<<< HEAD
         
-=======
->>>>>>> c8699966040b14bcc8e8191914d2ef5ba7d520b0
