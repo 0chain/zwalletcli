@@ -1,9 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.2.82
-	github.com/lithammer/shortuuid v3.0.0+incompatible // indirect
-	github.com/mattn/go-colorable v0.1.4 // indirect
+	github.com/0chain/gosdk v1.2.82-0.20210830152420-b909cca1a30d
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.1.1
