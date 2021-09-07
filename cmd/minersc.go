@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -12,6 +13,109 @@ import (
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
+
+var minerscUpdateSettings = &cobra.Command{
+	Use:   "mn-update-settings",
+	Short: "Change miner/sharder settings in Miner SC.",
+	Long:  "Change miner/sharder settings in Miner SC by delegate wallet.",
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags = cmd.Flags()
+			id    string
+			err   error
+		)
+
+		if !flags.Changed("id") {
+			log.Fatal("missing id flag")
+		}
+
+		if id, err = flags.GetString("id"); err != nil {
+			log.Fatal(err)
+		}
+
+		var (
+			miner     *zcncore.MinerSCMinerInfo
+			wg        sync.WaitGroup
+			statusBar = &ZCNStatus{wg: &wg}
+		)
+		wg.Add(1)
+		if err = zcncore.GetMinerSCNodeInfo(id, statusBar); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+
+		if !statusBar.success {
+			log.Fatal("fatal:", statusBar.errMsg)
+		}
+
+		miner = new(zcncore.MinerSCMinerInfo)
+		err = json.Unmarshal([]byte(statusBar.errMsg), miner)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// remove not settings fields
+		miner = &zcncore.MinerSCMinerInfo{SimpleMinerSCMinerInfo: &zcncore.SimpleMinerSCMinerInfo{
+			NumberOfDelegates: miner.NumberOfDelegates,
+			MinStake:          miner.MinStake,
+			MaxStake:          miner.MaxStake,
+			ID:                id,
+		},
+		}
+
+		if flags.Changed("num_delegates") {
+			miner.NumberOfDelegates, err = flags.GetInt("num_delegates")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("min_stake") {
+			var min float64
+			if min, err = flags.GetFloat64("min_stake"); err != nil {
+				log.Fatal(err)
+			}
+			miner.MinStake = common.Balance(zcncore.ConvertToValue(min))
+		}
+
+		if flags.Changed("max_stake") {
+			var max float64
+			if max, err = flags.GetFloat64("max_stake"); err != nil {
+				log.Fatal(err)
+			}
+			miner.MaxStake = common.Balance(zcncore.ConvertToValue(max))
+		}
+
+		txn, err := zcncore.NewTransaction(statusBar, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
+		wg.Add(1)
+		if err = txn.MinerSCMinerSettings(miner); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+
+		if !statusBar.success {
+			log.Fatal("fatal:", statusBar.errMsg)
+		}
+
+		statusBar.success = false
+		wg.Add(1)
+		if err = txn.Verify(); err != nil {
+			log.Fatal(err)
+		}
+		wg.Wait()
+
+		if !statusBar.success {
+			log.Fatal("fatal:", statusBar.errMsg)
+		}
+
+		fmt.Println("settings updated")
+	},
+}
 
 var minerscInfo = &cobra.Command{
 	Use:   "mn-info",
@@ -417,63 +521,25 @@ var minerscUnlock = &cobra.Command{
 	},
 }
 
-var minerConfig = &cobra.Command{
-	Use:   "mn-config",
-	Short: "Get miner SC global info.",
-	Long:  "Get miner SC global info.",
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		var (
-			conf = new(zcncore.MinerSCConfig)
-			cb   = NewJSONInfoCB(conf)
-			err  error
-		)
-
-		if err = zcncore.GetMinerSCConfig(cb); err != nil {
-			log.Fatal(err)
-		}
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println("view_change:          ", conf.ViewChange)
-		fmt.Println("max_n:                ", conf.MaxN)
-		fmt.Println("min_n:                ", conf.MinN)
-		fmt.Println("max_s:                ", conf.MaxS)
-		fmt.Println("min_s:                ", conf.MinS)
-		fmt.Println("t_percent:            ", conf.TPercent)
-		fmt.Println("k_percent:            ", conf.KPercent)
-		fmt.Println("last_round:           ", conf.LastRound)
-		fmt.Println("max_stake:            ", conf.MaxStake)
-		fmt.Println("min_stake:            ", conf.MinStake)
-		fmt.Println("interest_rate:        ", conf.InterestRate)
-		fmt.Println("reward_rate:          ", conf.RewardRate)
-		fmt.Println("share_ratio:          ", conf.ShareRatio)
-		fmt.Println("block_reward:         ", conf.BlockReward)
-		fmt.Println("max_charge:           ", conf.MaxCharge)
-		fmt.Println("epoch:                ", conf.Epoch)
-		fmt.Println("reward_decline_rate:  ", conf.RewardDeclineRate)
-		fmt.Println("interest_decline_rate:", conf.InterestDeclineRate)
-		fmt.Println("max_mint:             ", conf.MaxMint)
-		fmt.Println("minted:               ", conf.Minted)
-		fmt.Println("max_delegates:        ", conf.MaxDelegates)
-	},
-}
-
 func init() {
+	rootCmd.AddCommand(minerscUpdateSettings)
 	rootCmd.AddCommand(minerscInfo)
 	rootCmd.AddCommand(minerscUserInfo)
 	rootCmd.AddCommand(minerscPoolInfo)
 	rootCmd.AddCommand(minerscLock)
 	rootCmd.AddCommand(minerscUnlock)
-	rootCmd.AddCommand(minerConfig)
 	rootCmd.AddCommand(minerscMiners)
 	rootCmd.AddCommand(minerscSharders)
 
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
+
+	minerscUpdateSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
+	minerscUpdateSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
+	minerscUpdateSettings.PersistentFlags().Float64("min_stake", 0.0, "min stake allowed")
+	minerscUpdateSettings.PersistentFlags().Float64("max_stake", 0.0, "max stake allowed")
+	minerscUpdateSettings.MarkFlagRequired("id")
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")
