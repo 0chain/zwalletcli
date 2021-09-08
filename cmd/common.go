@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"gopkg.in/cheggaaa/pb.v1"
 )
@@ -19,7 +20,7 @@ type ZCNStatus struct {
 	wg           *sync.WaitGroup
 	success      bool
 	errMsg       string
-	balance      int64
+	balance      common.Balance
 	wallets      []string
 	clientID     string
 }
@@ -38,7 +39,7 @@ func (zcn *ZCNStatus) OnBalanceAvailable(status int, value int64, info string) {
 	} else {
 		zcn.success = false
 	}
-	zcn.balance = value
+	zcn.balance = common.Balance(value)
 }
 
 func (zcn *ZCNStatus) OnTransactionComplete(t *zcncore.Transaction, status int) {
