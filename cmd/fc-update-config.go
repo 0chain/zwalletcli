@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var updateVestingPoolConfigCmd = &cobra.Command{
-	Use:   "vp-update-config",
-	Short: "Update the vesting pool configurations.",
-	Long:  `Update the vesting pool configurations.`,
+var updateFaucetCmd = &cobra.Command{
+	Use:   "fc-update-config",
+	Short: "Update the Faucet smart contract",
+	Long:  `Update the Faucet smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
@@ -31,7 +31,7 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 		}
 
 		wg.Add(1)
-		if err = txn.VestingUpdateConfig(input); err != nil {
+		if err = txn.FaucetUpdateConfig(input); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
@@ -51,12 +51,12 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Printf("vesting smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
+		fmt.Printf("faucet smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(updateVestingPoolConfigCmd)
-	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	rootCmd.AddCommand(updateFaucetCmd)
+	updateFaucetCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
+	updateFaucetCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
 }

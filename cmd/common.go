@@ -2,10 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"sort"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/common"
+	"github.com/spf13/pflag"
+
 	"github.com/0chain/gosdk/zcncore"
 	"gopkg.in/cheggaaa/pb.v1"
 )
@@ -123,4 +128,46 @@ func PrintError(v ...interface{}) {
 func ExitWithError(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
 	os.Exit(1)
+}
+
+func setupInputMap(flags *pflag.FlagSet) map[string]string {
+	var err error
+	var keys []string
+	if flags.Changed("keys") {
+		keys, err = flags.GetStringSlice("keys")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	var values []string
+	if flags.Changed("values") {
+		values, err = flags.GetStringSlice("values")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	input := make(map[string]string)
+	if len(keys) != len(values) {
+		log.Fatal("number keys must equal the number values")
+	}
+	for i := 0; i < len(keys); i++ {
+		v := strings.TrimSpace(values[i])
+		k := strings.TrimSpace(keys[i])
+		input[k] = v
+	}
+	return input
+}
+
+func printMap(outMap map[string]string) {
+	keys := make([]string, 0, len(outMap))
+	for k := range outMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Println(k, "\t", outMap[k])
+	}
 }
