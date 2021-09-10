@@ -12,6 +12,7 @@ on:
     branches:
       - master
       - production
+      - staging
 jobs:
   build-linux:
     name: Build-linux
