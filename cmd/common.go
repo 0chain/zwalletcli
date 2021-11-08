@@ -130,19 +130,19 @@ func ExitWithError(v ...interface{}) {
 	os.Exit(1)
 }
 
-func setupInputMap(flags *pflag.FlagSet) map[string]string {
+func setupInputMap(flags *pflag.FlagSet, sKeys, sValues string) map[string]string {
 	var err error
 	var keys []string
-	if flags.Changed("keys") {
-		keys, err = flags.GetStringSlice("keys")
+	if flags.Changed(sKeys) {
+		keys, err = flags.GetStringSlice(sKeys)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	var values []string
-	if flags.Changed("values") {
-		values, err = flags.GetStringSlice("values")
+	if flags.Changed(sValues) {
+		values, err = flags.GetStringSlice(sValues)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -150,7 +150,7 @@ func setupInputMap(flags *pflag.FlagSet) map[string]string {
 
 	input := make(map[string]string)
 	if len(keys) != len(values) {
-		log.Fatal("number keys must equal the number values")
+		log.Fatal("number " + sKeys + " must equal the number " + sValues)
 	}
 	for i := 0; i < len(keys); i++ {
 		v := strings.TrimSpace(values[i])
