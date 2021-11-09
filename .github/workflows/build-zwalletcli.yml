@@ -29,6 +29,12 @@ jobs:
       with:
         go-version: ^1.14
 
+<<<<<<< HEAD
+=======
+    - name: Install
+      run: make install
+      
+>>>>>>> 3552c8b24297971131b546812214b6c34a5bff81
     - name: Get Branch
       id: get_version
       run: |
@@ -36,9 +42,13 @@ jobs:
         echo ::set-output name=TAG::${VERSION}
 
     - name: Zip release
+<<<<<<< HEAD
       run: |
         mkdir zwallet
         tar -czvf zwallet-linux.tar.gz ./zwallet
+=======
+      run: tar -czvf zwallet-linux.tar.gz ./zwallet
+>>>>>>> 3552c8b24297971131b546812214b6c34a5bff81
 
 ############################### v1.1.1 #############################
 
@@ -82,7 +92,10 @@ jobs:
 
     - name: Create Release for Next Version
       id: create_release_next_version
+<<<<<<< HEAD
       if: github.event.inputs.fixed_tag == 'no'
+=======
+>>>>>>> 3552c8b24297971131b546812214b6c34a5bff81
       uses: zendesk/action-create-release@v1 
       with:
         draft: false
@@ -107,12 +120,15 @@ jobs:
    
     - name: Install
       run: make install
+<<<<<<< HEAD
 
     - name: Get Branch
       id: get_version
       run: |
         VERSION=$(echo ${GITHUB_REF#refs/heads/}) 
         echo ::set-output name=TAG::${VERSION}
+=======
+>>>>>>> 3552c8b24297971131b546812214b6c34a5bff81
         
     - name: Zip release
       run: |
@@ -145,9 +161,13 @@ jobs:
         echo ::set-output name=TAG::${VERSION}
         
     - name: Zip release
+<<<<<<< HEAD
       run: |
         mkdir zwallet
         tar -czf zwallet-macos.tar.gz ./zwallet
+=======
+      run: tar -czvf zwallet-macos.tar.gz ./zwallet
+>>>>>>> 3552c8b24297971131b546812214b6c34a5bff81
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
