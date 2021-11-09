@@ -36,7 +36,9 @@ jobs:
         echo ::set-output name=TAG::${VERSION}
 
     - name: Zip release
-      run: tar -czf zwallet-linux.tar.gz ./zwallet
+      run: |
+        mkdir zwallet
+        tar -czvf zwallet-linux.tar.gz ./zwallet
 
 ############################### v1.1.1 #############################
 
@@ -143,7 +145,9 @@ jobs:
         echo ::set-output name=TAG::${VERSION}
         
     - name: Zip release
-      run: tar -czf zwallet-macos.tar.gz ./zwallet
+      run: |
+        mkdir zwallet
+        tar -czf zwallet-macos.tar.gz ./zwallet
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
