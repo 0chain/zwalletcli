@@ -83,7 +83,6 @@ jobs:
 
     - name: Create Release for Next Version
       id: create_release_next_version
-      if: github.event.inputs.fixed_tag == 'no'
       uses: zendesk/action-create-release@v1 
       with:
         draft: false
