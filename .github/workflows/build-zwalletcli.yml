@@ -53,13 +53,12 @@ jobs:
 
     - name: Create Release for Fixed v1.1.1
       if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'staging'
-      uses: svenstaro/upload-release-action@v2
+      uses: zendesk/action-create-release@v1
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-linux.tar.gz
-        tag: v1.1.1
-        overwrite: true
-        file_glob: true
+        tag_name: v1.1.1
+        release_name: v1.1.1
+        draft: false
+        prerelease: false
 
 ############################### v0.0.0 #############################
 
@@ -73,26 +72,24 @@ jobs:
         
     - name: Create Release for Fixed v0.0.0
       if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'master'
-      uses: svenstaro/upload-release-action@v2
+      uses: zendesk/action-create-release@v1
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-linux.tar.gz
-        tag: v0.0.0
-        overwrite: true
-        file_glob: true
+        tag_name: v0.0.0
+        release_name: v0.0.0
+        draft: false
+        prerelease: false
         
 ############################### v*.*.* #############################
 
     - name: Create Release for Next Version
       id: create_release_next_version
       if: github.event.inputs.fixed_tag == 'no'
-      uses: anothrNick/github-tag-action@1.34.0 
-      env:
-        WITH_V: true
-        DEFAULT_BUMP: ${{ github.event.inputs.version_tag }}
-        RELEASE_BRANCHES: master,staging,gitactionsfix
-        TAG_CONTEXT: repo
-        VERBOSE: true
+      uses: zendesk/action-create-release@v1 
+      with:
+        draft: false
+        prerelease: false
+        auto_increment_type: ${{ github.event.inputs.version_tag }}
+        tag_schema: semantic
         
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
@@ -100,7 +97,6 @@ jobs:
         name: zwallet-linux
         path: zwallet
         retention-days: 5
-        
         
   build-windows:
     name: Build-Windows
@@ -123,32 +119,6 @@ jobs:
       run: |
         copy zwallet zwallet.exe
         7z a zwallet-windows.zip zwallet.exe
-        
-############################### v1.1.1 #############################
-
-    - name: Create Release for Fixed v1.1.1
-      if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'staging'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-windows.zip
-        tag: v1.1.1
-        overwrite: true
-        file_glob: true
-
-############################### v0.0.0 #############################
-        
-    - name: Create Release for Fixed v0.0.0
-      if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'master'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-windows.zip
-        tag: v0.0.0
-        overwrite: true
-        file_glob: true
-        
-############################### v*.*.* #############################
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
@@ -156,8 +126,7 @@ jobs:
         name: zwallet-windows
         path: zwallet
         retention-days: 5
-        
-        
+  
   build-macos:
     name: Build-MacOS
     
@@ -178,37 +147,11 @@ jobs:
         
     - name: Zip release
       run: tar -czvf zwallet-macos.tar.gz ./zwallet
-      
-    ############################### v1.1.1 #############################
-
-    - name: Create Release for Fixed v1.1.1
-      if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'staging'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-macos.tar.gz
-        tag: v1.1.1
-        overwrite: true
-        file_glob: true
-
-############################### v0.0.0 #############################
-        
-    - name: Create Release for Fixed v0.0.0
-      if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'master'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: zwallet-macos.tar.gz
-        tag: v0.0.0
-        overwrite: true
-        file_glob: true
-        
-############################### v*.*.* #############################
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
-        name: zwallet-windows
+        name: zwallet-macos
         path: zwallet
         retention-days: 5
       
