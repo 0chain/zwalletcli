@@ -77,11 +77,11 @@ make install
 
 2. Add config yaml at `~/.zcn/config.yaml`
 
-The following script sets `https://one.devnet-0chain.net` as your 0chain network.
+The following script sets `https://beta.0chain.net` as your 0chain network.
 
 ```sh
 cat > ~/.zcn/config.yaml << EOF
-block_worker: http://one.devnet-0chain.net/dns
+block_worker: https://beta.0chain.net/dns
 signature_scheme: bls0chain
 min_submit: 50 # in percentage
 min_confirmation: 50 # in percentage

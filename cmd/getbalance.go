@@ -18,23 +18,22 @@ var getbalancecmd = &cobra.Command{
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
 		err := zcncore.GetBalance(statusBar)
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
+		if err != nil {
+			ExitWithError(err)
+			return
 		}
-		if statusBar.success {
-			token := zcncore.ConvertToToken(statusBar.balance)
-			tokenUSD, err := zcncore.ConvertTokenToUSD(token)
-			if err != nil {
-				ExitWithError("\nGet balance failed. " + err.Error() + "\n")
-			} else {
-				fmt.Printf("\nBalance: %v (%v USD)\n", token, tokenUSD)
-			}
-		} else {
-			ExitWithError("\nGet balance failed. " + statusBar.errMsg + "\n")
+		wg.Wait()
+		if !statusBar.success {
+			ExitWithError(fmt.Sprintf("\nFailed to get balance: %s\n", statusBar.errMsg))
+			return
 		}
-		return
+		b := statusBar.balance
+		usd, err := zcncore.ConvertTokenToUSD(b.ToToken())
+		if err != nil {
+			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", b, err))
+			return
+		}
+		fmt.Printf("\nBalance: %v (%.2f USD)\n", b, usd)
 	},
 }
 

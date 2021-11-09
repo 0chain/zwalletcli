@@ -343,23 +343,17 @@ func checkBalance(wallet string) bool {
 	statusBar := &ZCNStatus{wg: wg}
 	wg.Add(1)
 	err := zcncore.GetBalanceWallet(wallet, statusBar)
-	if err == nil {
-		wg.Wait()
-	} else {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	if statusBar.success {
-		fmt.Printf("\nBalance: %v\n", zcncore.ConvertToToken(statusBar.balance))
-		if zcncore.ConvertToToken(statusBar.balance) > 0 {
-			return true
-		}
+	if err != nil {
+		ExitWithError(err)
 		return false
-
 	}
-	fmt.Println("\nGet balance failed. " + statusBar.errMsg + "\n")
-	return false
-
+	wg.Wait()
+	if !statusBar.success {
+		ExitWithError(fmt.Sprintf("\nFailed to get balance: %s\n", statusBar.errMsg))
+		return false
+	}
+	fmt.Printf("\nBalance: %v\n", statusBar.balance)
+	return statusBar.balance.ToToken() > 0
 }
 
 func createAWallet() string {

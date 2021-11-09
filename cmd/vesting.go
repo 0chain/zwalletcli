@@ -13,33 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var getVestingPoolConfigCmd = &cobra.Command{
-	Use:   "vp-config",
-	Short: "Check out vesting pool configurations.",
-	Long:  `Check out vesting pool configurations.`,
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		var (
-			conf = new(zcncore.VestingSCConfig)
-			cb   = NewJSONInfoCB(conf)
-			err  error
-		)
-		if err = zcncore.GetVestingSCConfig(cb); err != nil {
-			log.Fatal(err)
-		}
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println("min_lock:", conf.MinLock)
-		fmt.Println("min_duration:", conf.MinDuration)
-		fmt.Println("max_duration:", conf.MaxDuration)
-		fmt.Println("max_destinations:", conf.MaxDestinations)
-		fmt.Println("max_description_length:", conf.MaxDescriptionLength)
-	},
-}
-
 var getVestingPoolInfoCmd = &cobra.Command{
 	Use:   "vp-info",
 	Short: "Check out vesting pool information.",
@@ -521,7 +494,6 @@ func init() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)
 
-	rootCmd.AddCommand(getVestingPoolConfigCmd)
 	rootCmd.AddCommand(getVestingPoolInfoCmd)
 	rootCmd.AddCommand(getVestingClientPoolsCmd)
 	rootCmd.AddCommand(vestingPoolAddCmd)

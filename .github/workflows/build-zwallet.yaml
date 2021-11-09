@@ -4,13 +4,10 @@ on:
     branches:
       - master
       - dev
+      - staging
     tags:
       - 'v*.*.*'
 
-  pull_request:
-    branches:
-      - master
-      - production
 jobs:
   build-linux:
     name: Build-linux
