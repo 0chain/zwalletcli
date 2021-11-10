@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -17,7 +18,6 @@ type Event struct {
 }
 
 type Events struct {
-	//	Events []map[string]string `json:"events"`
 	Events []Event `json:"events"`
 }
 
@@ -34,32 +34,24 @@ var events = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		//fields := new(zcncore.InputMap)
-
 		var events Events
 		cb := NewJSONInfoCB(&events)
-		//var (
-		//	wg        sync.WaitGroup
-		//	statusBar = &ZCNStatus{wg: &wg}
-		//)
-		//wg.Add(1)
-		//err = zcncore.GetEvents(statusBar, input.Fields)
+
 		err = zcncore.GetEvents(cb, input.Fields)
 		if err != nil {
 			log.Fatal(err)
 		}
-		//wg.Wait()
-		//if !statusBar.success {
-		//	log.Fatal("fatal:", statusBar.errMsg)
-		//}
-
-		//fmt.Println(statusBar.errMsg)
 
 		if err = cb.Waiting(); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("events", events)
-		//printMap(fields.Fields)
+
+		pretty, err := json.MarshalIndent(events, "", "    ")
+		if err != nil {
+			log.Fatal("cannot marshal indent result: " + err.Error())
+		}
+		fmt.Println("events:", string(pretty))
+
 	},
 }
 
