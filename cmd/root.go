@@ -10,7 +10,6 @@ import (
 
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zcncore"
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,7 +56,7 @@ func getConfigDir() string {
 	}
 	var configDir string
 	// Find home directory.
-	home, err := homedir.Dir()
+	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
