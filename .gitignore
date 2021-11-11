@@ -20,7 +20,7 @@ zwallet
 *.log
 zwallet
 
-
+zwallet.init.sh
 /.idea/.gitignore
 /.idea/modules.xml
 /.idea/vcs.xml
