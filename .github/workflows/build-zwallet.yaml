@@ -25,6 +25,8 @@ jobs:
           echo "TAG=v0.0.0-master" >> $GITHUB_ENV
         elif  [[ "${{github.base_ref}}" == "dev" || "${{github.ref}}" == "refs/heads/dev" ]]; then
           echo "TAG=v0.0.0-dev" >> $GITHUB_ENV
+        elif  [[ "${{github.base_ref}}" == "staging" || "${{github.ref}}" == "refs/heads/staging" ]]; then
+          echo "TAG=v0.0.0-staging" >> $GITHUB_ENV
         else
           echo "TAG=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_ENV
         fi
