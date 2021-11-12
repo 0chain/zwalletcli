@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  push: 
+    branches:
+      - master
+      - staging
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: [self-hosted, load-test]
+    steps:
+      - name: Setup go 1.17
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17' # The Go version to download (if necessary) and use.
+
+      - name: Clone ZWallet
+        uses: actions/checkout@v2
+  
+      - name: Build ZWallet
+        run: make install
