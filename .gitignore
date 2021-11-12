@@ -26,3 +26,5 @@ zwallet.init.sh
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/zwalletcli.iml
+
+.vscode
