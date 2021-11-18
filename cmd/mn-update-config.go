@@ -18,7 +18,7 @@ var updateMinerScConfigCmd = &cobra.Command{
 		var err error
 
 		input := new(zcncore.InputMap)
-		input.Fields = setupInputMap(cmd.Flags())
+		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
 		if err != nil {
 			log.Fatal(err)
 		}
