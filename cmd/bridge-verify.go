@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
-
-	"github.com/0chain/gosdk/"
-	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcnbridge/config"
 	"github.com/spf13/cobra"
+	"path"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 var verifyEthereumTrxCmd = &cobra.Command{
@@ -14,72 +16,71 @@ var verifyEthereumTrxCmd = &cobra.Command{
 	Short: "verify ethereum transaction ",
 	Long: `verify transaction.
 	        <hash>`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			logPath          = "logs"
+			walletConfigFile = "wallet.json"
+			development      = false
+			configFile       string
+			configDir        string
+			hash             string
+			err              error
+		)
+
 		fflags := cmd.Flags()
-		if fflags.Changed("hash") == false {
+
+		if !fflags.Changed("hash") {
 			ExitWithError("Error: hash flag is missing")
 		}
+		if !fflags.Changed("file") {
+			ExitWithError("Error: file flag is missing")
+		}
 
-		//cfg := &config.BridgeConfig{
-		//	Mnemonic:        "",
-		//	BridgeAddress:   "",
-		//	WzcnAddress:     "",
-		//	EthereumNodeURL: "",
-		//	ChainID:         "",
-		//	GasLimit:        0,
-		//	Value:           0,
-		//}
-		//
-		//zcnbridge.InitBridge(cfg)
-
-		//config.Bridge.BridgeAddress = viper.GetString("bridge.BridgeAddress")
-		//config.Bridge.Mnemonic = viper.GetString("bridge.Mnemonic")
-		//config.Bridge.EthereumNodeURL = viper.GetString("bridge.EthereumNodeURL")
-		//config.Bridge.Value = viper.GetInt64("bridge.Value")
-		//config.Bridge.GasLimit = viper.GetUint64("bridge.GasLimit")
-		//config.Bridge.WzcnAddress = viper.GetString("bridge.WzcnAddress")
-		//config.Bridge.ChainID = viper.GetString("bridge.ChainID")
-
-		hash := cmd.Flag("hash").Value.String()
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		configFlag, err := fflags.GetString("file")
 		if err != nil {
 			ExitWithError(err)
 		}
-		txn.SetTransactionHash(hash)
-		wg.Add(1)
-		err = txn.Verify()
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
+
+		hash, err = fflags.GetString("hash")
+		if err != nil {
+			ExitWithError(err)
 		}
 
-		if statusBar.success {
-			statusBar.success = false
-			fmt.Printf("\nTransaction verification success\n")
-			return
+		configDir, configFile = filepath.Split(configFlag)
+		configFile = strings.TrimSuffix(configFile, path.Ext(configFlag))
+
+		cfg := &zcnbridge.ClientConfig{
+			WalletFileConfig: &walletConfigFile,
+			LogPath:          &logPath,
+			ConfigFile:       &configFile,
+			ConfigDir:        &configDir,
+			Development:      &development,
 		}
-		ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
+
+		bridge := config.SetupBridge(configDir, configFile, false, logPath)
+		bridge.SetupWallets(cfg)
+
+		status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
+		if err != nil {
+			ExitWithError(err)
+		}
+
+		if status == 1 {
+			fmt.Printf("\nTransaction verification success\n")
+		} else {
+			ExitWithError("\nVerification failed.\n")
+		}
 	},
 }
 
-func init2() {
-	rootCmd.AddCommand(verifyEthereumTrxCmd)
-	verifyEthereumTrxCmd.PersistentFlags().String("hash", "", "hash of the ethereum transaction")
-	err := verifyEthereumTrxCmd.MarkFlagRequired("hash")
-	if err != nil {
-		return
-	}
-}
-
 func init() {
-	rootCmd.AddCommand(faucetcmd)
-	faucetcmd.PersistentFlags().String("methodName", "", "methodName")
-	faucetcmd.PersistentFlags().String("input", "", "input")
-	faucetcmd.PersistentFlags().Float64("tokens", 0, "Token request")
-	faucetcmd.MarkFlagRequired("methodName")
-	faucetcmd.MarkFlagRequired("input")
+	rootCmd.AddCommand(verifyEthereumTrxCmd)
+
+	verifyEthereumTrxCmd.PersistentFlags().String("file", "", "bridge config file")
+	verifyEthereumTrxCmd.PersistentFlags().String("log", "", "bridge log file")
+	verifyEthereumTrxCmd.PersistentFlags().String("hash", "", "hash of the ethereum transaction")
+
+	_ = verifyEthereumTrxCmd.MarkFlagRequired("hash")
+	_ = verifyEthereumTrxCmd.MarkFlagRequired("file")
 }
