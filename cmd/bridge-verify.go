@@ -67,9 +67,9 @@ var verifyEthereumTrxCmd = &cobra.Command{
 		}
 
 		if status == 1 {
-			fmt.Printf("\nTransaction verification success\n")
+			fmt.Printf("\nTransaction verification success: %s\n", hash)
 		} else {
-			ExitWithError("\nVerification failed.\n")
+			ExitWithError(fmt.Sprintf("\nVerification failed: %s\n", hash))
 		}
 	},
 }
