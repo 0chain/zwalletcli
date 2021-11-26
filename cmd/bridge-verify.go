@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcnbridge/config"
 	"github.com/spf13/cobra"
 	"path"
 	"path/filepath"
@@ -19,13 +19,11 @@ var verifyEthereumTrxCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			logPath          = "logs"
-			walletConfigFile = "wallet.json"
-			development      = false
-			configFile       string
-			configDir        string
-			hash             string
-			err              error
+			logPath    = "logs"
+			configFile string
+			configDir  string
+			hash       string
+			err        error
 		)
 
 		fflags := cmd.Flags()
@@ -50,16 +48,13 @@ var verifyEthereumTrxCmd = &cobra.Command{
 		configDir, configFile = filepath.Split(configFlag)
 		configFile = strings.TrimSuffix(configFile, path.Ext(configFlag))
 
-		cfg := &zcnbridge.ClientConfig{
-			WalletFileConfig: &walletConfigFile,
-			LogPath:          &logPath,
-			ConfigFile:       &configFile,
-			ConfigDir:        &configDir,
-			Development:      &development,
+		clientConfig, _ := conf.GetClientConfig()
+		if clientConfig.EthereumNode == "" {
+			ExitWithError("ethereum_node_url must be setup in config")
 		}
 
-		bridge := config.SetupBridge(configDir, configFile, false, logPath)
-		bridge.SetupWallets(cfg)
+		bridge := zcnbridge.SetupBridge(configDir, configFile, false, logPath)
+		bridge.SetupEthereumWallet()
 
 		status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
 		if err != nil {
