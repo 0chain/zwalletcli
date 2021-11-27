@@ -54,6 +54,7 @@ func createBridgeCommand(use, short, long string, comm HashCommand) *cobra.Comma
 			}
 
 			bridge := zcnbridge.SetupBridge(configDir, configFile, false, logPath)
+			bridge.RestoreChain()
 			bridge.SetupEthereumWallet()
 
 			comm(hash)
