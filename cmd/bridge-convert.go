@@ -22,7 +22,7 @@ var convertCmd = &cobra.Command{
 			ExitWithError("Error: fee flag is missing")
 		}
 
-		//zcnbridge.ConfirmEthereumTransaction("", 50, time.Second)
+		//zcnbridge.VerifyEthereumTransaction("", 50, time.Second)
 		//
 		//token, err := cmd.Flags().GetFloat64("tokens")
 		//if err != nil {

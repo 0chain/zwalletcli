@@ -11,7 +11,8 @@ import (
 
 type HashCommand func(*zcnbridge.Bridge, string)
 
-func createBridgeCommand(use, short, long string, comm HashCommand) *cobra.Command {
+// createBridgeCommand Function to initialize bridge commands with DRY principle
+func createBridgeCommand(comm HashCommand, use, short, long string) *cobra.Command {
 	var cobraCommand = &cobra.Command{
 		Use:   use,
 		Short: short,

@@ -6,14 +6,18 @@ import (
 	"time"
 )
 
-const (
-	USE   = "bridge-verify"
-	SHORT = "verify ethereum transaction "
-	LONG  = `verify transaction.
-	        <hash>`
-)
+func init() {
+	rootCmd.AddCommand(
+		createBridgeCommand(
+			VerifyEthereumTransaction,
+			"bridge-verify",
+			"verify ethereum transaction ",
+			`verify transaction.
+	        <hash>`,
+		))
+}
 
-func ConfirmEthereumTransaction(hash string) {
+func VerifyEthereumTransaction(_ *zcnbridge.Bridge, hash string) {
 	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
 	if err != nil {
 		ExitWithError(err)
@@ -24,14 +28,4 @@ func ConfirmEthereumTransaction(hash string) {
 	} else {
 		ExitWithError(fmt.Sprintf("\nVerification failed: %s\n", hash))
 	}
-}
-
-func init() {
-	rootCmd.AddCommand(
-		createBridgeCommand(
-			USE,
-			SHORT,
-			LONG,
-			ConfirmEthereumTransaction,
-		))
 }
