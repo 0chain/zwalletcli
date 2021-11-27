@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type HashCommand func(string)
+type HashCommand func(*zcnbridge.Bridge, string)
 
 func createBridgeCommand(use, short, long string, comm HashCommand) *cobra.Command {
 	var cobraCommand = &cobra.Command{
@@ -57,7 +57,7 @@ func createBridgeCommand(use, short, long string, comm HashCommand) *cobra.Comma
 			bridge.RestoreChain()
 			bridge.SetupEthereumWallet()
 
-			comm(hash)
+			comm(bridge, hash)
 		},
 	}
 
