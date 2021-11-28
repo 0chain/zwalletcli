@@ -21,7 +21,8 @@ func commandGetETHBurnTicket(b *zcnbridge.Bridge, hash string) {
 		ExitWithError(err)
 	}
 
-	fmt.Println(payload.Nonce)
-	fmt.Println(payload.Amount)
-	fmt.Println(payload.ZCNTxnID)
+	fmt.Println("Ethereum burn ticket the completed consensus")
+	fmt.Printf("Transaction nonce: %d\n", payload.Nonce)
+	fmt.Printf("Transaction amount: %d\n", payload.Amount)
+	fmt.Printf("ZCN transaction ID: %s\n", payload.ZCNTxnID)
 }
