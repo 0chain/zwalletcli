@@ -8,14 +8,17 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		createBridgeCommand(
-			commandGetETHBurnTicket,
 			"bridge-get-eth-burn",
 			"get confirmed burn ticket for ethereum burn transaction",
-			"get confirmed burn ticket for ethereum burn transaction",
+			"get transaction ticket with the given Ethereum transaction hash",
+			commandGetETHBurnTicket,
+			hashOption,
 		))
 }
 
-func commandGetETHBurnTicket(b *zcnbridge.Bridge, hash string) {
+func commandGetETHBurnTicket(b *zcnbridge.Bridge, args ...*Arg) {
+	hash := GetHash(args)
+
 	payload, err := b.QueryEthereumMintPayload(hash)
 	if err != nil {
 		ExitWithError(err)

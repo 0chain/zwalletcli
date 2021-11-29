@@ -7,17 +7,21 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(
-		createBridgeCommand(
-			VerifyEthereumTransaction,
-			"bridge-verify",
-			"verify ethereum transaction ",
-			`verify transaction.
-	        <hash>`,
-		))
+	command := createBridgeCommand(
+		"bridge-verify",
+		"verify ethereum transaction ",
+		`verify transaction.
+					<hash>`,
+		VerifyEthereumTransaction,
+		hashOption,
+	)
+
+	rootCmd.AddCommand(command)
 }
 
-func VerifyEthereumTransaction(_ *zcnbridge.Bridge, hash string) {
+func VerifyEthereumTransaction(_ *zcnbridge.Bridge, args ...*Arg) {
+	hash := GetHash(args)
+
 	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
 	if err != nil {
 		ExitWithError(err)

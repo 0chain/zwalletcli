@@ -8,14 +8,17 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		createBridgeCommand(
-			commandGetZCNBurnTicket,
 			"bridge-get-zcn-burn",
-			"get confirmed burn ticket for zcn burn transaction",
-			"get confirmed burn ticket for zcn burn transaction",
+			"get the confirmed burn ticket for zcn burn transaction",
+			"get transaction ticket with the given ZCN transaction hash",
+			commandGetZCNBurnTicket,
+			hashOption,
 		))
 }
 
-func commandGetZCNBurnTicket(b *zcnbridge.Bridge, hash string) {
+func commandGetZCNBurnTicket(b *zcnbridge.Bridge, args ...*Arg) {
+	hash := GetHash(args)
+
 	payload, err := b.QueryZChainMintPayload(hash)
 	if err != nil {
 		ExitWithError(err)
