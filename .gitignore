@@ -28,3 +28,5 @@ zwallet.init.sh
 /.idea/zwalletcli.iml
 
 .vscode
+
+.DS_Store

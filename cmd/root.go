@@ -98,23 +98,24 @@ func initConfig() {
 	minSubmit = nodeConfig.GetInt("min_submit")
 	minCfm = nodeConfig.GetInt("min_confirmation")
 	CfmChainLength = nodeConfig.GetInt("confirmation_chain_length")
-	//chainID := nodeConfig.GetString("chain_id")
+	ethereumNodeURL := nodeConfig.GetString("ethereum_node_url")
 
-	//TODO: move the private key storage to the keychain or secure storage
+	// TODO: move the private key storage to the keychain or secure storage
 	var walletFilePath string
 	if &walletFile != nil && len(walletFile) > 0 {
 		walletFilePath = configDir + "/" + walletFile
 	} else {
 		walletFilePath = configDir + "/wallet.json"
 	}
-	//set the log file
+	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
 	err := zcncore.InitZCNSDK(blockWorker, signScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
-		zcncore.WithConfirmationChainLength(CfmChainLength))
+		zcncore.WithConfirmationChainLength(CfmChainLength),
+		zcncore.WithEthereumNode(ethereumNodeURL))
 	if err != nil {
 		ExitWithError(err.Error())
 	}
