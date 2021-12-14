@@ -10,19 +10,19 @@ ZWALLETCLI=zwalletcli
 default: help
 
 zwallet-test:
-	go test -v -tags bn256 ./...
-
-$(ZWALLET):
-	$(eval VERSION=$(shell git describe --tags --dirty --always))
-	go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $@
+	CGO_ENABLED=1 go test -v -tags bn256 ./...
 
 gomod-download:
-	go mod download -json
+	go mod download
 
 gomod-clean:
 	go clean -i -r -x -modcache  ./...
 
-install: $(ZWALLET) | zwallet-test
+$(ZWALLET): gomod-download
+	$(eval VERSION=$(shell git describe --tags --dirty --always))
+	CGO_ENABLED=1 go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $(ZWALLET) main.go
+
+install: $(ZWALLET) zwallet-test
 
 clean: gomod-clean
 	@rm -rf $(ROOT_DIR)/$(ZWALLET)
@@ -44,7 +44,3 @@ help:
 	@echo "\tmake clean             - deletes all build output files"
 	@echo "\tmake gomod-download    - download the go modules"
 	@echo "\tmake gomod-clean       - clean the go modules"
-
-
-
-
