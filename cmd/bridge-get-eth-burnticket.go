@@ -16,7 +16,7 @@ func init() {
 		))
 }
 
-func commandGetETHBurnTicket(b *zcnbridge.Bridge, args ...*Arg) {
+func commandGetETHBurnTicket(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	payload, err := b.QueryEthereumMintPayload(hash)

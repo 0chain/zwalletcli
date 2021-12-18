@@ -12,7 +12,7 @@ import (
 
 // type HashCommand func(*zcnbridge.Bridge, string)
 
-type Command func(*zcnbridge.Bridge, ...*Arg)
+type Command func(*zcnbridge.BridgeClient, ...*Arg)
 
 type Option struct {
 	name         string
@@ -90,10 +90,12 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			var (
-				logPath    = "logs"
-				configFile string
-				configDir  string
-				err        error
+				logPath     = "logs"
+				configFile  string
+				configDir   string
+				development = false
+				loglevel    = "info"
+				err         error
 			)
 
 			fflags := cmd.Flags()
@@ -152,9 +154,16 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 				ExitWithError("ethereum_node_url must be setup in config")
 			}
 
-			bridge := zcnbridge.SetupBridge(configDir, configFile, false, logPath)
+			cfg := &zcnbridge.BridgeSDKConfig{
+				LogLevel:    &loglevel,
+				LogPath:     &logPath,
+				ConfigFile:  &configFile,
+				ConfigDir:   &configDir,
+				Development: &development,
+			}
+
+			bridge := zcnbridge.SetupBridgeClientSDK(cfg)
 			bridge.RestoreChain()
-			bridge.SetupEthereumWallet()
 
 			functor(bridge, parameters...)
 		},

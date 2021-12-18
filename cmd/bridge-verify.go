@@ -19,7 +19,7 @@ func init() {
 	rootCmd.AddCommand(command)
 }
 
-func VerifyEthereumTransaction(_ *zcnbridge.Bridge, args ...*Arg) {
+func VerifyEthereumTransaction(_ *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)

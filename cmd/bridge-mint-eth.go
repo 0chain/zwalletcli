@@ -18,7 +18,7 @@ func init() {
 		))
 }
 
-func commandMintEth(b *zcnbridge.Bridge, args ...*Arg) {
+func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	fmt.Printf("Query ticket for ZCN transaction hash: %s\n", hash)
