@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
 )
@@ -15,6 +17,13 @@ var listAuthorizers = &cobra.Command{
 		if err != nil || authorizers == nil || len(authorizers.NodeMap) == 0 {
 			ExitWithError("\nAuthorizers not found\n", err)
 		}
+
+		buffer, err := json.MarshalIndent(authorizers, "", "   ")
+		if err != nil {
+			ExitWithError("\nFailed to unmarshall\n", err)
+		}
+
+		fmt.Println(string(buffer))
 	},
 }
 
