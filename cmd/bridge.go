@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// all transactions must be performed with owner/client password
 // type HashCommand func(*zcnbridge.Bridge, string)
 
 type Command func(*zcnbridge.BridgeClient, ...*Arg)
