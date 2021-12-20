@@ -60,7 +60,7 @@ var bridgeClientInit = &cobra.Command{
 		// Action
 
 		zcnbridge.CreateInitialClientConfig(
-			"bridge",
+			"bridge.yaml",
 			ethereumaddress,
 			bridgeaddress,
 			wzcnaddress,
@@ -81,9 +81,9 @@ func init() {
 	bridgeClientInit.PersistentFlags().String("bridgeaddress", "", "bridgeaddress")
 	bridgeClientInit.PersistentFlags().String("wzcnaddress", "", "wzcnaddress")
 	bridgeClientInit.PersistentFlags().String("ethereumnodeurl", "", "ethereumnodeurl")
-	bridgeClientInit.PersistentFlags().Int64("gaslimit", 0, "gaslimit")
+	bridgeClientInit.PersistentFlags().Int64("gaslimit", 300000, "gaslimit")
 	bridgeClientInit.PersistentFlags().Int64("value", 0, "value")
-	bridgeClientInit.PersistentFlags().Int64("consensusthreshold", 0, "consensusthreshold")
+	bridgeClientInit.PersistentFlags().Float64("consensusthreshold", 0.75, "consensusthreshold")
 
 	_ = bridgeClientInit.MarkFlagRequired("password")
 	_ = bridgeClientInit.MarkFlagRequired("ethereumaddress")
