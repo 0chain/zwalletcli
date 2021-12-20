@@ -76,14 +76,14 @@ var bridgeClientInit = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(bridgeClientInit)
 
-	bridgeClientInit.PersistentFlags().String("password", "", "password")
-	bridgeClientInit.PersistentFlags().String("ethereumaddress", "", "ethereumaddress")
-	bridgeClientInit.PersistentFlags().String("bridgeaddress", "", "bridgeaddress")
-	bridgeClientInit.PersistentFlags().String("wzcnaddress", "", "wzcnaddress")
-	bridgeClientInit.PersistentFlags().String("ethereumnodeurl", "", "ethereumnodeurl")
-	bridgeClientInit.PersistentFlags().Int64("gaslimit", 300000, "gaslimit")
-	bridgeClientInit.PersistentFlags().Int64("value", 0, "value")
-	bridgeClientInit.PersistentFlags().Float64("consensusthreshold", 0.75, "consensusthreshold")
+	bridgeClientInit.PersistentFlags().String("password", "", "password be used to unlock private key stored in local storage")
+	bridgeClientInit.PersistentFlags().String("ethereumaddress", "", "client Ethereum address")
+	bridgeClientInit.PersistentFlags().String("bridgeaddress", "", "bridge contract address")
+	bridgeClientInit.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
+	bridgeClientInit.PersistentFlags().String("ethereumnodeurl", "", "Ethereum Node URL (Infura/Alchemy)")
+	bridgeClientInit.PersistentFlags().Int64("gaslimit", 300000, "appr. gas limit to execute Ethereum transaction")
+	bridgeClientInit.PersistentFlags().Int64("value", 0, "value sent along with Ethereum transaction")
+	bridgeClientInit.PersistentFlags().Float64("consensusthreshold", 0.75, "Consensus threshold required to reach consensus for burn tickets")
 
 	_ = bridgeClientInit.MarkFlagRequired("password")
 	_ = bridgeClientInit.MarkFlagRequired("ethereumaddress")
