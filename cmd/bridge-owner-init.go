@@ -60,7 +60,7 @@ var bridgeOwnerInit = &cobra.Command{
 		// Action
 
 		zcnbridge.CreateInitialOwnerConfig(
-			"owner",
+			"owner.yaml",
 			ethereumaddress,
 			bridgeaddress,
 			wzcnaddress,
