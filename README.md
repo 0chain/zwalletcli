@@ -2,6 +2,7 @@
 
 `zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain. 
 
+
 The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
 - [Architecture](#architecture)
