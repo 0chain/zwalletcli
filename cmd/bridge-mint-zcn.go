@@ -3,8 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/0chain/gosdk/zcnbridge"
 	"time"
+
+	"github.com/0chain/gosdk/zcnbridge"
 )
 
 func init() {
@@ -18,7 +19,7 @@ func init() {
 		))
 }
 
-func commandMintZCN(b *zcnbridge.Bridge, args ...*Arg) {
+func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	fmt.Printf("Query ticket for Ethereum transaction hash: %s\n", hash)

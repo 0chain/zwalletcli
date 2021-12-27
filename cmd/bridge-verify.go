@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcnbridge"
 	"time"
+
+	"github.com/0chain/gosdk/zcnbridge"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 	rootCmd.AddCommand(command)
 }
 
-func VerifyEthereumTransaction(_ *zcnbridge.Bridge, args ...*Arg) {
+func VerifyEthereumTransaction(_ *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)

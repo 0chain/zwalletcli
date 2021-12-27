@@ -2,17 +2,15 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
-	"path"
-	"path/filepath"
-	"strings"
 )
 
 // type HashCommand func(*zcnbridge.Bridge, string)
 
-type Command func(*zcnbridge.Bridge, ...*Arg)
+type Command func(*zcnbridge.BridgeClient, ...*Arg)
 
 type Option struct {
 	name         string
@@ -89,12 +87,6 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 		Long:  long,
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			var (
-				logPath    = "logs"
-				configFile string
-				configDir  string
-				err        error
-			)
 
 			fflags := cmd.Flags()
 
@@ -134,27 +126,16 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 				parameters = append(parameters, arg)
 			}
 
-			if !fflags.Changed("file") {
-				ExitWithError("Error: file flag is missing")
-			}
-
-			configFlag, err := fflags.GetString("file")
-			if err != nil {
-				ExitWithError(err)
-			}
-
-			configDir, configFile = filepath.Split(configFlag)
-			configFile = strings.TrimSuffix(configFile, path.Ext(configFlag))
-
 			// check SDK EthereumNode
 			clientConfig, _ := conf.GetClientConfig()
 			if clientConfig.EthereumNode == "" {
 				ExitWithError("ethereum_node_url must be setup in config")
 			}
 
-			bridge := zcnbridge.SetupBridge(configDir, configFile, false, logPath)
+			cfg := zcnbridge.ReadClientConfigFromCmd()
+
+			bridge := zcnbridge.SetupBridgeClientSDK(cfg)
 			bridge.RestoreChain()
-			bridge.SetupEthereumWallet()
 
 			functor(bridge, parameters...)
 		},
