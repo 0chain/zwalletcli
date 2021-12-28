@@ -3,8 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/0chain/gosdk/zcnbridge"
 	"time"
+
+	"github.com/0chain/gosdk/zcnbridge"
 )
 
 func init() {
@@ -18,7 +19,7 @@ func init() {
 		))
 }
 
-func commandBurnEth(b *zcnbridge.Bridge, args ...*Arg) {
+func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	amount := GetAmount(args)
 
 	// Increase Allowance
