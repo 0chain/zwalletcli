@@ -94,7 +94,6 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 				configDir   string
 				development = false
 				loglevel    = "info"
-				err         error
 			)
 
 			fflags := cmd.Flags()
