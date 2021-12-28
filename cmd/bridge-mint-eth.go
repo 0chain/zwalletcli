@@ -3,8 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/0chain/gosdk/zcnbridge"
 	"time"
+
+	"github.com/0chain/gosdk/zcnbridge"
 )
 
 func init() {
