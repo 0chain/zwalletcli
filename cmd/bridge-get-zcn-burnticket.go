@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/0chain/gosdk/zcnbridge"
 )
 
@@ -16,7 +17,7 @@ func init() {
 		))
 }
 
-func commandGetZCNBurnTicket(b *zcnbridge.Bridge, args ...*Arg) {
+func commandGetZCNBurnTicket(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
 	payload, err := b.QueryZChainMintPayload(hash)

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/0chain/gosdk/zcnbridge"
 )
 
@@ -17,7 +18,7 @@ func init() {
 		))
 }
 
-func commandBurnZCN(b *zcnbridge.Bridge, args ...*Arg) {
+func commandBurnZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	amount := GetAmount(args)
 
 	fmt.Printf("Starting burn transaction")
