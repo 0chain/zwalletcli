@@ -27,7 +27,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.14
+        go-version: ^1.17
 
     - name: Install
       run: make install
@@ -102,49 +102,55 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-   
-    - name: Install
-      run: make install
-        
-    - name: Zip release
-      run: |
-        copy zwallet zwallet.exe
-        7z a zwallet-windows.zip zwallet.exe
+      - name: Setup go 1.17
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17' # The Go version to download (if necessary) and use.
+      - name: Checkout
+        uses: actions/checkout@v2
+    
+      - name: Install
+        run: make install
+          
+      - name: Zip release
+        run: |
+          copy zwallet zwallet.exe
+          7z a zwallet-windows.zip zwallet.exe
 
-    - name: 'Upload Artifact'
-      uses: actions/upload-artifact@v2
-      with:
-        name: zwallet-windows
-        path: zwallet
-        retention-days: 5
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: zwallet-windows
+          path: zwallet
+          retention-days: 5
   
   build-macos:
     name: Build-MacOS
-    
     runs-on: macos-latest
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      
-    - name: Install
-      run: make install
-
-    - name: Get Branch
-      id: get_version
-      run: |
-        VERSION=$(echo ${GITHUB_REF#refs/heads/}) 
-        echo ::set-output name=TAG::${VERSION}
+      - name: Setup go 1.17
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17' # The Go version to download (if necessary) and use.
+      - name: Checkout
+        uses: actions/checkout@v2
         
-    - name: Zip release
-      run: tar -czvf zwallet-macos.tar.gz ./zwallet
+      - name: Install
+        run: make install
 
-    - name: 'Upload Artifact'
-      uses: actions/upload-artifact@v2
-      with:
-        name: zwallet-macos
-        path: zwallet
-        retention-days: 5
+      - name: Get Branch
+        id: get_version
+        run: |
+          VERSION=$(echo ${GITHUB_REF#refs/heads/}) 
+          echo ::set-output name=TAG::${VERSION}
+          
+      - name: Zip release
+        run: tar -czvf zwallet-macos.tar.gz ./zwallet
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: zwallet-macos
+          path: zwallet
+          retention-days: 5
       
