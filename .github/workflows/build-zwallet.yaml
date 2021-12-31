@@ -5,6 +5,7 @@ on:
       - master
       - staging
     tags:
+      - 'v*.*.*'
 
 jobs:
   build-linux:
@@ -54,7 +55,7 @@ jobs:
           name: zwallet-linux
           path: zwallet
           retention-days: 5
-          
+
   build-windows:
     name: Build-windows
     runs-on: windows-latest
