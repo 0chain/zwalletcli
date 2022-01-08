@@ -14,7 +14,7 @@ var listAuthorizers = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(_ *cobra.Command, _ []string) {
 		authorizers, err := zcnbridge.GetAuthorizers()
-		if err != nil || authorizers == nil || len(authorizers.NodeMap) == 0 {
+		if err != nil || authorizers == nil || len(authorizers) == 0 {
 			ExitWithError("\nAuthorizers not found\n", err)
 		}
 
