@@ -8,7 +8,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(
-		createBridgeCommand(
+		createCommandWithBridge(
 			"bridge-get-eth-burn",
 			"get confirmed burn ticket for ethereum burn transaction",
 			"get transaction ticket with the given Ethereum transaction hash",

@@ -8,7 +8,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(
-		createBridgeCommand(
+		createCommandWithBridge(
 			"bridge-get-zcn-burn",
 			"get the confirmed burn ticket for zcn burn transaction",
 			"get transaction ticket with the given ZCN transaction hash",

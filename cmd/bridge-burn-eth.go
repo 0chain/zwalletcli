@@ -10,7 +10,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(
-		createBridgeCommand(
+		createCommandWithBridge(
 			"bridge-burn-eth",
 			"burn eth tokens",
 			"burn eth tokens that will be minted on ZCN chain",

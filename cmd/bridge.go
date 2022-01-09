@@ -2,16 +2,23 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
+	"os"
 )
 
-// all transactions must be performed with owner/client password
-// type HashCommand func(*zcnbridge.Bridge, string)
+const (
+	ConfigFileName = "bridge"
+)
 
-type Command func(*zcnbridge.BridgeClient, ...*Arg)
+const (
+	OptionHash   = "hash"
+	OptionAmount = "amount"
+)
+
+type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
+type Command func(...*Arg)
 
 type Option struct {
 	name         string
@@ -30,7 +37,7 @@ type Arg struct {
 
 var (
 	hashOption = &Option{
-		name:         "hash",
+		name:         OptionHash,
 		value:        "",
 		usage:        "hash of the transaction",
 		typename:     "string",
@@ -39,7 +46,7 @@ var (
 	}
 
 	amountOption = &Option{
-		name:         "amount",
+		name:         OptionAmount,
 		value:        0,
 		usage:        "amount",
 		typename:     "int64",
@@ -54,7 +61,7 @@ func GetHash(args []*Arg) string {
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == "hash" {
+		if arg.fieldName == OptionHash {
 			return (arg.value).(string)
 		}
 	}
@@ -70,7 +77,7 @@ func GetAmount(args []*Arg) int64 {
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == "amount" {
+		if arg.fieldName == OptionAmount {
 			return (arg.value).(int64)
 		}
 	}
@@ -80,22 +87,57 @@ func GetAmount(args []*Arg) int64 {
 	return 0
 }
 
-// createBridgeCommand Function to initialize bridge commands with DRY principle
-func createBridgeCommand(use, short, long string, functor Command, opts ...*Option) *cobra.Command {
+// createCommand Function to initialize bridge commands with DRY principle
+func createCommand(use, short, long string, functor Command, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		functor(parameters...)
+	}
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
+// createCommandWithBridge Function to initialize bridge commands with DRY principle
+func createCommandWithBridge(use, short, long string, functor CommandWithBridge, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		bridge := initBridge()
+		functor(bridge, parameters...)
+	}
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
+func AppendOptions(opts []*Option, command *cobra.Command) {
+	for _, opt := range opts {
+		switch opt.typename {
+		case "string":
+			command.PersistentFlags().String(opt.name, "", opt.usage)
+		case "int64":
+			command.PersistentFlags().Int64(opt.name, 0, opt.usage)
+		}
+
+		if opt.required {
+			_ = command.MarkFlagRequired(opt.name)
+		}
+	}
+}
+
+func createBridgeComm(
+	use string,
+	short string,
+	long string,
+	functor Command,
+	opts []*Option,
+) *cobra.Command {
 	var cobraCommand = &cobra.Command{
 		Use:   use,
 		Short: short,
 		Long:  long,
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			var (
-				logPath     = "logs"
-				configFile  string
-				configDir   string
-				development = false
-				loglevel    = "info"
-			)
-
 			fflags := cmd.Flags()
 
 			var parameters []*Arg
@@ -140,36 +182,42 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 				ExitWithError("ethereum_node_url must be setup in config")
 			}
 
-			cfg := &zcnbridge.BridgeSDKConfig{
-				LogLevel:    &loglevel,
-				LogPath:     &logPath,
-				ConfigFile:  &configFile,
-				ConfigDir:   &configDir,
-				Development: &development,
-			}
-
-			bridge := zcnbridge.SetupBridgeClientSDK(cfg)
-			bridge.RestoreChain()
-
-			functor(bridge, parameters...)
+			functor(parameters...)
 		},
 	}
+	return cobraCommand
+}
 
-	cobraCommand.PersistentFlags().String("file", "", "bridge config file")
-	_ = cobraCommand.MarkFlagRequired("file")
+func GetConfigDir() string {
+	var configDir string
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	configDir = home + "/.zcn"
+	return configDir
+}
 
-	for _, opt := range opts {
-		switch opt.typename {
-		case "string":
-			cobraCommand.PersistentFlags().String(opt.name, "", opt.usage)
-		case "int64":
-			cobraCommand.PersistentFlags().Int64(opt.name, 0, opt.usage)
-		}
+func initBridge() *zcnbridge.BridgeClient {
+	var (
+		configDir   = GetConfigDir()
+		configFile  = ConfigFileName
+		logPath     = "logs"
+		loglevel    = "info"
+		development = false
+	)
 
-		if opt.required {
-			_ = cobraCommand.MarkFlagRequired(opt.name)
-		}
+	cfg := &zcnbridge.BridgeSDKConfig{
+		LogLevel:    &loglevel,
+		LogPath:     &logPath,
+		ConfigFile:  &configFile,
+		ConfigDir:   &configDir,
+		Development: &development,
 	}
 
-	return cobraCommand
+	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
+	bridge.RestoreChain()
+
+	return bridge
 }
