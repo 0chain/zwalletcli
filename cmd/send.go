@@ -35,7 +35,7 @@ var sendcmd = &cobra.Command{
 		fee, err = cmd.Flags().GetFloat64("fee")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee))
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee), nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
