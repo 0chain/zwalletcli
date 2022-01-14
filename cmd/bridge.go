@@ -221,3 +221,12 @@ func initBridge() *zcnbridge.BridgeClient {
 
 	return bridge
 }
+
+func check(cmd *cobra.Command, flags ...string) {
+	fflags := cmd.Flags()
+	for _, flag := range flags {
+		if !fflags.Changed(flag) {
+			ExitWithError(fmt.Sprintf("Error: '%s' flag is missing", flag))
+		}
+	}
+}

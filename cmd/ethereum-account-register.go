@@ -12,21 +12,19 @@ var registerAccount = &cobra.Command{
 	Long:  `register ethereum account using mnemonic and protected with password`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		fflags := cmd.Flags()
-		if fflags.Changed("mnemonic") == false {
-			ExitWithError("Error: 'mnemonic' flag is missing")
-		}
-		if fflags.Changed("password") == false {
-			ExitWithError("Error: 'password' flag is missing")
-		}
+		check(cmd,
+			"mnemonic",
+			"password")
 
 		mnemonic := cmd.Flag("mnemonic").Value.String()
 		password := cmd.Flag("password").Value.String()
 
-		err := zcnbridge.ImportAccount(mnemonic, password)
+		address, err := zcnbridge.ImportAccount(mnemonic, password)
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		fmt.Printf("Imported account, address: %s", address)
 	},
 }
 

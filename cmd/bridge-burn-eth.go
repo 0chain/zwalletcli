@@ -27,13 +27,13 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	// Example: https://ropsten.etherscan.io/tx/0xa28266fb44cfc2aa27b26bd94e268e40d065a05b1a8e6339865f826557ff9f0e
 	transaction, err := b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
 	if err != nil {
-		ExitWithError("failed to execute IncreaseBurnerAllowance")
+		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
 
 	hash := transaction.Hash().Hex()
 	res, err := zcnbridge.ConfirmEthereumTransaction(hash, 60, time.Second)
 	if err != nil {
-		ExitWithError(fmt.Sprintf("failed to confirm transaction ConfirmEthereumTransaction hash = %s, error = %v", hash, err))
+		ExitWithError(fmt.Sprintf("failed to confirm transaction: hash = %s, error = %v", hash, err))
 	}
 
 	if res == 0 {
@@ -42,22 +42,22 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	// Burn Eth
 
-	fmt.Printf("Starting burn transaction in Ethereum")
+	fmt.Println("Starting WZCN burn transaction")
 	transaction, err = b.BurnWZCN(context.Background(), amount)
 	if err != nil {
-		ExitWithError(err)
+		ExitWithError(err, "failed to burn WZCN tokens")
 	}
 	hash = transaction.Hash().String()
-	fmt.Printf("Submitted burn transaction %s\n", hash)
+	fmt.Printf("Confirming WZCN burn transaction %s\n", hash)
 
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
+	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 50, time.Second)
 	if err != nil {
 		ExitWithError(err)
 	}
 
 	if status == 1 {
-		fmt.Printf("\nTransaction verification success: %s\n", hash)
+		fmt.Printf("Transaction verification success: %s\n", hash)
 	} else {
-		ExitWithError(fmt.Sprintf("\nVerification failed: %s\n", hash))
+		ExitWithError(fmt.Sprintf("Verification failed: %s\n", hash))
 	}
 }

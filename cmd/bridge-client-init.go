@@ -15,27 +15,14 @@ var bridgeClientInit = &cobra.Command{
 
 		// Flags
 
-		if fflags.Changed("password") == false {
-			ExitWithError("Error: 'password' flag is missing")
-		}
-		if fflags.Changed("ethereumaddress") == false {
-			ExitWithError("Error: 'ethereumaddress' flag is missing")
-		}
-		if fflags.Changed("bridgeaddress") == false {
-			ExitWithError("Error: 'bridgeaddress' flag is missing")
-		}
-		if fflags.Changed("wzcnaddress") == false {
-			ExitWithError("Error: 'wzcnaddress' flag is missing")
-		}
-		if fflags.Changed("ethereumnodeurl") == false {
-			ExitWithError("Error: 'ethereumnodeurl' flag is missing")
-		}
-		if fflags.Changed("gaslimit") == false {
-			ExitWithError("Error: 'gaslimit' flag is missing")
-		}
-		if fflags.Changed("consensusthreshold") == false {
-			ExitWithError("Error: 'consensusthreshold' flag is missing")
-		}
+		check(cmd,
+			"password",
+			"ethereumaddress",
+			"bridgeaddress",
+			"wzcnaddress",
+			"ethereumnodeurl",
+			"gaslimit",
+			"consensusthreshold")
 
 		// Reading flags
 
