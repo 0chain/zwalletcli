@@ -21,7 +21,7 @@ func init() {
 func commandBurnZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	amount := GetAmount(args)
 
-	fmt.Printf("Starting burn transaction")
+	fmt.Println("Starting burn transaction")
 	transaction, err := b.BurnZCN(context.Background(), amount)
 	if err == nil {
 		fmt.Printf("Submitted burn transaction %s\n", transaction.Hash)
