@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"os"
+	"sync"
 )
 
 const (
@@ -283,4 +285,27 @@ func check(cmd *cobra.Command, flags ...string) {
 			ExitWithError(fmt.Sprintf("Error: '%s' flag is missing", flag))
 		}
 	}
+}
+
+func verify(hash string) {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	txn, err := zcncore.NewTransaction(statusBar, 0)
+	if err != nil {
+		ExitWithError(err)
+	}
+	_ = txn.SetTransactionHash(hash)
+	wg.Add(1)
+	err = txn.Verify()
+	if err == nil {
+		wg.Wait()
+	} else {
+		ExitWithError(err.Error())
+	}
+	if statusBar.success {
+		statusBar.success = false
+		fmt.Printf("\nTransaction verification success\n")
+		return
+	}
+	ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
 }
