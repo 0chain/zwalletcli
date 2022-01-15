@@ -52,7 +52,7 @@ var (
 
 	amountOption = &Option{
 		name:         OptionAmount,
-		value:        0,
+		value:        int64(0),
 		usage:        "amount",
 		typename:     "int64",
 		missingError: "amount should be provided",
