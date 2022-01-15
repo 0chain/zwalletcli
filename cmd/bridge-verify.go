@@ -23,7 +23,7 @@ func init() {
 func VerifyEthereumTransaction(args ...*Arg) {
 	hash := GetHash(args)
 
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
+	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 60, time.Second)
 	if err != nil {
 		ExitWithError(err)
 	}

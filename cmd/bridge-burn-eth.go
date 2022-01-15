@@ -16,28 +16,33 @@ func init() {
 			"burn eth tokens that will be minted on ZCN chain",
 			commandBurnEth,
 			amountOption,
+			retriesOption,
 		))
 }
 
 func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
+	retries := GetRetries(args)
 	amount := GetAmount(args)
 
 	// Increase Allowance
 
 	// Example: https://ropsten.etherscan.io/tx/0xa28266fb44cfc2aa27b26bd94e268e40d065a05b1a8e6339865f826557ff9f0e
+	fmt.Println("Starting IncreaseBurnerAllowance transaction")
 	transaction, err := b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
 	if err != nil {
 		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
 
 	hash := transaction.Hash().Hex()
-	res, err := zcnbridge.ConfirmEthereumTransaction(hash, 60, time.Second)
+	status, err := zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
 	if err != nil {
-		ExitWithError(fmt.Sprintf("failed to confirm transaction: hash = %s, error = %v", hash, err))
+		ExitWithError(fmt.Sprintf("Failed to confirm IncreaseBurnerAllowance: hash = %s, error = %v", hash, err))
 	}
 
-	if res == 0 {
-		ExitWithError(fmt.Sprintf("failed to confirm transaction: %s, status = failed", transaction.Hash().String()))
+	if status == 1 {
+		fmt.Printf("Verification: IncreaseBurnerAllowance [OK]: %s\n", hash)
+	} else {
+		ExitWithError(fmt.Sprintf("Verification: IncreaseBurnerAllowance [FAILED]: %s\n", hash))
 	}
 
 	// Burn Eth
@@ -50,14 +55,14 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash = transaction.Hash().String()
 	fmt.Printf("Confirming WZCN burn transaction %s\n", hash)
 
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 50, time.Second)
+	status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
 	if err != nil {
 		ExitWithError(err)
 	}
 
 	if status == 1 {
-		fmt.Printf("Transaction verification success: %s\n", hash)
+		fmt.Printf("Verification: WZCN burn [OK]: %s\n", hash)
 	} else {
-		ExitWithError(fmt.Sprintf("Verification failed: %s\n", hash))
+		ExitWithError(fmt.Sprintf("Verification: WZCN burn [FAILED]: %s\n", hash))
 	}
 }

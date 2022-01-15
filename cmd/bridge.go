@@ -9,12 +9,17 @@ import (
 )
 
 const (
+	DefaultRetries = 60
+)
+
+const (
 	ConfigFileName = "bridge"
 )
 
 const (
-	OptionHash   = "hash"
-	OptionAmount = "amount"
+	OptionHash    = "hash"
+	OptionAmount  = "amount"
+	OptionRetries = "retries"
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
@@ -53,36 +58,73 @@ var (
 		missingError: "amount should be provided",
 		required:     true,
 	}
+
+	retriesOption = &Option{
+		name:         OptionRetries,
+		value:        DefaultRetries,
+		typename:     "int",
+		usage:        "",
+		missingError: "retries count should be provided",
+		required:     false,
+	}
 )
 
 func GetHash(args []*Arg) string {
+	return getString(args, OptionHash)
+}
+
+func GetAmount(args []*Arg) int64 {
+	return getInt64(args, OptionAmount)
+}
+
+func GetRetries(args []*Arg) int {
+	return getInt(args, OptionRetries)
+}
+
+func getString(args []*Arg, name string) string {
 	if len(args) == 0 {
 		ExitWithError("wrong number of arguments")
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == OptionHash {
+		if arg.fieldName == name {
 			return (arg.value).(string)
 		}
 	}
 
-	ExitWithError("failed to get hash")
+	ExitWithError("failed to get " + name)
 
 	return ""
 }
 
-func GetAmount(args []*Arg) int64 {
+func getInt(args []*Arg, name string) int {
 	if len(args) == 0 {
 		ExitWithError("wrong number of arguments")
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == OptionAmount {
+		if arg.fieldName == name {
+			return (arg.value).(int)
+		}
+	}
+
+	ExitWithError("failed to get " + name)
+
+	return 0
+}
+
+func getInt64(args []*Arg, name string) int64 {
+	if len(args) == 0 {
+		ExitWithError("wrong number of arguments")
+	}
+
+	for _, arg := range args {
+		if arg.fieldName == name {
 			return (arg.value).(int64)
 		}
 	}
 
-	ExitWithError("failed to get hash")
+	ExitWithError("failed to get " + name)
 
 	return 0
 }
@@ -114,9 +156,11 @@ func AppendOptions(opts []*Option, command *cobra.Command) {
 	for _, opt := range opts {
 		switch opt.typename {
 		case "string":
-			command.PersistentFlags().String(opt.name, "", opt.usage)
+			command.PersistentFlags().String(opt.name, opt.value.(string), opt.usage)
 		case "int64":
-			command.PersistentFlags().Int64(opt.name, 0, opt.usage)
+			command.PersistentFlags().Int64(opt.name, opt.value.(int64), opt.usage)
+		case "int":
+			command.PersistentFlags().Int(opt.name, opt.value.(int), opt.usage)
 		}
 
 		if opt.required {
@@ -143,7 +187,7 @@ func createBridgeComm(
 			var parameters []*Arg
 
 			for _, opt := range opts {
-				if !fflags.Changed(opt.name) {
+				if !fflags.Changed(opt.name) && opt.required {
 					ExitWithError(opt.missingError)
 				}
 
@@ -161,6 +205,16 @@ func createBridgeComm(
 					}
 				case "int64":
 					optValue, err := fflags.GetInt64(opt.name)
+					if err != nil {
+						ExitWithError(err)
+					}
+					arg = &Arg{
+						typeName:  opt.typename,
+						fieldName: opt.name,
+						value:     optValue,
+					}
+				case "int":
+					optValue, err := fflags.GetInt(opt.name)
 					if err != nil {
 						ExitWithError(err)
 					}
