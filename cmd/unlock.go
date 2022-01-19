@@ -45,7 +45,7 @@ var unlockcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Printf("\nUnlock tokens success\n")
+				fmt.Printf("\nUnlock tokens success\nHash: %v\n", txn.GetTransactionHash())
 				return
 			}
 		}

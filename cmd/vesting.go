@@ -248,9 +248,8 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting pool added successfully:",
-					zcncore.VestingSmartContractAddress+":vestingpool:"+
-						txn.GetTransactionHash())
+				log.Printf("\nVesting pool added successfully:%v:vestingpool:%v\nHash: %v",
+					zcncore.VestingSmartContractAddress, txn.GetTransactionHash(), txn.GetTransactionHash())
 				return
 			}
 		}
@@ -304,7 +303,7 @@ var vestingPoolDeleteCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting pool deleted successfully.")
+				log.Printf("\nVesting pool deleted successfully.\nHash: %v", txn.GetTransactionHash())
 				return
 			}
 		}
@@ -371,7 +370,7 @@ var vestingPoolStopCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Printf("\nStop vesting for %s.", dest)
+				log.Printf("\nStop vesting for %s.\nHash: %v", dest, txn.GetTransactionHash())
 				return
 			}
 		}
@@ -426,7 +425,7 @@ var vestingPoolUnlockCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nTokens unlocked successfully.")
+				log.Printf("\nTokens unlocked successfully.\nHash: %v", txn.GetTransactionHash())
 				return
 			}
 		}
@@ -481,7 +480,7 @@ var vestingPoolTriggerCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting triggered successfully.")
+				log.Printf("\nVesting triggered successfully.\nHash: %v", txn.GetTransactionHash())
 				return
 			}
 		}

@@ -106,7 +106,7 @@ var lockcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Printf("\nTokens (%f) locked successfully\n", token)
+				fmt.Printf("\nTokens (%f) locked successfully\nHash: %v", token, txn.GetTransactionHash())
 				return
 			}
 		}
