@@ -113,7 +113,7 @@ var minerscUpdateSettings = &cobra.Command{
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
 
-		fmt.Println("settings updated")
+		fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
 	},
 }
 
