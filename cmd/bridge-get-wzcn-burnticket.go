@@ -13,7 +13,7 @@ func init() {
 			"get confirmed burn ticket for ethereum burn transaction",
 			"get transaction ticket with the given Ethereum transaction hash",
 			commandGetETHBurnTicket,
-			hashOption,
+			WithHash("Ethereum transaction hash"),
 		))
 }
 

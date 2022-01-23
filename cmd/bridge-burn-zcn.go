@@ -14,7 +14,7 @@ func init() {
 			"burn zcn tokens",
 			"burn zcn tokens that will be minted for WZCN tokens",
 			commandBurnZCN,
-			amountOption,
+			WithAmount("ZCN token amount to be burned"),
 		))
 }
 

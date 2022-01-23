@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"sync"
+
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"os"
-	"sync"
 )
 
 const (
@@ -15,13 +17,18 @@ const (
 )
 
 const (
-	ConfigFileName = "bridge"
+	ConfigBridgeFileName = "bridge.yaml"
+	ConfigOwnerFileName  = "owner.yaml"
+	ConfigChainFileName  = "config.yaml"
 )
 
 const (
-	OptionHash    = "hash"
-	OptionAmount  = "amount"
-	OptionRetries = "retries"
+	OptionHash             = "hash"          // OptionHash hash passed to cmd
+	OptionAmount           = "amount"        // OptionAmount amount passed to cmd
+	OptionRetries          = "retries"       // OptionRetries retries
+	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
+	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
+	OptionBridgeConfigFile = "bridge_config" // OptionBridgeConfigFile bridge config filename
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
@@ -43,33 +50,78 @@ type Arg struct {
 }
 
 var (
-	hashOption = &Option{
+	configFolderOption = &Option{
+		name:         OptionConfigFolder,
+		value:        GetConfigDir(),
+		typename:     "string",
+		usage:        "Config home folder",
+		missingError: "Config home folder not specified",
+		required:     false,
+	}
+
+	configChainFileOption = &Option{
+		name:         OptionChainConfigFile,
+		value:        ConfigChainFileName,
+		typename:     "string",
+		usage:        "Chain config file name",
+		missingError: "Chain config file name not specified",
+		required:     false,
+	}
+
+	configBridgeFileOption = &Option{
+		name:         OptionBridgeConfigFile,
+		value:        ConfigBridgeFileName,
+		typename:     "string",
+		usage:        "Bridge config file name",
+		missingError: "Bridge config file name not specified",
+		required:     false,
+	}
+)
+
+func WithRetries(usage string) *Option {
+	return &Option{
+		name:         OptionRetries,
+		value:        DefaultRetries,
+		typename:     "int",
+		usage:        usage,
+		missingError: "Retries count should be provided",
+		required:     false,
+	}
+}
+
+func WithAmount(usage string) *Option {
+	return &Option{
+		name:         OptionAmount,
+		value:        int64(0),
+		usage:        usage,
+		typename:     "int64",
+		missingError: "Amount should be provided",
+		required:     true,
+	}
+}
+
+func WithHash(usage string) *Option {
+	return &Option{
 		name:         OptionHash,
 		value:        "",
-		usage:        "hash of the transaction",
+		usage:        usage,
 		typename:     "string",
 		missingError: "hash of the transaction should be provided",
 		required:     true,
 	}
+}
 
-	amountOption = &Option{
-		name:         OptionAmount,
-		value:        int64(0),
-		usage:        "amount",
-		typename:     "int64",
-		missingError: "amount should be provided",
-		required:     true,
-	}
+func GetBridgeConfigFile(args []*Arg) string {
+	return getString(args, OptionBridgeConfigFile)
+}
 
-	retriesOption = &Option{
-		name:         OptionRetries,
-		value:        DefaultRetries,
-		typename:     "int",
-		usage:        "",
-		missingError: "retries count should be provided",
-		required:     false,
-	}
-)
+func GetChainConfigFile(args []*Arg) string {
+	return getString(args, OptionChainConfigFile)
+}
+
+func GetConfigFolder(args []*Arg) string {
+	return getString(args, OptionConfigFolder)
+}
 
 func GetHash(args []*Arg) string {
 	return getString(args, OptionHash)
@@ -137,6 +189,10 @@ func createCommand(use, short, long string, functor Command, opts ...*Option) *c
 		functor(parameters...)
 	}
 
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
+
 	command := createBridgeComm(use, short, long, fn, opts)
 	AppendOptions(opts, command)
 	return command
@@ -145,9 +201,17 @@ func createCommand(use, short, long string, functor Command, opts ...*Option) *c
 // createCommandWithBridge Function to initialize bridge commands with DRY principle
 func createCommandWithBridge(use, short, long string, functor CommandWithBridge, opts ...*Option) *cobra.Command {
 	fn := func(parameters ...*Arg) {
-		bridge := initBridge()
+		folder := GetConfigFolder(parameters)
+		chainConfigFile := GetChainConfigFile(parameters)
+		bridgeConfigFile := GetBridgeConfigFile(parameters)
+
+		bridge := initBridge(folder, chainConfigFile, bridgeConfigFile)
 		functor(bridge, parameters...)
 	}
+
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
 
 	command := createBridgeComm(use, short, long, fn, opts)
 	AppendOptions(opts, command)
@@ -255,21 +319,35 @@ func GetConfigDir() string {
 	return configDir
 }
 
-func initBridge() *zcnbridge.BridgeClient {
+func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeClient {
 	var (
-		configDir   = GetConfigDir()
-		configFile  = ConfigFileName
-		logPath     = "logs"
-		loglevel    = "info"
-		development = false
+		configDir            = GetConfigDir()
+		configBridgeFileName = ConfigBridgeFileName
+		configChainFileName  = ConfigChainFileName
+		logPath              = "logs"
+		loglevel             = "info"
+		development          = false
 	)
 
+	if overrideConfigFolder != "" {
+		configDir = overrideConfigFolder
+	}
+
+	configBridgeFileName = overrideBridgeFile
+	configChainFileName = overrideConfigFile
+
+	configDir, err := filepath.Abs(configDir)
+	if err != nil {
+		ExitWithError(err)
+	}
+
 	cfg := &zcnbridge.BridgeSDKConfig{
-		LogLevel:    &loglevel,
-		LogPath:     &logPath,
-		ConfigFile:  &configFile,
-		ConfigDir:   &configDir,
-		Development: &development,
+		ConfigDir:        &configDir,
+		ConfigBridgeFile: &configBridgeFileName,
+		ConfigChainFile:  &configChainFileName,
+		LogPath:          &logPath,
+		LogLevel:         &loglevel,
+		Development:      &development,
 	}
 
 	bridge := zcnbridge.SetupBridgeClientSDK(cfg)

@@ -11,7 +11,7 @@ var listEthAccounts = &cobra.Command{
 	Short: "list Ethereum account registered in local key chain",
 	Long:  `list available ethereum accounts`,
 	Args:  cobra.MinimumNArgs(0),
-	Run: func(_ *cobra.Command, _ []string) {
+	Run: func(*cobra.Command, []string) {
 		accounts := zcnbridge.ListStorageAccounts()
 		if len(accounts) == 0 {
 			fmt.Printf("Accounts not found")

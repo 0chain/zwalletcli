@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
 )
@@ -11,6 +12,11 @@ var bridgeOwnerInit = &cobra.Command{
 	Long:  `init bridge owner config (owner.yaml) in HOME (~/.zcn) folder`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			path        = GetConfigDir()
+			ownerConfig = ConfigOwnerFileName
+		)
+
 		fflags := cmd.Flags()
 
 		// Flags
@@ -44,10 +50,22 @@ var bridgeOwnerInit = &cobra.Command{
 			ExitWithError(err)
 		}
 
+		path, err = fflags.GetString("path")
+		if err != nil {
+			fmt.Printf("Flag 'path' not found, defaulting to %s\n", GetConfigDir())
+		}
+
+		ownerConfig, err = fflags.GetString("owner_config")
+		if err != nil {
+			ownerConfig = ConfigOwnerFileName
+			fmt.Printf("Flag 'owner_config' not found, defaulting to %s\n", ConfigOwnerFileName)
+		}
+
 		// Action
 
 		zcnbridge.CreateInitialOwnerConfig(
-			"owner.yaml",
+			ownerConfig,
+			path,
 			ethereumaddress,
 			bridgeaddress,
 			wzcnaddress,
@@ -60,23 +78,28 @@ var bridgeOwnerInit = &cobra.Command{
 	},
 }
 
+//goland:noinspection GoUnhandledErrorResult
 func init() {
-	rootCmd.AddCommand(bridgeOwnerInit)
+	f := bridgeOwnerInit
+	rootCmd.AddCommand(f)
 
-	bridgeOwnerInit.PersistentFlags().String("password", "", "Password to unlock private key stored in local storage")
-	bridgeOwnerInit.PersistentFlags().String("ethereumaddress", "", "Client Ethereum address")
-	bridgeOwnerInit.PersistentFlags().String("bridgeaddress", "", "Bridge smart contract address")
-	bridgeOwnerInit.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
-	bridgeOwnerInit.PersistentFlags().String("authorizersaddress", "", "Authorizers smart contract address")
-	bridgeOwnerInit.PersistentFlags().String("ethereumnodeurl", "", "Ethereum Node URL (Infura/Alchemy)")
-	bridgeOwnerInit.PersistentFlags().Int64("gaslimit", 0, "Appr. gas limit to execute Ethereum transaction")
-	bridgeOwnerInit.PersistentFlags().Int64("value", 0, "Value sent along with Ethereum transaction")
+	f.PersistentFlags().String("path", GetConfigDir(), "Configuration dir")
+	f.PersistentFlags().String("owner_config", ConfigOwnerFileName, "Owner config file name")
+	f.PersistentFlags().String("password", "", "Password to unlock private key stored in local storage")
+	f.PersistentFlags().String("ethereumaddress", "", "Client Ethereum address")
+	f.PersistentFlags().String("bridgeaddress", "", "Bridge smart contract address")
+	f.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
+	f.PersistentFlags().String("authorizersaddress", "", "Authorizers smart contract address")
+	f.PersistentFlags().String("ethereumnodeurl", "", "Ethereum Node URL (Infura/Alchemy)")
+	f.PersistentFlags().Int64("gaslimit", 0, "Appr. gas limit to execute Ethereum transaction")
+	f.PersistentFlags().Int64("value", 0, "Value sent along with Ethereum transaction")
 
-	_ = bridgeOwnerInit.MarkFlagRequired("password")
-	_ = bridgeOwnerInit.MarkFlagRequired("ethereumaddress")
-	_ = bridgeOwnerInit.MarkFlagRequired("bridgeaddress")
-	_ = bridgeOwnerInit.MarkFlagRequired("wzcnaddress")
-	_ = bridgeOwnerInit.MarkFlagRequired("authorizersaddress")
-	_ = bridgeOwnerInit.MarkFlagRequired("ethereumnodeurl")
-	_ = bridgeOwnerInit.MarkFlagRequired("gaslimit")
+	f.MarkFlagRequired("path")
+	f.MarkFlagRequired("password")
+	f.MarkFlagRequired("ethereumaddress")
+	f.MarkFlagRequired("bridgeaddress")
+	f.MarkFlagRequired("wzcnaddress")
+	f.MarkFlagRequired("authorizersaddress")
+	f.MarkFlagRequired("ethereumnodeurl")
+	f.MarkFlagRequired("gaslimit")
 }

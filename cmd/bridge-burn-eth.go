@@ -15,8 +15,8 @@ func init() {
 			"burn eth tokens",
 			"burn eth tokens that will be minted on ZCN chain",
 			commandBurnEth,
-			amountOption,
-			retriesOption,
+			WithAmount("WZCN token amount to be burned"),
+			WithRetries("Num of seconds a transaction status check should run"),
 		))
 }
 
@@ -62,7 +62,13 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	if status == 1 {
 		fmt.Printf("Verification: WZCN burn [OK]: %s\n", hash)
-	} else {
-		ExitWithError(fmt.Sprintf("Verification: WZCN burn [FAILED]: %s\n", hash))
+	}
+
+	if status == 0 {
+		ExitWithError(fmt.Sprintf("Verification: WZCN burn [PENDING]: %s\n", hash))
+	}
+
+	if status == -1 {
+		ExitWithError(fmt.Sprintf("Verification: WZCN burn not started, please, check later [FAILED]: %s\n", hash))
 	}
 }

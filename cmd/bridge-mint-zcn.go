@@ -15,7 +15,7 @@ func init() {
 			"mint zcn tokens using the hash of Ethereum burn transaction",
 			"mint zcn tokens after burning WZCN tokens in Ethereum chain",
 			commandMintZCN,
-			hashOption,
+			WithHash("ZCN transaction hash"),
 		))
 }
 

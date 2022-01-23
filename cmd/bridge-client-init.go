@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
 )
@@ -11,6 +12,11 @@ var bridgeClientInit = &cobra.Command{
 	Long:  `init bridge client config (bridge.yaml) in HOME (~/.zcn) folder`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			path         = GetConfigDir()
+			bridgeConfig = ConfigBridgeFileName
+		)
+
 		fflags := cmd.Flags()
 
 		// Flags
@@ -44,10 +50,22 @@ var bridgeClientInit = &cobra.Command{
 			ExitWithError(err)
 		}
 
+		path, err = fflags.GetString("path")
+		if err != nil {
+			fmt.Printf("Flag 'path' not found, defaulting to %s\n", GetConfigDir())
+		}
+
+		bridgeConfig, err = fflags.GetString("bridge_config")
+		if err != nil {
+			bridgeConfig = ConfigBridgeFileName
+			fmt.Printf("Flag 'bridge_config' not found, defaulting to %s\n", ConfigBridgeFileName)
+		}
+
 		// Action
 
 		zcnbridge.CreateInitialClientConfig(
-			"bridge.yaml",
+			bridgeConfig,
+			path,
 			ethereumaddress,
 			bridgeaddress,
 			wzcnaddress,
@@ -60,23 +78,29 @@ var bridgeClientInit = &cobra.Command{
 	},
 }
 
+//goland:noinspection GoUnhandledErrorResult
 func init() {
-	rootCmd.AddCommand(bridgeClientInit)
+	f := bridgeClientInit
+	rootCmd.AddCommand(f)
 
-	bridgeClientInit.PersistentFlags().String("password", "", "password be used to unlock private key stored in local storage")
-	bridgeClientInit.PersistentFlags().String("ethereumaddress", "", "client Ethereum address")
-	bridgeClientInit.PersistentFlags().String("bridgeaddress", "", "bridge contract address")
-	bridgeClientInit.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
-	bridgeClientInit.PersistentFlags().String("ethereumnodeurl", "", "Ethereum Node URL (Infura/Alchemy)")
-	bridgeClientInit.PersistentFlags().Int64("gaslimit", 300000, "appr. gas limit to execute Ethereum transaction")
-	bridgeClientInit.PersistentFlags().Int64("value", 0, "value sent along with Ethereum transaction")
-	bridgeClientInit.PersistentFlags().Float64("consensusthreshold", 0.75, "Consensus threshold required to reach consensus for burn tickets")
+	f.PersistentFlags().String("path", GetConfigDir(), "Configuration dir")
+	f.PersistentFlags().String("bridge_config", ConfigBridgeFileName, "Bridge config file name")
+	f.PersistentFlags().String("password", "", "Password be used to unlock private key stored in local storage")
+	f.PersistentFlags().String("ethereumaddress", "", "Client Ethereum address")
+	f.PersistentFlags().String("bridgeaddress", "", "Bridge contract address")
+	f.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
+	f.PersistentFlags().String("ethereumnodeurl", "", "Ethereum Node URL (Infura/Alchemy)")
+	f.PersistentFlags().Int64("gaslimit", 300000, "appr. Gas limit to execute Ethereum transaction")
+	f.PersistentFlags().Float64("consensusthreshold", 0.75, "Consensus threshold required to reach consensus for burn tickets")
+	f.PersistentFlags().Int64("value", 0, "Value sent along with Ethereum transaction")
 
-	_ = bridgeClientInit.MarkFlagRequired("password")
-	_ = bridgeClientInit.MarkFlagRequired("ethereumaddress")
-	_ = bridgeClientInit.MarkFlagRequired("bridgeaddress")
-	_ = bridgeClientInit.MarkFlagRequired("wzcnaddress")
-	_ = bridgeClientInit.MarkFlagRequired("ethereumnodeurl")
-	_ = bridgeClientInit.MarkFlagRequired("gaslimit")
-	_ = bridgeClientInit.MarkFlagRequired("consensusthreshold")
+	f.MarkFlagRequired("path")
+	f.MarkFlagRequired("password")
+	f.MarkFlagRequired("ethereumaddress")
+	f.MarkFlagRequired("bridgeaddress")
+	f.MarkFlagRequired("wzcnaddress")
+	f.MarkFlagRequired("ethereumnodeurl")
+	f.MarkFlagRequired("gaslimit")
+	f.MarkFlagRequired("consensusthreshold")
+	// value not required
 }

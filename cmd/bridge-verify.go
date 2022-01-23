@@ -14,7 +14,7 @@ func init() {
 		`verify transaction.
 					<hash>`,
 		VerifyEthereumTransaction,
-		hashOption,
+		WithHash("Ethereum transaction hash"),
 	)
 
 	rootCmd.AddCommand(command)
