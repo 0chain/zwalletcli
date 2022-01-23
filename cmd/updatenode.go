@@ -7,6 +7,8 @@ import (
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"log"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -114,12 +116,19 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Wait()
-
-		if !statusBar.success {
+		if statusBar.success {
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
+			default:
+				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+		} else {
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
-
-		fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
 	},
 }
 
