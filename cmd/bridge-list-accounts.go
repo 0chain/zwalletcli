@@ -7,9 +7,9 @@ import (
 )
 
 var listEthAccounts = &cobra.Command{
-	Use:   "eth-list-accounts",
-	Short: "list Ethereum account registered in local key chain",
-	Long:  `list available ethereum accounts`,
+	Use:   "bridge-list-accounts",
+	Short: "List Ethereum account registered in local key chain",
+	Long:  `List available ethereum accounts`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(*cobra.Command, []string) {
 		accounts := zcnbridge.ListStorageAccounts()

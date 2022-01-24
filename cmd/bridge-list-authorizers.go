@@ -9,10 +9,10 @@ import (
 
 var listAuthorizers = &cobra.Command{
 	Use:   "bridge-list-auth",
-	Short: "list authorizers",
-	Long:  `list available authorizers`,
+	Short: "List authorizers",
+	Long:  `List available authorizers registered in 0Chain defined in config`,
 	Args:  cobra.MinimumNArgs(0),
-	Run: func(_ *cobra.Command, _ []string) {
+	Run: func(*cobra.Command, []string) {
 		authorizers, err := zcnbridge.GetAuthorizers()
 		if err != nil || authorizers == nil || len(authorizers) == 0 {
 			ExitWithError("\nAuthorizers not found\n", err)

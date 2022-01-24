@@ -14,7 +14,7 @@ var bridgeOwnerInit = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			path        = GetConfigDir()
-			ownerConfig = ConfigOwnerFileName
+			ownerConfig = DefaultConfigOwnerFileName
 		)
 
 		fflags := cmd.Flags()
@@ -23,7 +23,7 @@ var bridgeOwnerInit = &cobra.Command{
 
 		check(
 			cmd,
-			"password",
+			OptionKeyPassword,
 			"ethereumaddress",
 			"bridgeaddress",
 			"wzcnaddress",
@@ -35,7 +35,7 @@ var bridgeOwnerInit = &cobra.Command{
 
 		// Reading flags
 
-		password := cmd.Flag("password").Value.String()
+		password := cmd.Flag(OptionKeyPassword).Value.String()
 		ethereumaddress := cmd.Flag("ethereumaddress").Value.String()
 		bridgeaddress := cmd.Flag("bridgeaddress").Value.String()
 		wzcnaddress := cmd.Flag("wzcnaddress").Value.String()
@@ -50,15 +50,15 @@ var bridgeOwnerInit = &cobra.Command{
 			ExitWithError(err)
 		}
 
-		path, err = fflags.GetString("path")
+		path, err = fflags.GetString(OptionConfigFolder)
 		if err != nil {
-			fmt.Printf("Flag 'path' not found, defaulting to %s\n", GetConfigDir())
+			fmt.Printf("Flag '%s' not found, defaulting to %s\n", OptionConfigFolder, GetConfigDir())
 		}
 
-		ownerConfig, err = fflags.GetString("owner_config")
+		ownerConfig, err = fflags.GetString(OptionOwnerConfigFile)
 		if err != nil {
-			ownerConfig = ConfigOwnerFileName
-			fmt.Printf("Flag 'owner_config' not found, defaulting to %s\n", ConfigOwnerFileName)
+			ownerConfig = DefaultConfigOwnerFileName
+			fmt.Printf("Flag '%s' not found, defaulting to %s\n", OptionOwnerConfigFile, DefaultConfigOwnerFileName)
 		}
 
 		// Action
@@ -83,9 +83,9 @@ func init() {
 	f := bridgeOwnerInit
 	rootCmd.AddCommand(f)
 
-	f.PersistentFlags().String("path", GetConfigDir(), "Configuration dir")
-	f.PersistentFlags().String("owner_config", ConfigOwnerFileName, "Owner config file name")
-	f.PersistentFlags().String("password", "", "Password to unlock private key stored in local storage")
+	f.PersistentFlags().String(OptionConfigFolder, GetConfigDir(), "Configuration dir")
+	f.PersistentFlags().String(OptionOwnerConfigFile, DefaultConfigOwnerFileName, "Owner config file name")
+	f.PersistentFlags().String(OptionKeyPassword, "", "Password to unlock private key stored in local storage")
 	f.PersistentFlags().String("ethereumaddress", "", "Client Ethereum address")
 	f.PersistentFlags().String("bridgeaddress", "", "Bridge smart contract address")
 	f.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
@@ -94,8 +94,8 @@ func init() {
 	f.PersistentFlags().Int64("gaslimit", 0, "Appr. gas limit to execute Ethereum transaction")
 	f.PersistentFlags().Int64("value", 0, "Value sent along with Ethereum transaction")
 
-	f.MarkFlagRequired("path")
-	f.MarkFlagRequired("password")
+	f.MarkFlagRequired(OptionConfigFolder)
+	f.MarkFlagRequired(OptionKeyPassword)
 	f.MarkFlagRequired("ethereumaddress")
 	f.MarkFlagRequired("bridgeaddress")
 	f.MarkFlagRequired("wzcnaddress")

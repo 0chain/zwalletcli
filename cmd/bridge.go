@@ -17,9 +17,9 @@ const (
 )
 
 const (
-	ConfigBridgeFileName = "bridge.yaml"
-	ConfigOwnerFileName  = "owner.yaml"
-	ConfigChainFileName  = "config.yaml"
+	DefaultConfigBridgeFileName = "bridge.yaml"
+	DefaultConfigOwnerFileName  = "owner.yaml"
+	DefaultConfigChainFileName  = "config.yaml"
 )
 
 const (
@@ -29,6 +29,9 @@ const (
 	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
 	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
 	OptionBridgeConfigFile = "bridge_config" // OptionBridgeConfigFile bridge config filename
+	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename
+	OptionMnemonic         = "mnemonic"      // OptionMnemonic bridge config filename
+	OptionKeyPassword      = "password"      // OptionKeyPassword bridge config filename
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
@@ -61,7 +64,7 @@ var (
 
 	configChainFileOption = &Option{
 		name:         OptionChainConfigFile,
-		value:        ConfigChainFileName,
+		value:        DefaultConfigChainFileName,
 		typename:     "string",
 		usage:        "Chain config file name",
 		missingError: "Chain config file name not specified",
@@ -70,7 +73,7 @@ var (
 
 	configBridgeFileOption = &Option{
 		name:         OptionBridgeConfigFile,
-		value:        ConfigBridgeFileName,
+		value:        DefaultConfigBridgeFileName,
 		typename:     "string",
 		usage:        "Bridge config file name",
 		missingError: "Bridge config file name not specified",
@@ -322,8 +325,8 @@ func GetConfigDir() string {
 func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeClient {
 	var (
 		configDir            = GetConfigDir()
-		configBridgeFileName = ConfigBridgeFileName
-		configChainFileName  = ConfigChainFileName
+		configBridgeFileName = DefaultConfigBridgeFileName
+		configChainFileName  = DefaultConfigChainFileName
 		logPath              = "logs"
 		loglevel             = "info"
 		development          = false

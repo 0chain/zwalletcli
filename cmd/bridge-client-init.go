@@ -13,8 +13,8 @@ var bridgeClientInit = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			path         = GetConfigDir()
-			bridgeConfig = ConfigBridgeFileName
+			path                 = GetConfigDir()
+			bridgeConfigFileName = DefaultConfigBridgeFileName
 		)
 
 		fflags := cmd.Flags()
@@ -22,7 +22,7 @@ var bridgeClientInit = &cobra.Command{
 		// Flags
 
 		check(cmd,
-			"password",
+			OptionKeyPassword,
 			"ethereumaddress",
 			"bridgeaddress",
 			"wzcnaddress",
@@ -32,7 +32,7 @@ var bridgeClientInit = &cobra.Command{
 
 		// Reading flags
 
-		password := cmd.Flag("password").Value.String()
+		password := cmd.Flag(OptionKeyPassword).Value.String()
 		ethereumaddress := cmd.Flag("ethereumaddress").Value.String()
 		bridgeaddress := cmd.Flag("bridgeaddress").Value.String()
 		wzcnaddress := cmd.Flag("wzcnaddress").Value.String()
@@ -50,21 +50,21 @@ var bridgeClientInit = &cobra.Command{
 			ExitWithError(err)
 		}
 
-		path, err = fflags.GetString("path")
+		path, err = fflags.GetString(OptionConfigFolder)
 		if err != nil {
-			fmt.Printf("Flag 'path' not found, defaulting to %s\n", GetConfigDir())
+			fmt.Printf("Flag '%s' not found, defaulting to %s\n", OptionConfigFolder, GetConfigDir())
 		}
 
-		bridgeConfig, err = fflags.GetString("bridge_config")
+		bridgeConfigFileName, err = fflags.GetString(OptionBridgeConfigFile)
 		if err != nil {
-			bridgeConfig = ConfigBridgeFileName
-			fmt.Printf("Flag 'bridge_config' not found, defaulting to %s\n", ConfigBridgeFileName)
+			bridgeConfigFileName = DefaultConfigBridgeFileName
+			fmt.Printf("Flag '%s' not found, defaulting to %s\n", OptionBridgeConfigFile, DefaultConfigBridgeFileName)
 		}
 
 		// Action
 
 		zcnbridge.CreateInitialClientConfig(
-			bridgeConfig,
+			bridgeConfigFileName,
 			path,
 			ethereumaddress,
 			bridgeaddress,
@@ -83,9 +83,9 @@ func init() {
 	f := bridgeClientInit
 	rootCmd.AddCommand(f)
 
-	f.PersistentFlags().String("path", GetConfigDir(), "Configuration dir")
-	f.PersistentFlags().String("bridge_config", ConfigBridgeFileName, "Bridge config file name")
-	f.PersistentFlags().String("password", "", "Password be used to unlock private key stored in local storage")
+	f.PersistentFlags().String(OptionConfigFolder, GetConfigDir(), "Configuration dir")
+	f.PersistentFlags().String(OptionBridgeConfigFile, DefaultConfigBridgeFileName, "Bridge config file name")
+	f.PersistentFlags().String(OptionKeyPassword, "", "Password be used to unlock private key stored in local storage")
 	f.PersistentFlags().String("ethereumaddress", "", "Client Ethereum address")
 	f.PersistentFlags().String("bridgeaddress", "", "Bridge contract address")
 	f.PersistentFlags().String("wzcnaddress", "", "WZCN token address")
@@ -94,8 +94,8 @@ func init() {
 	f.PersistentFlags().Float64("consensusthreshold", 0.75, "Consensus threshold required to reach consensus for burn tickets")
 	f.PersistentFlags().Int64("value", 0, "Value sent along with Ethereum transaction")
 
-	f.MarkFlagRequired("path")
-	f.MarkFlagRequired("password")
+	f.MarkFlagRequired(OptionConfigFolder)
+	f.MarkFlagRequired(OptionKeyPassword)
 	f.MarkFlagRequired("ethereumaddress")
 	f.MarkFlagRequired("bridgeaddress")
 	f.MarkFlagRequired("wzcnaddress")
