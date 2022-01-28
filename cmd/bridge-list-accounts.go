@@ -11,10 +11,16 @@ var listEthAccounts = &cobra.Command{
 	Short: "List Ethereum account registered in local key chain",
 	Long:  `List available ethereum accounts`,
 	Args:  cobra.MinimumNArgs(0),
-	Run: func(*cobra.Command, []string) {
-		accounts := zcnbridge.ListStorageAccounts()
+	Run: func(cmd *cobra.Command, _ []string) {
+		fflags := cmd.Flags()
+		path, err := fflags.GetString(OptionConfigFolder)
+		if err != nil {
+			fmt.Printf("Flag '%s' not found, defaulting to %s\n", OptionConfigFolder, GetConfigDir())
+		}
+
+		accounts := zcnbridge.ListStorageAccounts(path)
 		if len(accounts) == 0 {
-			fmt.Printf("Accounts not found")
+			fmt.Println("Accounts not found")
 		}
 
 		fmt.Println("Ethereum available account:")
@@ -25,5 +31,8 @@ var listEthAccounts = &cobra.Command{
 }
 
 func init() {
+	f := listEthAccounts
 	rootCmd.AddCommand(listEthAccounts)
+
+	f.PersistentFlags().String(OptionConfigFolder, GetConfigDir(), "Configuration dir")
 }
