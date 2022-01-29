@@ -248,14 +248,21 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting pool added successfully:",
-					zcncore.VestingSmartContractAddress+":vestingpool:"+
-						txn.GetTransactionHash())
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					log.Printf("\nVesting pool added successfully:%v:vestingpool:%v\nHash: %v",
+						zcncore.VestingSmartContractAddress, txn.GetTransactionHash(), txn.GetTransactionHash())
+				default:
+					ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
 				return
+			} else {
+				log.Fatalf("\nFailed to add vesting pool: %s\n", statusBar.errMsg)
 			}
 		}
-
-		log.Fatalf("\nFailed to add vesting pool: %s\n", statusBar.errMsg)
 	},
 }
 
@@ -304,12 +311,20 @@ var vestingPoolDeleteCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting pool deleted successfully.")
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					log.Printf("\nVesting pool deleted successfully.\nHash: %v", txn.GetTransactionHash())
+				default:
+					ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
 				return
+			} else {
+				log.Fatalf("\nFailed to delete vesting pool: %s\n", statusBar.errMsg)
 			}
 		}
-
-		log.Fatalf("\nFailed to delete vesting pool: %s\n", statusBar.errMsg)
 	},
 }
 
@@ -371,12 +386,19 @@ var vestingPoolStopCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Printf("\nStop vesting for %s.", dest)
-				return
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					log.Printf("\nStop vesting for %s.\nHash: %v", dest, txn.GetTransactionHash())
+				default:
+					ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
+			} else {
+				log.Fatalf("\nFailed to stop vesting: %s\n", statusBar.errMsg)
 			}
 		}
-
-		log.Fatalf("\nFailed to stop vesting: %s\n", statusBar.errMsg)
 	},
 }
 
@@ -426,12 +448,20 @@ var vestingPoolUnlockCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nTokens unlocked successfully.")
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					log.Printf("\nTokens unlocked successfully.\nHash: %v", txn.GetTransactionHash())
+				default:
+					log.Fatalf("\nFailed to unlock tokens: %s\n", statusBar.errMsg)
+
+				}
 				return
+			} else {
+				fmt.Printf("Pour request failed\n")
 			}
 		}
-
-		log.Fatalf("\nFailed to unlock tokens: %s\n", statusBar.errMsg)
 	},
 }
 
@@ -481,12 +511,19 @@ var vestingPoolTriggerCmd = &cobra.Command{
 			statusBar.Wait()
 
 			if statusBar.success {
-				log.Println("\nVesting triggered successfully.")
-				return
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					log.Printf("\nVesting triggered successfully.\nHash: %v", txn.GetTransactionHash())
+				default:
+					ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
+			} else {
+				log.Fatalf("\nFailed to trigger vesting: %s\n", statusBar.errMsg)
 			}
 		}
-
-		log.Fatalf("\nFailed to trigger vesting: %s\n", statusBar.errMsg)
 	},
 }
 

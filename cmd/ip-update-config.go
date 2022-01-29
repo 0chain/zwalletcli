@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -47,11 +49,20 @@ var updateInterestPoolConfigCmd = &cobra.Command{
 		}
 		wg.Wait()
 
-		if !statusBar.success {
+		if statusBar.success {
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Printf("interest pool smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
+			default:
+				ExitWithError("\nExecute interest pool update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+			return
+		} else {
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
-
-		fmt.Printf("interest pool smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 	},
 }
 

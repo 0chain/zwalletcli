@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -109,11 +110,20 @@ var minerscUpdateSettings = &cobra.Command{
 		}
 		wg.Wait()
 
-		if !statusBar.success {
+		if statusBar.success {
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
+			default:
+				ExitWithError("\nExecute settings update update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+			return
+		} else {
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
-
-		fmt.Println("settings updated")
 	},
 }
 
@@ -449,11 +459,20 @@ var minerscLock = &cobra.Command{
 		}
 		wg.Wait()
 
-		if !statusBar.success {
+		if statusBar.success {
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Println("locked with:", txn.GetTransactionHash())
+			default:
+				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+			return
+		} else {
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
-
-		fmt.Println("locked with:", txn.GetTransactionHash())
 	},
 }
 
@@ -513,11 +532,20 @@ var minerscUnlock = &cobra.Command{
 		}
 		wg.Wait()
 
-		if !statusBar.success {
+		if statusBar.success {
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Println("tokens will be unlocked next VC")
+			default:
+				ExitWithError("\nExecute miner unlock update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+			return
+		} else {
 			log.Fatal("fatal:", statusBar.errMsg)
 		}
-
-		fmt.Println("tokens will be unlocked next VC")
 	},
 }
 
