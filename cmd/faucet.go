@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -50,7 +52,15 @@ var faucetcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Println("Execute faucet smart contract success with txn : ", txn.GetTransactionHash())
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					fmt.Println("Execute faucet smart contract success with txn : ", txn.GetTransactionHash())
+				default:
+					ExitWithError("\nExecute faucet smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
 				return
 			}
 		}

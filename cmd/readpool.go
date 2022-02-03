@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"errors"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -34,7 +36,15 @@ func createReadPool() (err error) {
 		wg.Wait()
 
 		if statusBar.success {
-			return // nil
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				return errors.New(strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				return
+			default:
+				return errors.New("\nExecute global settings update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
 		}
 	}
 
