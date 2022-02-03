@@ -354,7 +354,6 @@ func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile str
 	}
 
 	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
-	bridge.RestoreChain()
 
 	return bridge
 }
