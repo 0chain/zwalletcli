@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -107,12 +109,22 @@ func pourToWallet(wallet string) bool {
 			fmt.Printf("error in faucet transaction:\n%v\n", err.Error())
 			return false
 		}
+
 		if statusBar.success {
-			fmt.Printf("Pour request success\n")
-			b := checkBalance(wallet)
-			return b
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Printf("Pour request success\n")
+				b := checkBalance(wallet)
+				return b
+			default:
+				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+		} else {
+			fmt.Printf("Pour request failed\n")
 		}
-		fmt.Printf("Pour request failed\n")
 
 	}
 	return false
@@ -288,8 +300,22 @@ func registerMultiSig(grw string, msw string) error {
 				fmt.Printf("\nMultisigSC  wallet SC registration request success\n")
 				return nil
 			}
-			fmt.Printf("\nMultisigSC wallet SC registration request failed\n")
-			return nil
+
+			if statusBar.success {
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					fmt.Printf("\nMultisigSC  wallet SC registration request success\n")
+				default:
+					ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
+				return nil
+			} else {
+				fmt.Printf("\nMultisigSC wallet SC registration request failed\n")
+				return nil
+			}
 
 		}
 		fmt.Println("error in verifying multisig wallet registration: ", err.Error())
@@ -328,10 +354,23 @@ func registerMSVote(signerWalletStr string, voteStr string) error {
 			fmt.Println("error in verifying: ", err.Error())
 			return err
 		}
+
 		if statusBar.success {
-			fmt.Printf("\nMultisig Voting success\n")
+			switch txn.GetVerifyConfirmationStatus() {
+			case zcncore.ChargeableError:
+				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+			case zcncore.Success:
+				fmt.Printf("\nMultisig Voting success\n")
+			default:
+				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
+					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+			}
+
 			return nil
+		} else {
+			fmt.Printf("Pour request failed\n")
 		}
+
 	}
 	fmt.Println("\nFailed to register multisig vote. " + statusBar.errMsg + "\n")
 	return fmt.Errorf(statusBar.errMsg)
