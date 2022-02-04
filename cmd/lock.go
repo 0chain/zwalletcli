@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
@@ -106,7 +108,15 @@ var lockcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Printf("\nTokens (%f) locked successfully\n", token)
+				switch txn.GetVerifyConfirmationStatus() {
+				case zcncore.ChargeableError:
+					ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				case zcncore.Success:
+					fmt.Printf("\nTokens (%f) locked successfully\nHash: %v", token, txn.GetTransactionHash())
+				default:
+					ExitWithError("\nFailed to lock tokens. Unknown status code: " +
+						strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
+				}
 				return
 			}
 		}

@@ -36,7 +36,8 @@ var verifycmd = &cobra.Command{
 		}
 		if statusBar.success {
 			statusBar.success = false
-			fmt.Printf("\nTransaction verification success\n")
+			fmt.Printf("\nTransaction verification success\nTransactionStatus: %v\nTransactionOutput: %v",
+				txn.GetVerifyConfirmationStatus(), txn.GetVerifyOutput())
 			return
 		}
 		ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
