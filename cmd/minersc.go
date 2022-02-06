@@ -484,7 +484,7 @@ var minerscUnlock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags(zz)
+			flags  = cmd.Flags()
 			id     string
 			poolID string
 			err    error
