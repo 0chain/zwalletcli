@@ -21,7 +21,7 @@ var minerScPayReward = &cobra.Command{
 			log.Fatal("missing pool id flag")
 		}
 
-		pool_id, err := flags.GetString("pool_id")
+		poolId, err := flags.GetString("pool_id")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -30,7 +30,12 @@ var minerScPayReward = &cobra.Command{
 			log.Fatal("missing tokens flag")
 		}
 
-		providerType, err := flags.GetString("provider_type")
+		providerName, err := flags.GetString("provider_type")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pr, err := zcncore.NewSCPayReward(poolId, providerName)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -44,7 +49,21 @@ var minerScPayReward = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCPayReward(pool_id, providerType)
+		switch pr.ProviderType {
+		case zcncore.ProviderMiner:
+			err = txn.MinerSCPayReward(pr)
+		case zcncore.ProviderSharder:
+			err = txn.MinerSCPayReward(pr)
+		case zcncore.ProviderBlobber:
+			err = txn.StorageSCPayReward(pr)
+		case zcncore.ProviderValidator:
+			err = txn.StorageSCPayReward(pr)
+		case zcncore.ProviderAuthorizer:
+			err = txn.MinerSCPayReward(pr)
+		default:
+			log.Fatal("unknown provider type")
+		}
+
 		if err != nil {
 			log.Fatal(err)
 		}
