@@ -2,15 +2,40 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"sync"
 
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 )
 
-// type HashCommand func(*zcnbridge.Bridge, string)
+const (
+	DefaultRetries = 60
+)
 
-type Command func(*zcnbridge.BridgeClient, ...*Arg)
+const (
+	DefaultConfigBridgeFileName = "bridge.yaml"
+	DefaultConfigOwnerFileName  = "owner.yaml"
+	DefaultConfigChainFileName  = "config.yaml"
+)
+
+const (
+	OptionHash             = "hash"          // OptionHash hash passed to cmd
+	OptionAmount           = "amount"        // OptionAmount amount passed to cmd
+	OptionRetries          = "retries"       // OptionRetries retries
+	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
+	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
+	OptionBridgeConfigFile = "bridge_config" // OptionBridgeConfigFile bridge config filename
+	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename
+	OptionMnemonic         = "mnemonic"      // OptionMnemonic bridge config filename
+	OptionKeyPassword      = "password"      // OptionKeyPassword bridge config filename
+)
+
+type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
+type Command func(...*Arg)
 
 type Option struct {
 	name         string
@@ -28,72 +53,210 @@ type Arg struct {
 }
 
 var (
-	hashOption = &Option{
-		name:         "hash",
+	configFolderOption = &Option{
+		name:         OptionConfigFolder,
+		value:        GetConfigDir(),
+		typename:     "string",
+		usage:        "Config home folder",
+		missingError: "Config home folder not specified",
+		required:     false,
+	}
+
+	configChainFileOption = &Option{
+		name:         OptionChainConfigFile,
+		value:        DefaultConfigChainFileName,
+		typename:     "string",
+		usage:        "Chain config file name",
+		missingError: "Chain config file name not specified",
+		required:     false,
+	}
+
+	configBridgeFileOption = &Option{
+		name:         OptionBridgeConfigFile,
+		value:        DefaultConfigBridgeFileName,
+		typename:     "string",
+		usage:        "Bridge config file name",
+		missingError: "Bridge config file name not specified",
+		required:     false,
+	}
+)
+
+func WithRetries(usage string) *Option {
+	return &Option{
+		name:         OptionRetries,
+		value:        DefaultRetries,
+		typename:     "int",
+		usage:        usage,
+		missingError: "Retries count should be provided",
+		required:     false,
+	}
+}
+
+func WithAmount(usage string) *Option {
+	return &Option{
+		name:         OptionAmount,
+		value:        int64(0),
+		usage:        usage,
+		typename:     "int64",
+		missingError: "Amount should be provided",
+		required:     true,
+	}
+}
+
+func WithHash(usage string) *Option {
+	return &Option{
+		name:         OptionHash,
 		value:        "",
-		usage:        "hash of the transaction",
+		usage:        usage,
 		typename:     "string",
 		missingError: "hash of the transaction should be provided",
 		required:     true,
 	}
+}
 
-	amountOption = &Option{
-		name:         "amount",
-		value:        0,
-		usage:        "amount",
-		typename:     "int64",
-		missingError: "amount should be provided",
-		required:     true,
-	}
-)
+func GetBridgeConfigFile(args []*Arg) string {
+	return getString(args, OptionBridgeConfigFile)
+}
+
+func GetChainConfigFile(args []*Arg) string {
+	return getString(args, OptionChainConfigFile)
+}
+
+func GetConfigFolder(args []*Arg) string {
+	return getString(args, OptionConfigFolder)
+}
 
 func GetHash(args []*Arg) string {
+	return getString(args, OptionHash)
+}
+
+func GetAmount(args []*Arg) int64 {
+	return getInt64(args, OptionAmount)
+}
+
+func GetRetries(args []*Arg) int {
+	return getInt(args, OptionRetries)
+}
+
+func getString(args []*Arg, name string) string {
 	if len(args) == 0 {
 		ExitWithError("wrong number of arguments")
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == "hash" {
+		if arg.fieldName == name {
 			return (arg.value).(string)
 		}
 	}
 
-	ExitWithError("failed to get hash")
+	ExitWithError("failed to get " + name)
 
 	return ""
 }
 
-func GetAmount(args []*Arg) int64 {
+func getInt(args []*Arg, name string) int {
 	if len(args) == 0 {
 		ExitWithError("wrong number of arguments")
 	}
 
 	for _, arg := range args {
-		if arg.fieldName == "amount" {
-			return (arg.value).(int64)
+		if arg.fieldName == name {
+			return (arg.value).(int)
 		}
 	}
 
-	ExitWithError("failed to get hash")
+	ExitWithError("failed to get " + name)
 
 	return 0
 }
 
-// createBridgeCommand Function to initialize bridge commands with DRY principle
-func createBridgeCommand(use, short, long string, functor Command, opts ...*Option) *cobra.Command {
+func getInt64(args []*Arg, name string) int64 {
+	if len(args) == 0 {
+		ExitWithError("wrong number of arguments")
+	}
+
+	for _, arg := range args {
+		if arg.fieldName == name {
+			return (arg.value).(int64)
+		}
+	}
+
+	ExitWithError("failed to get " + name)
+
+	return 0
+}
+
+// createCommand Function to initialize bridge commands with DRY principle
+func createCommand(use, short, long string, functor Command, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		functor(parameters...)
+	}
+
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
+// createCommandWithBridge Function to initialize bridge commands with DRY principle
+func createCommandWithBridge(use, short, long string, functor CommandWithBridge, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		folder := GetConfigFolder(parameters)
+		chainConfigFile := GetChainConfigFile(parameters)
+		bridgeConfigFile := GetBridgeConfigFile(parameters)
+
+		bridge := initBridge(folder, chainConfigFile, bridgeConfigFile)
+		functor(bridge, parameters...)
+	}
+
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
+func AppendOptions(opts []*Option, command *cobra.Command) {
+	for _, opt := range opts {
+		switch opt.typename {
+		case "string":
+			command.PersistentFlags().String(opt.name, opt.value.(string), opt.usage)
+		case "int64":
+			command.PersistentFlags().Int64(opt.name, opt.value.(int64), opt.usage)
+		case "int":
+			command.PersistentFlags().Int(opt.name, opt.value.(int), opt.usage)
+		}
+
+		if opt.required {
+			_ = command.MarkFlagRequired(opt.name)
+		}
+	}
+}
+
+func createBridgeComm(
+	use string,
+	short string,
+	long string,
+	functor Command,
+	opts []*Option,
+) *cobra.Command {
 	var cobraCommand = &cobra.Command{
 		Use:   use,
 		Short: short,
 		Long:  long,
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-
 			fflags := cmd.Flags()
 
 			var parameters []*Arg
 
 			for _, opt := range opts {
-				if !fflags.Changed(opt.name) {
+				if !fflags.Changed(opt.name) && opt.required {
 					ExitWithError(opt.missingError)
 				}
 
@@ -119,6 +282,16 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 						fieldName: opt.name,
 						value:     optValue,
 					}
+				case "int":
+					optValue, err := fflags.GetInt(opt.name)
+					if err != nil {
+						ExitWithError(err)
+					}
+					arg = &Arg{
+						typeName:  opt.typename,
+						fieldName: opt.name,
+						value:     optValue,
+					}
 				default:
 					ExitWithError(fmt.Printf("unknown argument: %s, value: %v\n", opt.name, opt.value))
 				}
@@ -132,30 +305,87 @@ func createBridgeCommand(use, short, long string, functor Command, opts ...*Opti
 				ExitWithError("ethereum_node_url must be setup in config")
 			}
 
-			cfg := zcnbridge.ReadClientConfigFromCmd()
-
-			bridge := zcnbridge.SetupBridgeClientSDK(cfg)
-			bridge.RestoreChain()
-
-			functor(bridge, parameters...)
+			functor(parameters...)
 		},
 	}
+	return cobraCommand
+}
 
-	cobraCommand.PersistentFlags().String("file", "", "bridge config file")
-	_ = cobraCommand.MarkFlagRequired("file")
+func GetConfigDir() string {
+	var configDir string
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	configDir = home + "/.zcn"
+	return configDir
+}
 
-	for _, opt := range opts {
-		switch opt.typename {
-		case "string":
-			cobraCommand.PersistentFlags().String(opt.name, "", opt.usage)
-		case "int64":
-			cobraCommand.PersistentFlags().Int64(opt.name, 0, opt.usage)
-		}
+func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeClient {
+	var (
+		configDir            = GetConfigDir()
+		configBridgeFileName = DefaultConfigBridgeFileName
+		configChainFileName  = DefaultConfigChainFileName
+		logPath              = "logs"
+		loglevel             = "info"
+		development          = false
+	)
 
-		if opt.required {
-			_ = cobraCommand.MarkFlagRequired(opt.name)
-		}
+	if overrideConfigFolder != "" {
+		configDir = overrideConfigFolder
 	}
 
-	return cobraCommand
+	configBridgeFileName = overrideBridgeFile
+	configChainFileName = overrideConfigFile
+
+	configDir, err := filepath.Abs(configDir)
+	if err != nil {
+		ExitWithError(err)
+	}
+
+	cfg := &zcnbridge.BridgeSDKConfig{
+		ConfigDir:        &configDir,
+		ConfigBridgeFile: &configBridgeFileName,
+		ConfigChainFile:  &configChainFileName,
+		LogPath:          &logPath,
+		LogLevel:         &loglevel,
+		Development:      &development,
+	}
+
+	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
+
+	return bridge
+}
+
+func check(cmd *cobra.Command, flags ...string) {
+	fflags := cmd.Flags()
+	for _, flag := range flags {
+		if !fflags.Changed(flag) {
+			ExitWithError(fmt.Sprintf("Error: '%s' flag is missing", flag))
+		}
+	}
+}
+
+func verify(hash string) {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	txn, err := zcncore.NewTransaction(statusBar, 0)
+	if err != nil {
+		ExitWithError(err)
+	}
+	_ = txn.SetTransactionHash(hash)
+	wg.Add(1)
+	err = txn.Verify()
+	if err == nil {
+		wg.Wait()
+	} else {
+		ExitWithError(err.Error())
+	}
+	if statusBar.success {
+		statusBar.success = false
+		fmt.Printf("\nTransaction verification success\n")
+		return
+	}
+	ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
 }

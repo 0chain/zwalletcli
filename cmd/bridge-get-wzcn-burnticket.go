@@ -8,12 +8,12 @@ import (
 
 func init() {
 	rootCmd.AddCommand(
-		createBridgeCommand(
-			"bridge-get-eth-burn",
+		createCommandWithBridge(
+			"bridge-get-wzcn-burn",
 			"get confirmed burn ticket for ethereum burn transaction",
 			"get transaction ticket with the given Ethereum transaction hash",
 			commandGetETHBurnTicket,
-			hashOption,
+			WithHash("Ethereum transaction hash"),
 		))
 }
 
@@ -25,7 +25,7 @@ func commandGetETHBurnTicket(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err)
 	}
 
-	fmt.Println("Ethereum burn ticket the completed consensus")
+	fmt.Println("WZCN burn ticket the completed consensus")
 	fmt.Printf("Transaction nonce: %d\n", payload.Nonce)
 	fmt.Printf("Transaction amount: %d\n", payload.Amount)
 	fmt.Printf("ZCN transaction ID: %s\n", payload.ZCNTxnID)

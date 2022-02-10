@@ -10,12 +10,12 @@ import (
 
 func init() {
 	rootCmd.AddCommand(
-		createBridgeCommand(
-			"bridge-mint-eth",
+		createCommandWithBridge(
+			"bridge-mint-wzcn",
 			"mint WZCN tokens using the hash of ZCN burn transaction",
 			"mint WZCN tokens after burning ZCN tokens in ZCN chain",
 			commandMintEth,
-			hashOption,
+			WithHash("Ethereum transaction hash"),
 		))
 }
 
@@ -36,6 +36,8 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancelFunc()
+
+	fmt.Println("Starting to mint WZCN")
 
 	tx, err := b.MintWZCN(ctx, payload)
 	if err != nil {

@@ -18,6 +18,9 @@ gomod-download:
 gomod-clean:
 	go clean -i -r -x -modcache  ./...
 
+build:
+	CGO_ENABLED=1 go build -v -tags bn256 -o $(ZWALLET) main.go
+
 $(ZWALLET): gomod-download
 	$(eval VERSION=$(shell git describe --tags --dirty --always))
 	CGO_ENABLED=1 go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $(ZWALLET) main.go

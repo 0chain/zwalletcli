@@ -30,3 +30,5 @@ zwallet.init.sh
 .vscode
 
 .DS_Store
+
+.idea/
