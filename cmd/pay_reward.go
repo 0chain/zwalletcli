@@ -35,11 +35,6 @@ var minerScPayReward = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		pr, err := zcncore.NewSCPayReward(poolId, providerName)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		var (
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
@@ -49,17 +44,13 @@ var minerScPayReward = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		switch pr.ProviderType {
-		case zcncore.ProviderMiner:
-			err = txn.MinerSCPayReward(pr)
-		case zcncore.ProviderSharder:
-			err = txn.MinerSCPayReward(pr)
-		case zcncore.ProviderBlobber:
-			err = txn.StorageSCPayReward(pr)
-		case zcncore.ProviderValidator:
-			err = txn.StorageSCPayReward(pr)
-		case zcncore.ProviderAuthorizer:
-			err = txn.MinerSCPayReward(pr)
+		switch providerName {
+		case "miner":
+			err = txn.MinerSCPayReward(poolId, zcncore.ProviderMiner)
+		case "sharder":
+			err = txn.MinerSCPayReward(poolId, zcncore.ProviderSharder)
+		case "authorizer":
+			err = txn.MinerSCPayReward(poolId, zcncore.ProviderAuthorizer)
 		default:
 			log.Fatal("unknown provider type")
 		}

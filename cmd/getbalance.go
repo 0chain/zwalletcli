@@ -18,6 +18,7 @@ var getbalancecmd = &cobra.Command{
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
 		err := zcncore.GetBalance(statusBar)
+
 		if err != nil {
 			ExitWithError(err)
 			return
@@ -34,6 +35,7 @@ var getbalancecmd = &cobra.Command{
 			return
 		}
 		fmt.Printf("\nBalance: %v (%.2f USD)\n", b, usd)
+		fmt.Printf("piers balance %d", b)
 	},
 }
 
