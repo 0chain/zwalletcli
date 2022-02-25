@@ -22,7 +22,7 @@ var createmswalletcmd = &cobra.Command{
 		MaxSigners := 20 //This is the limitation from MultiSigSC
 		MinSigners := 2  //This is the limitation from MultiSigSC
 		fflags := cmd.Flags()
-		if !fflags.Changed("numsigners") {
+		if fflags.Changed("numsigners") == false {
 			ExitWithError("Error: numsigners flag is missing")
 		}
 		numsigners, err := cmd.Flags().GetInt("numsigners")
@@ -37,19 +37,15 @@ var createmswalletcmd = &cobra.Command{
 			ExitWithError(fmt.Sprintf("Error: too few signers. Minimum numsigners required is %d\n", MinSigners))
 		}
 
-		if !fflags.Changed("threshold") {
+		if fflags.Changed("threshold") == false {
 			ExitWithError("Error: threshold flag is missing")
 		}
-
 		threshold, err := cmd.Flags().GetInt("threshold")
 		if err != nil {
 			ExitWithError("Error: threshold is not an integer")
 		}
 		if threshold > numsigners {
 			ExitWithError(fmt.Sprintf("Error: given threshold (%d) is too high. Threshold has to be less than or equal to numsigners (%d)\n", threshold, numsigners))
-		}
-		if threshold <= 0 {
-			ExitWithError("Error: threshold should be bigger than 0")
 		}
 
 		testN, err := cmd.Flags().GetBool("testn")
