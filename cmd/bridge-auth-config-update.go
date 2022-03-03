@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"log"
@@ -22,10 +23,11 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		)
 
 		var (
-			flags = cmd.Flags()
-			ID    string
-			Fee   string
-			err   error
+			flags      = cmd.Flags()
+			ID         string
+			Fee        string
+			FeeBalance int64
+			err        error
 		)
 
 		if flags.Changed(IDFlag) {
@@ -40,10 +42,15 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 			}
 		}
 
+		FeeBalance, err = strconv.ParseInt(Fee, 10, 64)
+		if err != nil {
+			log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
+		}
+
 		node := &zcncore.AuthorizerNode{
 			ID: ID,
 			Config: &zcncore.AuthorizerConfig{
-				Fee: Fee,
+				Fee: common.Balance(FeeBalance),
 			},
 		}
 
