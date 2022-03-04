@@ -46,11 +46,11 @@ var minerScPayReward = &cobra.Command{
 		wg.Add(1)
 		switch providerName {
 		case "miner":
-			err = txn.MinerSCPayReward(poolId, zcncore.ProviderMiner)
+			err = txn.MinerSCCollectReward(poolId, zcncore.ProviderMiner)
 		case "sharder":
-			err = txn.MinerSCPayReward(poolId, zcncore.ProviderSharder)
+			err = txn.MinerSCCollectReward(poolId, zcncore.ProviderSharder)
 		case "authorizer":
-			err = txn.MinerSCPayReward(poolId, zcncore.ProviderAuthorizer)
+			log.Fatal("not implemented yet")
 		default:
 			log.Fatal("unknown provider type")
 		}
