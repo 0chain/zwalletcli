@@ -11,25 +11,36 @@ import (
 )
 
 var minerScPayReward = &cobra.Command{
-	Use:   "pay_reward",
+	Use:   "collect-reward",
 	Short: "Pay accrued rewards for a stake pool.",
 	Long:  "Pay accrued rewards for a stake pool.",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		flags := cmd.Flags()
-		if !flags.Changed("pool_id") {
-			log.Fatal("missing pool id flag")
+		if !flags.Changed("pool_id") && !flags.Changed("provider_id") {
+			log.Fatal("must have pool id or provider id")
 		}
 
-		poolId, err := flags.GetString("pool_id")
-		if err != nil {
-			log.Fatal(err)
+		var poolId, providerId string
+		var err error
+
+		if flags.Changed("pool_id") {
+			poolId, err = flags.GetString("pool_id")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("provider_id") {
+			providerId, err = flags.GetString("provider_id")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if !flags.Changed("provider_type") {
 			log.Fatal("missing tokens flag")
 		}
-
 		providerName, err := flags.GetString("provider_type")
 		if err != nil {
 			log.Fatal(err)
@@ -46,9 +57,9 @@ var minerScPayReward = &cobra.Command{
 		wg.Add(1)
 		switch providerName {
 		case "miner":
-			err = txn.MinerSCCollectReward(poolId, zcncore.ProviderMiner)
+			err = txn.MinerSCCollectReward(providerId, poolId, zcncore.ProviderMiner)
 		case "sharder":
-			err = txn.MinerSCCollectReward(poolId, zcncore.ProviderSharder)
+			err = txn.MinerSCCollectReward(providerId, poolId, zcncore.ProviderSharder)
 		case "authorizer":
 			log.Fatal("not implemented yet")
 		default:
@@ -93,6 +104,8 @@ func init() {
 
 	minerScPayReward.PersistentFlags().String("pool_id", "", "stake pool id")
 	minerScPayReward.MarkFlagRequired("pool_id")
-	minerScPayReward.PersistentFlags().String("provider_type", "blobber", "provider type")
+	minerScPayReward.PersistentFlags().String("provider_id", "", "miner or sharder id")
+	minerScPayReward.MarkFlagRequired("provider_id")
+	minerScPayReward.PersistentFlags().String("provider_type", "blobber", "provider type, miner or sharder")
 	minerScPayReward.MarkFlagRequired("provider_type")
 }
