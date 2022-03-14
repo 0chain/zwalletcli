@@ -187,11 +187,6 @@ var minerscMiners = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if len(info.Nodes) == 0 {
-			fmt.Println("no miners in Miner SC")
-			return
-		}
-
 		if flags.Changed("json") {
 			var j bool
 			if j, err = flags.GetBool("json"); err != nil {
@@ -201,6 +196,11 @@ var minerscMiners = &cobra.Command{
 				util.PrintJSON(info)
 				return
 			}
+		}
+
+		if len(info.Nodes) == 0 {
+			fmt.Println("no miners in Miner SC")
+			return
 		}
 
 		for _, node := range info.Nodes {

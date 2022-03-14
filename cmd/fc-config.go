@@ -8,8 +8,8 @@ import (
 
 var getFaucetConfigCmd = &cobra.Command{
 	Use:   "fc-config",
-	Short: "Show facuet configurations.",
-	Long:  `Show facuet configurations.`,
+	Short: "Show Faucet configurations.",
+	Long:  `Show Faucet configurations.`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
