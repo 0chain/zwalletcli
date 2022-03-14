@@ -328,26 +328,22 @@ var minerscUserInfo = &cobra.Command{
 		}
 
 		var total common.Balance
-		for _, nodes := range info.Pools {
-			for _, pools := range nodes {
-				for _, pool := range pools {
-					total += pool.Balance
-				}
+		for _, delegates := range info.Pools {
+			for _, pool := range delegates {
+				total += pool.Balance
 			}
 		}
 
-		for key, nodes := range info.Pools {
-			for nit, pools := range nodes {
-				fmt.Println("- node:", nit+" ("+key+")")
-				for _, pool := range pools {
-					fmt.Println("  - pool_id:       ", pool.ID)
-					fmt.Println("    balance:       ", pool.Balance)
-					fmt.Println("    interests paid:", pool.InterestPaid)
-					fmt.Println("    rewards paid:  ", pool.RewardPaid)
-					fmt.Println("    status:        ", strings.ToLower(pool.Status))
-					fmt.Println("    stake %:       ",
-						float64(pool.Balance)/float64(total)*100.0, "%")
-				}
+		for key, delegates := range info.Pools {
+			for _, pool := range delegates {
+				fmt.Println("- delegates:", "("+key+")")
+				fmt.Println("  - pool_id:            ", pool.ID)
+				fmt.Println("    balance:            ", pool.Balance)
+				fmt.Println("    rewards uncollected:", pool.Reward)
+				fmt.Println("    rewards paid:       ", pool.RewardPaid)
+				fmt.Println("    status:             ", strings.ToLower(pool.Status))
+				fmt.Println("    stake %:            ",
+					float64(pool.Balance)/float64(total)*100.0, "%")
 			}
 		}
 	},
