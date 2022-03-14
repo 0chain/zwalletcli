@@ -106,6 +106,6 @@ func init() {
 	minerScPayReward.MarkFlagRequired("pool_id")
 	minerScPayReward.PersistentFlags().String("provider_id", "", "miner or sharder id")
 	minerScPayReward.MarkFlagRequired("provider_id")
-	minerScPayReward.PersistentFlags().String("provider_type", "blobber", "provider type, miner or sharder")
+	minerScPayReward.PersistentFlags().String("provider_type", "miner", "provider type, miner or sharder")
 	minerScPayReward.MarkFlagRequired("provider_type")
 }
