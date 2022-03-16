@@ -27,7 +27,6 @@ var updateGlobalConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		println(nonce)
 		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
