@@ -23,11 +23,10 @@ var getnoncecmd = &cobra.Command{
 			return
 		}
 		wg.Wait()
-		if !statusBar.success {
-			ExitWithError(fmt.Sprintf("\nFailed to get balance: %s\n", statusBar.errMsg))
-			return
+		b := int64(0)
+		if statusBar.success {
+			b = statusBar.nonce
 		}
-		b := statusBar.nonce
 		fmt.Printf("\nNonce: %v\n", b)
 	},
 }
