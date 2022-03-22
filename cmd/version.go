@@ -20,7 +20,7 @@ var versionCmd = &cobra.Command{
 
 		if doJSON {
 			j := make(map[string]string)
-			j["zbox"] = VersionStr
+			j["zwallet"] = VersionStr
 			j["gosdk"] = getVersion("github.com/0chain/gosdk")
 			util.PrintJSON(j)
 			return
