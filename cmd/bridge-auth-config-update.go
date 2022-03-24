@@ -79,6 +79,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		wg.Wait()
 
 		if statusBar.success {
+			fmt.Printf("Nonce:%v\n", txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
 				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))

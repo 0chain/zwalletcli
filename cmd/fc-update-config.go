@@ -54,13 +54,14 @@ var updateFaucetCmd = &cobra.Command{
 		}
 
 		if statusBar.success {
+			fmt.Printf("Hash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))
 			case zcncore.Success:
 				fmt.Printf("faucet smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 			default:
-				ExitWithError("\nExecute faucet smart contract failed. Unknown status code: " +
+				ExitWithError("Execute faucet smart contract failed. Unknown status code: " +
 					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
 			}
 			return
