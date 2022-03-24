@@ -370,7 +370,7 @@ func check(cmd *cobra.Command, flags ...string) {
 func verify(hash string) {
 	wg := &sync.WaitGroup{}
 	statusBar := &ZCNStatus{wg: wg}
-	txn, err := zcncore.NewTransaction(statusBar, 0, 0)
+	txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 	if err != nil {
 		ExitWithError(err)
 	}
