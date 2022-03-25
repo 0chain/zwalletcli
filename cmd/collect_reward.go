@@ -38,9 +38,6 @@ var minerScPayReward = &cobra.Command{
 			}
 		}
 
-		if !flags.Changed("provider_type") {
-			log.Fatal("missing tokens flag")
-		}
 		providerName, err := flags.GetString("provider_type")
 		if err != nil {
 			log.Fatal(err)
