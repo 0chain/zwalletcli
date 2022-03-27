@@ -54,7 +54,7 @@ var updateFaucetCmd = &cobra.Command{
 		}
 
 		if statusBar.success {
-			fmt.Printf("Hash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
+			//fmt.Printf("Hash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
 				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))

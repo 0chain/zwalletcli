@@ -50,7 +50,7 @@ var updateMinerScConfigCmd = &cobra.Command{
 		wg.Wait()
 
 		if statusBar.success {
-			fmt.Printf("\nHash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
+			//fmt.Printf("\nHash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
 				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))
