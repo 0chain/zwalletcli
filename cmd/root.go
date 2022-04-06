@@ -20,6 +20,7 @@ var walletFile string
 var cDir string
 var bSilent bool
 
+var SignScheme string
 var clientConfig string
 var minSubmit int
 var minCfm int
@@ -30,13 +31,12 @@ var rootCmd = &cobra.Command{
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
 	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
-	PersistentPreRun: checkWalletPath,
+	PersistentPreRun: preRunLogic,
 }
 
 var clientWallet *zcncrypto.Wallet
 
 func init() {
-	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config.yaml)")
 	rootCmd.PersistentFlags().StringVar(&networkFile, "network", "", "network file to overwrite the network details (if required, default is network.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
@@ -48,6 +48,23 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+func preRunLogic(cmd *cobra.Command, args []string) {
+	cmdName := cmd.Name()
+	isVersion := cmdName == "version"
+	
+	if isVersion {
+		return
+	}
+
+	initConfig()
+
+	skipWalletCheck := cmdName == "createmswallet"
+
+	if (!skipWalletCheck) {
+		checkWalletPath(cmd, args)
 	}
 }
 
@@ -70,12 +87,15 @@ func initConfig() {
 	nodeConfig := viper.New()
 	networkConfig := viper.New()
 	var configDir string
+
 	if cDir != "" {
 		configDir = cDir
 	} else {
 		configDir = getConfigDir()
 	}
+
 	nodeConfig.AddConfigPath(configDir)
+
 	if &cfgFile != nil && len(cfgFile) > 0 {
 		nodeConfig.SetConfigFile(configDir + "/" + cfgFile)
 	} else {
@@ -83,6 +103,7 @@ func initConfig() {
 	}
 
 	networkConfig.AddConfigPath(configDir)
+
 	if &networkFile != nil && len(networkFile) > 0 {
 		networkConfig.SetConfigFile(configDir + "/" + networkFile)
 	} else {
@@ -93,8 +114,8 @@ func initConfig() {
 		ExitWithError("Can't read config:", err)
 	}
 
+	SignScheme = nodeConfig.GetString("signature_scheme")
 	blockWorker := nodeConfig.GetString("block_worker")
-	signScheme := nodeConfig.GetString("signature_scheme")
 	chainID := nodeConfig.GetString("chain_id")
 	minSubmit = nodeConfig.GetInt("min_submit")
 	minCfm = nodeConfig.GetInt("min_confirmation")
@@ -104,12 +125,13 @@ func initConfig() {
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
-	err := zcncore.InitZCNSDK(blockWorker, signScheme,
+	err := zcncore.InitZCNSDK(blockWorker, SignScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
 		zcncore.WithConfirmationChainLength(CfmChainLength),
 		zcncore.WithEthereumNode(ethereumNodeURL))
+
 	if err != nil {
 		ExitWithError(err.Error())
 	}
@@ -137,13 +159,6 @@ func checkWalletPath(cmd *cobra.Command, args []string) {
 		walletFilePath = configDir + "/" + walletFile
 	} else {
 		walletFilePath = configDir + "/wallet.json"
-	}
-
-	cmdName := cmd.Name()
-	shouldCreateWallet := cmdName != "version" && cmdName != "createmswallet" 
-
-	if !shouldCreateWallet {
-		return
 	}
 
 	// is freshly created wallet?

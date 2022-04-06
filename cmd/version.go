@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/icza/bitio"
 	"github.com/0chain/zwalletcli/util"
+	"github.com/icza/bitio"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,6 @@ var versionCmd = &cobra.Command{
 		fmt.Println("Version info:")
 		fmt.Println("\tzwallet...: ", VersionStr)
 		fmt.Println("\tgosdk.....: ", getVersion("github.com/0chain/gosdk"))
-		return
 	},
 }
 
