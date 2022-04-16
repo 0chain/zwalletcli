@@ -30,6 +30,7 @@ var rootCmd = &cobra.Command{
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
 	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
+	PersistentPreRun: checkWalletPath,
 }
 
 var clientWallet *zcncrypto.Wallet
@@ -100,13 +101,6 @@ func initConfig() {
 	CfmChainLength = nodeConfig.GetInt("confirmation_chain_length")
 	ethereumNodeURL := nodeConfig.GetString("ethereum_node_url")
 
-	// TODO: move the private key storage to the keychain or secure storage
-	var walletFilePath string
-	if &walletFile != nil && len(walletFile) > 0 {
-		walletFilePath = configDir + "/" + walletFile
-	} else {
-		walletFilePath = configDir + "/wallet.json"
-	}
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
@@ -126,6 +120,30 @@ func initConfig() {
 		if len(miners) > 0 && len(sharders) > 0 {
 			zcncore.SetNetwork(miners, sharders)
 		}
+	}
+}
+
+func checkWalletPath(cmd *cobra.Command, args []string) {
+	var configDir string
+	if cDir != "" {
+		configDir = cDir
+	} else {
+		configDir = getConfigDir()
+	}
+
+	// TODO: move the private key storage to the keychain or secure storage
+	var walletFilePath string
+	if &walletFile != nil && len(walletFile) > 0 {
+		walletFilePath = configDir + "/" + walletFile
+	} else {
+		walletFilePath = configDir + "/wallet.json"
+	}
+
+	cmdName := cmd.Name()
+	shouldCreateWallet := cmdName != "version" && cmdName != "createmswallet" 
+
+	if !shouldCreateWallet {
+		return
 	}
 
 	// is freshly created wallet?
@@ -171,7 +189,7 @@ func initConfig() {
 	}
 
 	wallet := &zcncrypto.Wallet{}
-	err = json.Unmarshal([]byte(clientConfig), wallet)
+	err := json.Unmarshal([]byte(clientConfig), wallet)
 	clientWallet = wallet
 	if err != nil {
 		ExitWithError("Invalid wallet at path:" + walletFilePath)
@@ -191,5 +209,4 @@ func initConfig() {
 		}
 		log.Printf("Read pool created successfully")
 	}
-
 }
