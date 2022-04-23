@@ -511,7 +511,7 @@ var minerscUnlock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MienrSCUnlock(id, poolID)
+		err = txn.MinerSCUnlock(id, poolID)
 		if err != nil {
 			log.Fatal(err)
 		}
