@@ -4,7 +4,7 @@ require (
 	github.com/0chain/gosdk v1.8.2-0.20220423091831-6ca1805f9d6b
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/spf13/cobra v1.2.1
+	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.11.0
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
@@ -66,7 +66,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-go 1.17
+go 1.18
 
 // temporary, for development
 //replace github.com/0chain/gosdk => ../gosdk
