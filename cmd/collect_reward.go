@@ -62,7 +62,6 @@ var minerScPayReward = &cobra.Command{
 		default:
 			log.Fatal("unknown provider type")
 		}
-
 		if err != nil {
 			log.Fatal(err)
 		}
