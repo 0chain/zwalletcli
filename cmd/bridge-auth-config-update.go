@@ -56,7 +56,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,6 +79,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		wg.Wait()
 
 		if statusBar.success {
+			//fmt.Printf("Nonce:%v\n", txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
 				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))

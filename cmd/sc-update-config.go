@@ -27,7 +27,7 @@ var updateStoragScConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
