@@ -27,7 +27,7 @@ var updateMinerScConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -50,13 +50,14 @@ var updateMinerScConfigCmd = &cobra.Command{
 		wg.Wait()
 
 		if statusBar.success {
+			//fmt.Printf("\nHash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
+				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))
 			case zcncore.Success:
 				fmt.Printf("storagesc smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 			default:
-				ExitWithError("\nExecute storagesc update smart contract failed. Unknown status code: " +
+				ExitWithError("Execute storagesc update smart contract failed. Unknown status code: " +
 					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
 			}
 			return

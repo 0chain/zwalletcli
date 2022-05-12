@@ -26,8 +26,19 @@ type ZCNStatus struct {
 	success      bool
 	errMsg       string
 	balance      common.Balance
+	nonce        int64
 	wallets      []string
 	clientID     string
+}
+
+func (zcn *ZCNStatus) OnNonceAvailable(status int, nonce int64, info string) {
+	defer zcn.wg.Done()
+	if status == zcncore.StatusSuccess {
+		zcn.success = true
+	} else {
+		zcn.success = false
+	}
+	zcn.nonce = nonce
 }
 
 func NewZCNStatus() (zcns *ZCNStatus) {
