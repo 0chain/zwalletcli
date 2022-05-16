@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
 
@@ -30,6 +31,7 @@ var sendcmd = &cobra.Command{
 		if err != nil {
 			ExitWithError("Error: invalid 'tokens' flag", err)
 		}
+		doJSON, _ := cmd.Flags().GetBool("json")
 		desc := cmd.Flag("desc").Value.String()
 		fee := float64(0)
 		fee, err = cmd.Flags().GetFloat64("fee")
@@ -56,7 +58,14 @@ var sendcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 			if statusBar.success {
-				fmt.Println("Send tokens success")
+				if doJSON {
+					j := map[string]string {
+		  			"status": "success",
+		  			"tx": txn.Hash() }
+					util.PrintJSON(j)
+					return
+				}
+				fmt.Println("Send tokens success:", txn.Hash())
 				return
 			}
 		}
@@ -73,4 +82,5 @@ func init() {
 	sendcmd.MarkFlagRequired("to_client_id")
 	sendcmd.MarkFlagRequired("tokens")
 	sendcmd.MarkFlagRequired("desc")
+	sendcmd.Flags().Bool("json", false, "pass this option to print response as json data")
 }
