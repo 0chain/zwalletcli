@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +15,8 @@ var getbalancecmd = &cobra.Command{
 	Long:  `Get balance from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+		doJSON, _ := cmd.Flags().GetBool("json")
+
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
@@ -29,6 +32,15 @@ var getbalancecmd = &cobra.Command{
 		}
 		b := statusBar.balance
 		usd, err := zcncore.ConvertTokenToUSD(b.ToToken())
+		
+		if doJSON {
+			j := map[string]string {
+  			"usd": fmt.Sprintf("%f", usd),
+  			"zcn": fmt.Sprintf("%f", b.ToToken()),
+			"fmt": fmt.Sprintf("%s", b) }
+			util.PrintJSON(j)
+			return
+		}
 		if err != nil {
 			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", b, err))
 			return
@@ -39,4 +51,5 @@ var getbalancecmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getbalancecmd)
+	getbalancecmd.Flags().Bool("json", false, "pass this option to print response as json data")
 }
