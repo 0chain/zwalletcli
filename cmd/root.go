@@ -146,27 +146,31 @@ func loadConfigs() {
 	}
 }
 
-var withZCN bool
-var withWallet bool
+var zcnIsConnected bool
+var hasWallet bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
-	_, ok := withoutZCNCommands[cmd]
-	if ok {
-		return
+
+	// connect to zcn
+	if !zcnIsConnected {
+		_, ok := withoutZCNCmds[cmd]
+		if !ok {
+			initZCN()
+			zcnIsConnected = true
+		}
 	}
 
-	if !withZCN {
-		initZCN()
-		withZCN = true
+	// create wallet
+	if !hasWallet {
+		_, ok := withoutWalletCmds[cmd]
+		if !ok {
+			createWallet()
+			loadWallet()
+
+			hasWallet = true
+		}
 	}
 
-	_, ok = withoutWalletCommands[cmd]
-	if !ok {
-		createWallet()
-		loadWallet()
-
-		withWallet = true
-	}
 }
 
 func createWallet() {
