@@ -57,17 +57,21 @@ var minerscUpdateSettings = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// remove not settings fields
-		miner = &zcncore.MinerSCMinerInfo{SimpleMinerSCMinerInfo: &zcncore.SimpleMinerSCMinerInfo{
-			NumberOfDelegates: miner.NumberOfDelegates,
-			MinStake:          miner.MinStake,
-			MaxStake:          miner.MaxStake,
-			ID:                id,
-		},
+		miner = &zcncore.MinerSCMinerInfo{
+			SimpleMiner: zcncore.SimpleMiner{
+				ID: id,
+			},
+			MinerSCDelegatePool: zcncore.MinerSCDelegatePool{
+				Settings: zcncore.StakePoolSettings{
+					NumDelegates: miner.Settings.NumDelegates,
+					MinStake:     miner.Settings.MinStake,
+					MaxStake:     miner.Settings.MaxStake,
+				},
+			},
 		}
 
 		if flags.Changed("num_delegates") {
-			miner.NumberOfDelegates, err = flags.GetInt("num_delegates")
+			miner.Settings.NumDelegates, err = flags.GetInt("num_delegates")
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -78,7 +82,7 @@ var minerscUpdateSettings = &cobra.Command{
 			if min, err = flags.GetFloat64("min_stake"); err != nil {
 				log.Fatal(err)
 			}
-			miner.MinStake = common.Balance(zcncore.ConvertToValue(min))
+			miner.Settings.MinStake = common.Balance(zcncore.ConvertToValue(min))
 		}
 
 		if flags.Changed("max_stake") {
@@ -86,10 +90,10 @@ var minerscUpdateSettings = &cobra.Command{
 			if max, err = flags.GetFloat64("max_stake"); err != nil {
 				log.Fatal(err)
 			}
-			miner.MaxStake = common.Balance(zcncore.ConvertToValue(max))
+			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -328,26 +332,22 @@ var minerscUserInfo = &cobra.Command{
 		}
 
 		var total common.Balance
-		for _, nodes := range info.Pools {
-			for _, pools := range nodes {
-				for _, pool := range pools {
-					total += pool.Balance
-				}
+		for _, delegates := range info.Pools {
+			for _, pool := range delegates {
+				total += pool.Balance
 			}
 		}
 
-		for key, nodes := range info.Pools {
-			for nit, pools := range nodes {
-				fmt.Println("- node:", nit+" ("+key+")")
-				for _, pool := range pools {
-					fmt.Println("  - pool_id:       ", pool.ID)
-					fmt.Println("    balance:       ", pool.Balance)
-					fmt.Println("    interests paid:", pool.InterestPaid)
-					fmt.Println("    rewards paid:  ", pool.RewardPaid)
-					fmt.Println("    status:        ", strings.ToLower(pool.Status))
-					fmt.Println("    stake %:       ",
-						float64(pool.Balance)/float64(total)*100.0, "%")
-				}
+		for key, delegates := range info.Pools {
+			for _, pool := range delegates {
+				fmt.Println("- delegates:", "("+key+")")
+				fmt.Println("  - pool_id:            ", pool.ID)
+				fmt.Println("    balance:            ", pool.Balance)
+				fmt.Println("    rewards uncollected:", pool.Reward)
+				fmt.Println("    rewards paid:       ", pool.RewardPaid)
+				fmt.Println("    status:             ", strings.ToLower(pool.Status))
+				fmt.Println("    stake %:            ",
+					float64(pool.Balance)/float64(total)*100.0, "%")
 			}
 		}
 	},
@@ -437,7 +437,7 @@ var minerscLock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -510,7 +510,7 @@ var minerscUnlock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -29,7 +29,7 @@ var faucetcmd = &cobra.Command{
 		input := cmd.Flag("input").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
