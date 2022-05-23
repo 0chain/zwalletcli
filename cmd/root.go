@@ -174,7 +174,12 @@ func initCmdContext(cmd *cobra.Command, args []string) {
 }
 
 func createWallet() {
-	if _, err := os.Stat(cfgWallet); os.IsNotExist(err) {
+
+	_, err := os.Stat(cfgWallet)
+
+	isNewWallet := os.IsNotExist(err)
+
+	if isNewWallet {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
@@ -192,19 +197,22 @@ func createWallet() {
 			ExitWithError("Error creating the wallet." + statusBar.errMsg)
 		}
 
+		fmt.Println("ZCN wallet created!!")
 		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
 		if err != nil {
 			ExitWithError(err.Error())
 		}
 
-		fmt.Println("ZCN wallet created!!")
+	}
 
+	loadWallet()
+
+	if isNewWallet {
 		log.Print("Creating related read pool for storage smart-contract...")
-		if err = createReadPool(); err != nil {
+		if err := createReadPool(); err != nil {
 			log.Fatalf("Failed to create read pool: %v", err)
 		}
 		log.Printf("Read pool created successfully")
-
 	}
 }
 
