@@ -192,12 +192,12 @@ func createWallet() {
 			ExitWithError("Error creating the wallet." + statusBar.errMsg)
 		}
 
-		fmt.Println("ZCN wallet created!!")
-
 		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
 		if err != nil {
-			ExitWithError("Error creating the wallet." + err.Error())
+			ExitWithError(err.Error())
 		}
+
+		fmt.Println("ZCN wallet created!!")
 
 		log.Print("Creating related read pool for storage smart-contract...")
 		if err = createReadPool(); err != nil {
