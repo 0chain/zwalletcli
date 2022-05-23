@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
 	"strconv"
+	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
@@ -60,14 +60,14 @@ var sendcmd = &cobra.Command{
 			}
 			if statusBar.success {
 				if doJSON {
-					j := map[string]string {
-		  			"status": "success",
-		  			"tx": txn.Hash(),
-		  			"nonce": strconv.FormatInt(txn.GetTransactionNonce(),10) }
+					j := map[string]string{
+						"status": "success",
+						"tx":     txn.Hash(),
+						"nonce":  strconv.FormatInt(txn.GetTransactionNonce(), 10)}
 					util.PrintJSON(j)
 					return
 				}
-				fmt.Println("Send tokens success")
+				fmt.Println("Send tokens success: ", txn.Hash())
 				return
 			}
 		}
