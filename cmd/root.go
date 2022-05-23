@@ -37,13 +37,13 @@ var rootCmd = &cobra.Command{
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
 	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
-	PersistentPreRun: connectToZCN,
+	PersistentPreRun: initCmdContext,
 }
 
 var clientWallet *zcncrypto.Wallet
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(loadConfigs)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config.yaml)")
 	rootCmd.PersistentFlags().StringVar(&networkFile, "network", "", "network file to overwrite the network details (if required, default is network.yaml)")
 	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
@@ -101,7 +101,7 @@ func initZCN() {
 	}
 }
 
-func initConfig() {
+func loadConfigs() {
 	cfgConfig = viper.New()
 	cfgNetwork = viper.New()
 	var configDir string
@@ -135,9 +135,7 @@ func initConfig() {
 		ExitWithError("Can't read config:", err)
 	}
 
-	if err := cfgNetwork.ReadInConfig(); err == nil {
-
-	}
+	cfgNetwork.ReadInConfig() //nolint: errcheck
 
 	// TODO: move the private key storage to the keychain or secure storage
 	// ~/.zcn/wallet.json
@@ -151,7 +149,7 @@ func initConfig() {
 var withZCN bool
 var withWallet bool
 
-func connectToZCN(cmd *cobra.Command, args []string) {
+func initCmdContext(cmd *cobra.Command, args []string) {
 	_, ok := withoutZCNCommands[cmd]
 	if ok {
 		return
@@ -165,7 +163,7 @@ func connectToZCN(cmd *cobra.Command, args []string) {
 	_, ok = withoutWalletCommands[cmd]
 	if !ok {
 		createWallet()
-		initWallet()
+		loadWallet()
 
 		withWallet = true
 	}
@@ -206,7 +204,7 @@ func createWallet() {
 	}
 }
 
-func initWallet() {
+func loadWallet() {
 
 	clientBytes, err := ioutil.ReadFile(cfgWallet)
 	if err != nil {
