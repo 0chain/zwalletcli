@@ -32,8 +32,6 @@ var (
 	cfgWallet  string
 )
 
-var isConnected bool
-
 var rootCmd = &cobra.Command{
 	Use:   "zwallet",
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
@@ -150,21 +148,27 @@ func initConfig() {
 	}
 }
 
+var withZCN bool
+var withWallet bool
+
 func connectToZCN(cmd *cobra.Command, args []string) {
-	_, ok := offlineCommands[cmd]
+	_, ok := withoutZCNCommands[cmd]
 	if ok {
 		return
 	}
 
-	if isConnected {
-		return
+	if !withZCN {
+		initZCN()
+		withZCN = true
 	}
 
-	initZCN()
-	createWallet()
-	initWallet()
+	_, ok = withoutWalletCommands[cmd]
+	if !ok {
+		createWallet()
+		initWallet()
 
-	isConnected = true
+		withWallet = true
+	}
 }
 
 func createWallet() {
@@ -186,12 +190,12 @@ func createWallet() {
 			ExitWithError("Error creating the wallet." + statusBar.errMsg)
 		}
 
+		fmt.Println("ZCN wallet created!!")
+
 		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
 		if err != nil {
 			ExitWithError("Error creating the wallet." + err.Error())
 		}
-
-		fmt.Println("ZCN wallet created!!")
 
 		log.Print("Creating related read pool for storage smart-contract...")
 		if err = createReadPool(); err != nil {

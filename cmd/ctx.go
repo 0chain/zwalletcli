@@ -2,10 +2,17 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-var offlineCommands = make(map[*cobra.Command]bool)
+var (
+	withoutZCNCommands    = make(map[*cobra.Command]bool)
+	withoutWalletCommands = make(map[*cobra.Command]bool)
+)
 
-func EnableOffline(c *cobra.Command) *cobra.Command {
+func WithoutZCN(c *cobra.Command) *cobra.Command {
+	withoutZCNCommands[c] = true
+	return c
+}
 
-	offlineCommands[c] = true
+func WithoutWallet(c *cobra.Command) *cobra.Command {
+	withoutWalletCommands[c] = true
 	return c
 }
