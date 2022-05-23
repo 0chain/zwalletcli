@@ -67,7 +67,7 @@ var sendcmd = &cobra.Command{
 					util.PrintJSON(j)
 					return
 				}
-fmt.Println("Send tokens success:")
+				fmt.Println("Send tokens success")
 				return
 			}
 		}
