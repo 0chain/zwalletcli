@@ -418,7 +418,7 @@ func createAWallet() string {
 }
 
 func init() {
-	rootCmd.AddCommand(createmswalletcmd)
+	rootCmd.AddCommand(EnableOffline(createmswalletcmd))
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
 	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")

@@ -26,12 +26,20 @@ var minSubmit int
 var minCfm int
 var CfmChainLength int
 
+var (
+	cfgConfig  *viper.Viper
+	cfgNetwork *viper.Viper
+	cfgWallet  string
+)
+
+var isConnected bool
+
 var rootCmd = &cobra.Command{
 	Use:   "zwallet",
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
 	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
 			Complete documentation is available at https://0chain.net`,
-	PersistentPreRun: checkWalletPath,
+	PersistentPreRun: connectToZCN,
 }
 
 var clientWallet *zcncrypto.Wallet
@@ -68,43 +76,21 @@ func getConfigDir() string {
 	return configDir
 }
 
-func initConfig() {
-	nodeConfig := viper.New()
-	networkConfig := viper.New()
-	var configDir string
-	if cDir != "" {
-		configDir = cDir
-	} else {
-		configDir = getConfigDir()
-	}
-	nodeConfig.AddConfigPath(configDir)
-	if &cfgFile != nil && len(cfgFile) > 0 {
-		nodeConfig.SetConfigFile(configDir + "/" + cfgFile)
-	} else {
-		nodeConfig.SetConfigFile(configDir + "/" + "config.yaml")
-	}
-
-	networkConfig.AddConfigPath(configDir)
-	if &networkFile != nil && len(networkFile) > 0 {
-		networkConfig.SetConfigFile(configDir + "/" + networkFile)
-	} else {
-		networkConfig.SetConfigFile(configDir + "/" + "network.yaml")
-	}
-
-	if err := nodeConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err)
-	}
-
-	blockWorker := nodeConfig.GetString("block_worker")
-	signScheme := nodeConfig.GetString("signature_scheme")
-	chainID := nodeConfig.GetString("chain_id")
-	minSubmit = nodeConfig.GetInt("min_submit")
-	minCfm = nodeConfig.GetInt("min_confirmation")
-	CfmChainLength = nodeConfig.GetInt("confirmation_chain_length")
-	ethereumNodeURL := nodeConfig.GetString("ethereum_node_url")
+func initZCN() {
 
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
+
+	miners := cfgNetwork.GetStringSlice("miners")
+	sharders := cfgNetwork.GetStringSlice("sharders")
+	if len(miners) > 0 && len(sharders) > 0 {
+		zcncore.SetNetwork(miners, sharders)
+	}
+
+	blockWorker := cfgConfig.GetString("block_worker")
+	signScheme := cfgConfig.GetString("signature_scheme")
+	chainID := cfgConfig.GetString("chain_id")
+	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 
 	err := zcncore.InitZCNSDK(blockWorker, signScheme,
 		zcncore.WithChainID(chainID),
@@ -115,17 +101,11 @@ func initConfig() {
 	if err != nil {
 		ExitWithError(err.Error())
 	}
-
-	if err := networkConfig.ReadInConfig(); err == nil {
-		miners := networkConfig.GetStringSlice("miners")
-		sharders := networkConfig.GetStringSlice("sharders")
-		if len(miners) > 0 && len(sharders) > 0 {
-			zcncore.SetNetwork(miners, sharders)
-		}
-	}
 }
 
-func checkWalletPath(cmd *cobra.Command, args []string) {
+func initConfig() {
+	cfgConfig = viper.New()
+	cfgNetwork = viper.New()
 	var configDir string
 	if cDir != "" {
 		configDir = cDir
@@ -133,30 +113,68 @@ func checkWalletPath(cmd *cobra.Command, args []string) {
 		configDir = getConfigDir()
 	}
 
-	// TODO: move the private key storage to the keychain or secure storage
-	var walletFilePath string
-	if &walletFile != nil && len(walletFile) > 0 {
-		walletFilePath = configDir + "/" + walletFile
+	// ~/.zcn/config.yaml
+	cfgConfig.AddConfigPath(configDir)
+	if &cfgFile != nil && len(cfgFile) > 0 {
+		cfgConfig.SetConfigFile(configDir + "/" + cfgFile)
 	} else {
-		walletFilePath = configDir + "/wallet.json"
+		cfgConfig.SetConfigFile(configDir + "/" + "config.yaml")
 	}
 
-	cmdName := cmd.Name()
-	shouldCreateWallet := cmdName != "version" && cmdName != "createmswallet" 
+	minSubmit = cfgConfig.GetInt("min_submit")
+	minCfm = cfgConfig.GetInt("min_confirmation")
+	CfmChainLength = cfgConfig.GetInt("confirmation_chain_length")
 
-	if !shouldCreateWallet {
+	// ~/.zcn/network.yaml
+	cfgNetwork.AddConfigPath(configDir)
+	if &networkFile != nil && len(networkFile) > 0 {
+		cfgNetwork.SetConfigFile(configDir + "/" + networkFile)
+	} else {
+		cfgNetwork.SetConfigFile(configDir + "/" + "network.yaml")
+	}
+
+	if err := cfgConfig.ReadInConfig(); err != nil {
+		ExitWithError("Can't read config:", err)
+	}
+
+	if err := cfgNetwork.ReadInConfig(); err == nil {
+
+	}
+
+	// TODO: move the private key storage to the keychain or secure storage
+	// ~/.zcn/wallet.json
+	if &walletFile != nil && len(walletFile) > 0 {
+		cfgWallet = configDir + "/" + walletFile
+	} else {
+		cfgWallet = configDir + "/wallet.json"
+	}
+}
+
+func connectToZCN(cmd *cobra.Command, args []string) {
+	_, ok := offlineCommands[cmd]
+	if ok {
 		return
 	}
 
-	// is freshly created wallet?
-	var fresh bool
+	if isConnected {
+		return
+	}
 
-	if _, err := os.Stat(walletFilePath); os.IsNotExist(err) {
-		fmt.Println("No wallet in path ", walletFilePath, "found. Creating wallet...")
+	initZCN()
+	createWallet()
+	initWallet()
+
+	isConnected = true
+}
+
+func createWallet() {
+	if _, err := os.Stat(cfgWallet); os.IsNotExist(err) {
+		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 
 		wg.Add(1)
+
 		err = zcncore.CreateWallet(statusBar)
 		if err == nil {
 			wg.Wait()
@@ -167,48 +185,45 @@ func checkWalletPath(cmd *cobra.Command, args []string) {
 		if len(statusBar.walletString) == 0 || !statusBar.success {
 			ExitWithError("Error creating the wallet." + statusBar.errMsg)
 		}
+
+		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
+		if err != nil {
+			ExitWithError("Error creating the wallet." + err.Error())
+		}
+
 		fmt.Println("ZCN wallet created!!")
-		clientConfig = string(statusBar.walletString)
-		file, err := os.Create(walletFilePath)
-		if err != nil {
-			ExitWithError(err.Error())
-		}
-		defer file.Close()
-		fmt.Fprintf(file, clientConfig)
 
-		fresh = true
+		log.Print("Creating related read pool for storage smart-contract...")
+		if err = createReadPool(); err != nil {
+			log.Fatalf("Failed to create read pool: %v", err)
+		}
+		log.Printf("Read pool created successfully")
 
-	} else {
-		f, err := os.Open(walletFilePath)
-		if err != nil {
-			ExitWithError("Error opening the wallet", err)
-		}
-		clientBytes, err := ioutil.ReadAll(f)
-		if err != nil {
-			ExitWithError("Error reading the wallet", err)
-		}
-		clientConfig = string(clientBytes)
 	}
+}
 
-	wallet := &zcncrypto.Wallet{}
-	err := json.Unmarshal([]byte(clientConfig), wallet)
-	clientWallet = wallet
+func initWallet() {
+
+	clientBytes, err := ioutil.ReadFile(cfgWallet)
 	if err != nil {
-		ExitWithError("Invalid wallet at path:" + walletFilePath)
+		ExitWithError("Error reading the wallet", err)
 	}
+	clientConfig = string(clientBytes)
+
+	wallet := zcncrypto.Wallet{}
+	err = json.Unmarshal([]byte(clientConfig), &wallet)
+
+	if err != nil {
+		ExitWithError("Invalid wallet at path:" + cfgWallet)
+	}
+
+	clientWallet = &wallet
+
 	wg := &sync.WaitGroup{}
 	err = zcncore.SetWalletInfo(clientConfig, false)
 	if err == nil {
 		wg.Wait()
 	} else {
 		ExitWithError(err.Error())
-	}
-
-	if fresh {
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err = createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
-		}
-		log.Printf("Read pool created successfully")
 	}
 }
