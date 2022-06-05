@@ -10,6 +10,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func checkBalanceBeforeSend(tokens, fee float64) {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+	wg.Add(1)
+	err := zcncore.GetBalance(statusBar)
+	if err != nil {
+		return // continue sending txn even if getBalance fails
+	}
+	wg.Wait()
+	if !statusBar.success {
+		return // continue sending txn even if getBalance fails
+	}
+	b := statusBar.balance
+
+	if b.ToToken() < tokens + fee {
+		ExitWithError("Insufficient balance for this transaction.")
+	}
+	return
+}
+
 var sendcmd = &cobra.Command{
 	Use:   "send",
 	Short: "Send ZCN tokens to another wallet",
@@ -36,6 +56,9 @@ var sendcmd = &cobra.Command{
 		desc := cmd.Flag("desc").Value.String()
 		fee := float64(0)
 		fee, err = cmd.Flags().GetFloat64("fee")
+
+		checkBalanceBeforeSend(token, fee)
+
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee), nonce)
