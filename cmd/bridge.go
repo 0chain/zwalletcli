@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"sync"
-
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"os"
+	"path/filepath"
 )
 
 const (
@@ -25,6 +22,7 @@ const (
 const (
 	OptionHash             = "hash"          // OptionHash hash passed to cmd
 	OptionAmount           = "amount"        // OptionAmount amount passed to cmd
+	OptionToken            = "token"         // OptionToken token in SAS passed to cmd
 	OptionRetries          = "retries"       // OptionRetries retries
 	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
 	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
@@ -92,6 +90,17 @@ func WithRetries(usage string) *Option {
 	}
 }
 
+func WithToken(usage string) *Option {
+	return &Option{
+		name:         OptionToken,
+		value:        float64(0),
+		usage:        usage,
+		typename:     "float64",
+		missingError: "Token should be provided",
+		required:     true,
+	}
+}
+
 func WithAmount(usage string) *Option {
 	return &Option{
 		name:         OptionAmount,
@@ -134,6 +143,10 @@ func GetAmount(args []*Arg) int64 {
 	return getInt64(args, OptionAmount)
 }
 
+func GetToken(args []*Arg) float64 {
+	return getFloat64(args, OptionToken)
+}
+
 func GetRetries(args []*Arg) int {
 	return getInt(args, OptionRetries)
 }
@@ -162,6 +175,22 @@ func getInt(args []*Arg, name string) int {
 	for _, arg := range args {
 		if arg.fieldName == name {
 			return (arg.value).(int)
+		}
+	}
+
+	ExitWithError("failed to get " + name)
+
+	return 0
+}
+
+func getFloat64(args []*Arg, name string) float64 {
+	if len(args) == 0 {
+		ExitWithError("wrong number of arguments")
+	}
+
+	for _, arg := range args {
+		if arg.fieldName == name {
+			return (arg.value).(float64)
 		}
 	}
 
@@ -228,6 +257,8 @@ func AppendOptions(opts []*Option, command *cobra.Command) {
 			command.PersistentFlags().String(opt.name, opt.value.(string), opt.usage)
 		case "int64":
 			command.PersistentFlags().Int64(opt.name, opt.value.(int64), opt.usage)
+		case "float64":
+			command.PersistentFlags().Float64(opt.name, opt.value.(float64), opt.usage)
 		case "int":
 			command.PersistentFlags().Int(opt.name, opt.value.(int), opt.usage)
 		}
@@ -274,6 +305,16 @@ func createBridgeComm(
 					}
 				case "int64":
 					optValue, err := fflags.GetInt64(opt.name)
+					if err != nil {
+						ExitWithError(err)
+					}
+					arg = &Arg{
+						typeName:  opt.typename,
+						fieldName: opt.name,
+						value:     optValue,
+					}
+				case "float64":
+					optValue, err := fflags.GetFloat64(opt.name)
 					if err != nil {
 						ExitWithError(err)
 					}
@@ -365,27 +406,4 @@ func check(cmd *cobra.Command, flags ...string) {
 			ExitWithError(fmt.Sprintf("Error: '%s' flag is missing", flag))
 		}
 	}
-}
-
-func verify(hash string) {
-	wg := &sync.WaitGroup{}
-	statusBar := &ZCNStatus{wg: wg}
-	txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
-	if err != nil {
-		ExitWithError(err)
-	}
-	_ = txn.SetTransactionHash(hash)
-	wg.Add(1)
-	err = txn.Verify()
-	if err == nil {
-		wg.Wait()
-	} else {
-		ExitWithError(err.Error())
-	}
-	if statusBar.success {
-		statusBar.success = false
-		fmt.Printf("\nTransaction verification success\n")
-		return
-	}
-	ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
 }
