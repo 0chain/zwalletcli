@@ -74,7 +74,7 @@ func getConfigDir() string {
 	return configDir
 }
 
-func initZCN() {
+func initZCNCore() {
 
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
@@ -146,28 +146,28 @@ func loadConfigs() {
 	}
 }
 
-var zcnIsConnected bool
-var hasWallet bool
+var zcncoreIsInitialized bool
+var walletIsLoaded bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
 
-	// connect to zcn
-	if !zcnIsConnected {
-		_, ok := withoutZCNCmds[cmd]
+	// zcncore is initialized , skip any zcncore checking
+	if !zcncoreIsInitialized {
+		_, ok := withoutZCNCoreCmds[cmd]
 		if !ok {
-			initZCN()
-			zcnIsConnected = true
+			initZCNCore()
+			zcncoreIsInitialized = true
 		}
 	}
 
 	// create wallet
-	if !hasWallet {
+	if !walletIsLoaded {
 		_, ok := withoutWalletCmds[cmd]
 		if !ok {
 			createWallet()
 			loadWallet()
 
-			hasWallet = true
+			walletIsLoaded = true
 		}
 	}
 

@@ -54,6 +54,6 @@ func getVersion(path string) string {
 }
 
 func init() {
-	rootCmd.AddCommand(WithoutZCN(WithoutWallet(versionCmd)))
+	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(versionCmd)))
 	versionCmd.Flags().Bool("json", false, "pass this option to print response as json data")
 }
