@@ -29,25 +29,36 @@ var recoverwalletcmd = &cobra.Command{
 			fmt.Println("offline is not used or not set to true. Setting it to false")
 		}
 
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err = zcncore.RecoverWallet(mnemonic, offline, statusBar)
-		if err == nil {
-			wg.Wait()
+		var walletString string
+		if offline {
+			walletString, err = zcncore.RecoverOfflineWallet(mnemonic)
+			if err != nil {
+				ExitWithError(err.Error())
+			}
 		} else {
-			ExitWithError(err.Error())
+			wg := &sync.WaitGroup{}
+			statusBar := &ZCNStatus{wg: wg}
+			wg.Add(1)
+			err = zcncore.RecoverWallet(mnemonic, statusBar)
+			if err == nil {
+				wg.Wait()
+			} else {
+				ExitWithError(err.Error())
+			}
+			if len(statusBar.walletString) == 0 || !statusBar.success {
+				ExitWithError("Error recovering the wallet." + statusBar.errMsg)
+			}
+
+			walletString = statusBar.walletString
 		}
-		if len(statusBar.walletString) == 0 || !statusBar.success {
-			ExitWithError("Error recovering the wallet." + statusBar.errMsg)
-		}
+
 		var walletFilePath string
 		if len(walletFile) > 0 {
 			walletFilePath = getConfigDir() + "/" + walletFile
 		} else {
 			walletFilePath = getConfigDir() + "/wallet.json"
 		}
-		clientConfig = string(statusBar.walletString)
+		clientConfig = string(walletString)
 		file, err := os.Create(walletFilePath)
 		if err != nil {
 			ExitWithError(err.Error())
