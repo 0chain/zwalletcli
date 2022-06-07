@@ -23,10 +23,16 @@ var recoverwalletcmd = &cobra.Command{
 		if zcncore.IsMnemonicValid(mnemonic) == false {
 			ExitWithError("Error: Invalid mnemonic")
 		}
+
+		offline, err := cmd.Flags().GetBool("offline")
+		if err != nil {
+			fmt.Println("offline is not used or not set to true. Setting it to false")
+		}
+
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
-		err := zcncore.RecoverWallet(mnemonic, statusBar)
+		err = zcncore.RecoverWallet(mnemonic, offline, statusBar)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -36,7 +42,7 @@ var recoverwalletcmd = &cobra.Command{
 			ExitWithError("Error recovering the wallet." + statusBar.errMsg)
 		}
 		var walletFilePath string
-		if &walletFile != nil && len(walletFile) > 0 {
+		if len(walletFile) > 0 {
 			walletFilePath = getConfigDir() + "/" + walletFile
 		} else {
 			walletFilePath = getConfigDir() + "/wallet.json"
@@ -54,7 +60,8 @@ var recoverwalletcmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(recoverwalletcmd)
+	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(recoverwalletcmd)))
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
+	recoverwalletcmd.PersistentFlags().Bool("offline", false, "recover wallet without registration on blockchain")
 	recoverwalletcmd.MarkFlagRequired("mnemonic")
 }

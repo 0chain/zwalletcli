@@ -62,23 +62,31 @@ var createmswalletcmd = &cobra.Command{
 			ExitWithError(err)
 		}
 
-		//register all wallets
-		err = registerMSWallets(wallets)
+		offline, err := cmd.Flags().GetBool("offline")
 		if err != nil {
-			ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
+			fmt.Println("offline is not used or not set to true. Setting it to false")
 		}
 
-		groupWallet := wallets[0]
-		signerWallets := wallets[1:]
+		if !offline {
 
-		err = registerMultiSig(groupWallet, smsw)
-		if err != nil {
-			ExitWithError(fmt.Sprintf("Error while registering ms group wallet. The error is:\n %v\n", err))
-		}
+			//register all wallets
+			err = registerMSWallets(wallets)
+			if err != nil {
+				ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
+			}
 
-		//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
-		if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
-			ExitWithError("Failed to test voting\n")
+			groupWallet := wallets[0]
+			signerWallets := wallets[1:]
+
+			err = registerMultiSig(groupWallet, smsw)
+			if err != nil {
+				ExitWithError(fmt.Sprintf("Error while registering ms group wallet. The error is:\n %v\n", err))
+			}
+
+			//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
+			if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
+				ExitWithError("Failed to test voting\n")
+			}
 		}
 		fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
 		return
@@ -418,10 +426,11 @@ func createAWallet() string {
 }
 
 func init() {
-	rootCmd.AddCommand(WithoutWallet(createmswalletcmd))
+	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(createmswalletcmd)))
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
 	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
+	createmswalletcmd.PersistentFlags().Bool("offline", false, "create multiwallet without registration on blockchain")
 	createmswalletcmd.MarkFlagRequired("threshold")
 	createmswalletcmd.MarkFlagRequired("numsigners")
 }

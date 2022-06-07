@@ -25,6 +25,7 @@ var clientConfig string
 var minSubmit int
 var minCfm int
 var CfmChainLength int
+var signatureScheme string
 
 var (
 	cfgConfig  *viper.Viper
@@ -79,18 +80,11 @@ func initZCNCore() {
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 
-	miners := cfgNetwork.GetStringSlice("miners")
-	sharders := cfgNetwork.GetStringSlice("sharders")
-	if len(miners) > 0 && len(sharders) > 0 {
-		zcncore.SetNetwork(miners, sharders)
-	}
-
 	blockWorker := cfgConfig.GetString("block_worker")
-	signScheme := cfgConfig.GetString("signature_scheme")
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 
-	err := zcncore.InitZCNSDK(blockWorker, signScheme,
+	err := zcncore.InitZCNSDK(blockWorker, signatureScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
@@ -98,6 +92,12 @@ func initZCNCore() {
 		zcncore.WithEthereumNode(ethereumNodeURL))
 	if err != nil {
 		ExitWithError(err.Error())
+	}
+
+	miners := cfgNetwork.GetStringSlice("miners")
+	sharders := cfgNetwork.GetStringSlice("sharders")
+	if len(miners) > 0 && len(sharders) > 0 {
+		zcncore.SetNetwork(miners, sharders)
 	}
 }
 
@@ -119,20 +119,24 @@ func loadConfigs() {
 		cfgConfig.SetConfigFile(configDir + "/" + "config.yaml")
 	}
 
+	if err := cfgConfig.ReadInConfig(); err != nil {
+		ExitWithError("Can't read config:", err)
+	}
+
 	minSubmit = cfgConfig.GetInt("min_submit")
 	minCfm = cfgConfig.GetInt("min_confirmation")
 	CfmChainLength = cfgConfig.GetInt("confirmation_chain_length")
+	signatureScheme = cfgConfig.GetString("signature_scheme")
+
+	//initialize signature scheme for createmswallet and recoverwallet
+	zcncore.InitSignatureScheme(signatureScheme)
 
 	// ~/.zcn/network.yaml
 	cfgNetwork.AddConfigPath(configDir)
-	if &networkFile != nil && len(networkFile) > 0 {
+	if len(networkFile) > 0 {
 		cfgNetwork.SetConfigFile(configDir + "/" + networkFile)
 	} else {
 		cfgNetwork.SetConfigFile(configDir + "/" + "network.yaml")
-	}
-
-	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err)
 	}
 
 	cfgNetwork.ReadInConfig() //nolint: errcheck
