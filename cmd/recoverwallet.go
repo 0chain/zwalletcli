@@ -36,6 +36,7 @@ var recoverwalletcmd = &cobra.Command{
 				ExitWithError(err.Error())
 			}
 		} else {
+			initZCNCoreContext()
 			wg := &sync.WaitGroup{}
 			statusBar := &ZCNStatus{wg: wg}
 			wg.Add(1)

@@ -68,7 +68,7 @@ var createmswalletcmd = &cobra.Command{
 		}
 
 		if !offline {
-
+			initZCNCoreContext()
 			//register all wallets
 			err = registerMSWallets(wallets)
 			if err != nil {

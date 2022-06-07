@@ -155,26 +155,33 @@ var walletIsLoaded bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
 
+	_, ok := withoutZCNCoreCmds[cmd]
+	if !ok {
+		initZCNCoreContext()
+	}
+
+	_, ok = withoutWalletCmds[cmd]
+	if !ok {
+		initZwalletContext()
+	}
+
+}
+
+func initZCNCoreContext() {
 	// zcncore is initialized , skip any zcncore checking
 	if !zcncoreIsInitialized {
-		_, ok := withoutZCNCoreCmds[cmd]
-		if !ok {
-			initZCNCore()
-			zcncoreIsInitialized = true
-		}
+		initZCNCore()
+		zcncoreIsInitialized = true
 	}
+}
 
+func initZwalletContext() {
 	// create wallet
 	if !walletIsLoaded {
-		_, ok := withoutWalletCmds[cmd]
-		if !ok {
-			createWallet()
-			loadWallet()
-
-			walletIsLoaded = true
-		}
+		createWallet()
+		loadWallet()
+		walletIsLoaded = true
 	}
-
 }
 
 func createWallet() {
