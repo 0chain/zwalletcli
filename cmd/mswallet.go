@@ -67,27 +67,32 @@ var createmswalletcmd = &cobra.Command{
 			fmt.Println("offline is not used or not set to true. Setting it to false")
 		}
 
-		if !offline {
-			initZCNCoreContext()
-			//register all wallets
-			err = registerMSWallets(wallets)
-			if err != nil {
-				ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
-			}
-
-			groupWallet := wallets[0]
-			signerWallets := wallets[1:]
-
-			err = registerMultiSig(groupWallet, smsw)
-			if err != nil {
-				ExitWithError(fmt.Sprintf("Error while registering ms group wallet. The error is:\n %v\n", err))
-			}
-
-			//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
-			if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
-				ExitWithError("Failed to test voting\n")
-			}
+		if offline {
+			fmt.Printf("\nCreating a multisig wallet is successful!\n\n")
+			return
 		}
+
+		//register wallet to miners
+		initZCNCoreContext()
+		//register all wallets
+		err = registerMSWallets(wallets)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
+		}
+
+		groupWallet := wallets[0]
+		signerWallets := wallets[1:]
+
+		err = registerMultiSig(groupWallet, smsw)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Error while registering ms group wallet. The error is:\n %v\n", err))
+		}
+
+		//if !testMSVoting(msw, grpWallet, grpClientID, signerWallets, threshold, testN) {
+		if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
+			ExitWithError("Failed to test voting\n")
+		}
+
 		fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
 		return
 	},
