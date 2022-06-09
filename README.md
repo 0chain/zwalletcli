@@ -4,45 +4,50 @@
 
 The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Global Parameters](#global-parameters)
-- [Commands](#commands)
-  - [Creating and Restoring wallets](#creating-and-restoring-wallets)
-    - [Creating wallet - (any command)](#creating-wallet---any-command)
-    - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
-    - [Registering wallet - `register`](#registering-wallet---register)
-    - [Creating multisig wallet - `createmswallet`](#creating-multisig-wallet---createmswallet)
-  - [Exploring network nodes](#exploring-network-nodes)
-    - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
-    - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
-    - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
-    - [Getting node ID by URL - `getid`](#getting-node-by-url---getid)
-  - [Getting and sending tokens](#getting-and-sending-tokens)
-    - [Getting tokens with Faucet smart contract - `faucet`](#getting-and-sending-tokens)
-    - [Checking balance - `getbalance`](#checking-balance---getbalance)
-    - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
-    - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
-  - [Staking on miners and sharders](#staking-on-miners-and-sharders)
-    - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
-    - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
-    - [Locking a stake on a node - `mn-lock`](#locking-a-stake-on-a-node---mn-lock)
+- [zwallet - a CLI for 0chain wallet](#zwallet---a-cli-for-0chain-wallet)
+  - [Architecture](#architecture)
+  - [Getting started](#getting-started)
+    - [1. Installation](#1-installation)
+    - [2. Run `zwallet` commands](#2-run-zwallet-commands)
+  - [Global parameters](#global-parameters)
+  - [Commands](#commands)
+    - [Creating and restoring wallets](#creating-and-restoring-wallets)
+      - [Creating wallet - (any command)](#creating-wallet---any-command)
+      - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
+      - [Registering wallet - `register`](#registering-wallet---register)
+      - [Creating multisig wallet - `createmswallet`](#creating-multisig-wallet---createmswallet)
+    - [Exploring network nodes](#exploring-network-nodes)
+      - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
+      - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
+      - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
+      - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
+    - [Getting and sending tokens](#getting-and-sending-tokens)
+      - [Getting tokens with Faucet smart contract - `faucet`](#getting-tokens-with-faucet-smart-contract---faucet)
+      - [Checking balance - `getbalance`](#checking-balance---getbalance)
+      - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
+      - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
+    - [Staking on miners and sharders](#staking-on-miners-and-sharders)
+      - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
+      - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
+      - [Locking a stake on a node - `mn-lock`](#locking-a-stake-on-a-node---mn-lock)
     - [Getting the stake pools of a wallet - `mn-user-info`](#getting-the-stake-pools-of-a-wallet---mn-user-info)
-    - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
-    - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
-    - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
-  - [Vesting pool](#vesting-pool)
-    - [Checking vesting pool config - `vp-config`](#checking-vesting-pool-config---vp-config)
-    - [Adding a vesting pool - `vp-add`](#adding-a-vesting-pool---vp-add)
-    - [Checking vesting pool list - `vp-list`](#checking-vesting-pool-list---vp-list)
-    - [Checking vesting pool info - `vp-info`](#checking-vesting-pool-info---vp-info)
-    - [Triggering a vesting pool work - `vp-trigger`](#triggering-a-vesting-pool-work---vp-trigger)
-    - [Unlocking tokens of a vesting pool - `vp-unlock`](#unlocking-tokens-of-a-vesting-pool---vp-unlock)
-    - [Stopping vesting for a destination - `vp-stop`](#stopping-vesting-for-a-destination---vp-stop)
-    - [Deleting a vesting pool - `vp-delete`](#deleting-a-vesting-pool---vp-delete)
-- [Config](#config)
-- [Video Resources](#video-resources)
-- [Troubleshooting](#troubleshooting)
+      - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
+      - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
+      - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+    - [Vesting pool](#vesting-pool)
+      - [Checking vesting pool config - `vp-config`](#checking-vesting-pool-config---vp-config)
+      - [Adding a vesting pool - `vp-add`](#adding-a-vesting-pool---vp-add)
+      - [Checking vesting pool list - `vp-list`](#checking-vesting-pool-list---vp-list)
+      - [Checking vesting pool info - `vp-info`](#checking-vesting-pool-info---vp-info)
+      - [Triggering a vesting pool work - `vp-trigger`](#triggering-a-vesting-pool-work---vp-trigger)
+      - [Unlocking tokens of a vesting pool - `vp-unlock`](#unlocking-tokens-of-a-vesting-pool---vp-unlock)
+      - [Stopping vesting for a destination - `vp-stop`](#stopping-vesting-for-a-destination---vp-stop)
+      - [Deleting a vesting pool - `vp-delete`](#deleting-a-vesting-pool---vp-delete)
+  - [Config](#config)
+    - [~/.zcn/config.yaml](#zcnconfigyaml)
+    - [(Optional) ~/.zcn/network.yaml](#optional-zcnnetworkyaml)
+  - [Video resources](#video-resources)
+  - [Troubleshooting](#troubleshooting)
 
 ## Architecture
 
@@ -460,6 +465,7 @@ Given a wallet's mnemonics, you can recover and recreate your wallet.
 | Parameter    | Required | Description                            | Default | Valid Values |
 | ------------ | -------- | -------------------------------------- | ------- | ------------ |
 | `--mnemonic` | Yes      | The mnemonics of the wallet to recover |         |              |
+| `--offline`  | No       | recover wallet without registration on blockchain|  false  |              |
 
 ![recover wallet](docs/recoverwallet.png "Recover wallet")
 
@@ -521,7 +527,8 @@ The Multisig smart contract allows the registration of new multisig wallets, and
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--numsigners` | Yes      | The number of signers of the multisig wallet                 |         |              |
 | `--threshold`  | Yes      | The number of signers required to vote a transaction         |         |              |
-| `--testn`      | No       | Whether to have all signers vote on the test transation, otherwise just the minimum threshold | false   |              |
+| `--testn`      | No       | Whether to have all signers vote on the test transation, otherwise just the minimum threshold | false  
+| `--offline`    | No       | create multiwallet without registration on blockchain        |  false  |              |
 
 ![Create multisignature wallet](docs/createmswallet.png "Create multisignature wallet")
 

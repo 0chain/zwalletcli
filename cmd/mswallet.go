@@ -62,6 +62,18 @@ var createmswalletcmd = &cobra.Command{
 			ExitWithError(err)
 		}
 
+		offline, err := cmd.Flags().GetBool("offline")
+		if err != nil {
+			fmt.Println("offline is not used or not set to true. Setting it to false")
+		}
+
+		if offline {
+			fmt.Printf("\nCreating a multisig wallet is successful!\n\n")
+			return
+		}
+
+		//register wallet to miners
+		initZCNCoreContext()
 		//register all wallets
 		err = registerMSWallets(wallets)
 		if err != nil {
@@ -80,6 +92,7 @@ var createmswalletcmd = &cobra.Command{
 		if !testMSVoting(smsw, groupWallet, groupClientID, signerWallets, threshold, testN) {
 			ExitWithError("Failed to test voting\n")
 		}
+
 		fmt.Printf("\nCreating and testing a multisig wallet is successful!\n\n")
 		return
 	},
@@ -418,10 +431,11 @@ func createAWallet() string {
 }
 
 func init() {
-	rootCmd.AddCommand(createmswalletcmd)
+	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(createmswalletcmd)))
 	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
 	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
 	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
+	createmswalletcmd.PersistentFlags().Bool("offline", false, "create multiwallet without registration on blockchain")
 	createmswalletcmd.MarkFlagRequired("threshold")
 	createmswalletcmd.MarkFlagRequired("numsigners")
 }

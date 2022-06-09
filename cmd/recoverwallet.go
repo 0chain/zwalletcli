@@ -23,25 +23,43 @@ var recoverwalletcmd = &cobra.Command{
 		if zcncore.IsMnemonicValid(mnemonic) == false {
 			ExitWithError("Error: Invalid mnemonic")
 		}
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.RecoverWallet(mnemonic, statusBar)
-		if err == nil {
-			wg.Wait()
+
+		offline, err := cmd.Flags().GetBool("offline")
+		if err != nil {
+			fmt.Println("offline is not used or not set to true. Setting it to false")
+		}
+
+		var walletString string
+		if offline {
+			walletString, err = zcncore.RecoverOfflineWallet(mnemonic)
+			if err != nil {
+				ExitWithError(err.Error())
+			}
 		} else {
-			ExitWithError(err.Error())
+			initZCNCoreContext()
+			wg := &sync.WaitGroup{}
+			statusBar := &ZCNStatus{wg: wg}
+			wg.Add(1)
+			err = zcncore.RecoverWallet(mnemonic, statusBar)
+			if err == nil {
+				wg.Wait()
+			} else {
+				ExitWithError(err.Error())
+			}
+			if len(statusBar.walletString) == 0 || !statusBar.success {
+				ExitWithError("Error recovering the wallet." + statusBar.errMsg)
+			}
+
+			walletString = statusBar.walletString
 		}
-		if len(statusBar.walletString) == 0 || !statusBar.success {
-			ExitWithError("Error recovering the wallet." + statusBar.errMsg)
-		}
+
 		var walletFilePath string
-		if &walletFile != nil && len(walletFile) > 0 {
+		if len(walletFile) > 0 {
 			walletFilePath = getConfigDir() + "/" + walletFile
 		} else {
 			walletFilePath = getConfigDir() + "/wallet.json"
 		}
-		clientConfig = string(statusBar.walletString)
+		clientConfig = string(walletString)
 		file, err := os.Create(walletFilePath)
 		if err != nil {
 			ExitWithError(err.Error())
@@ -54,7 +72,8 @@ var recoverwalletcmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(recoverwalletcmd)
+	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(recoverwalletcmd)))
 	recoverwalletcmd.PersistentFlags().String("mnemonic", "", "mnemonic")
+	recoverwalletcmd.PersistentFlags().Bool("offline", false, "recover wallet without registration on blockchain")
 	recoverwalletcmd.MarkFlagRequired("mnemonic")
 }
