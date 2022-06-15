@@ -10,7 +10,8 @@ on:
 jobs:
   build-linux:
     name: Build-linux
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
+    runs-on: [self-hosted, build]
     steps:
       - name: Setup go 1.18
         uses: actions/setup-go@v2
