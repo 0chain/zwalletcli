@@ -24,7 +24,7 @@ func checkBalanceBeforeSend(tokens, fee float64) {
 	}
 	b := statusBar.balance
 
-	if b.ToToken() < tokens + fee {
+	if b.ToToken() < tokens+fee {
 		ExitWithError("Insufficient balance for this transaction.")
 	}
 	return
@@ -51,6 +51,9 @@ var sendcmd = &cobra.Command{
 		token, err := cmd.Flags().GetFloat64("tokens")
 		if err != nil {
 			ExitWithError("Error: invalid 'tokens' flag", err)
+		}
+		if token < 0 {
+			ExitWithError("invalid token amount: negative")
 		}
 		doJSON, _ := cmd.Flags().GetBool("json")
 		desc := cmd.Flag("desc").Value.String()

@@ -432,6 +432,9 @@ var minerscLock = &cobra.Command{
 		if tokens, err = flags.GetFloat64("tokens"); err != nil {
 			log.Fatal(err)
 		}
+		if tokens < 0 {
+			log.Fatal("invalid token amount: negative")
+		}
 
 		var (
 			wg        sync.WaitGroup
