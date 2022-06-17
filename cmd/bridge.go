@@ -130,8 +130,8 @@ func GetHash(args []*Arg) string {
 	return getString(args, OptionHash)
 }
 
-func GetAmount(args []*Arg) int64 {
-	return getInt64(args, OptionAmount)
+func GetAmount(args []*Arg) uint64 {
+	return getUint64(args, OptionAmount)
 }
 
 func GetRetries(args []*Arg) int {
@@ -178,6 +178,22 @@ func getInt64(args []*Arg, name string) int64 {
 	for _, arg := range args {
 		if arg.fieldName == name {
 			return (arg.value).(int64)
+		}
+	}
+
+	ExitWithError("failed to get " + name)
+
+	return 0
+}
+
+func getUint64(args []*Arg, name string) uint64 {
+	if len(args) == 0 {
+		ExitWithError("wrong number of arguments")
+	}
+
+	for _, arg := range args {
+		if arg.fieldName == name {
+			return (arg.value).(uint64)
 		}
 	}
 

@@ -204,7 +204,7 @@ var vestingPoolAddCmd = &cobra.Command{
 		}
 
 		// fee
-		var fee int64
+		var fee uint64
 		if flags.Changed("fee") {
 			var feef float64
 			if feef, err = flags.GetFloat64("fee"); err != nil {
@@ -213,7 +213,7 @@ var vestingPoolAddCmd = &cobra.Command{
 			fee = zcncore.ConvertToValue(feef)
 		}
 
-		var lock int64
+		var lock uint64
 		if flags.Changed("lock") {
 			var lockf float64
 			if lockf, err = flags.GetFloat64("lock"); err != nil {
