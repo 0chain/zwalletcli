@@ -35,11 +35,10 @@ var getidcmd = &cobra.Command{
 }
 
 type Terms struct {
-	ReadPrice               int64         `json:"read_price"`
-	WritePrice              int64         `json:"write_price"`
-	MinLockDemand           float64       `json:"min_lock_demand"`
-	MaxOfferDuration        time.Duration `json:"max_offer_duration"`
-	ChallengeCompletionTime time.Duration `json:"challenge_completion_time"`
+	ReadPrice        int64         `json:"read_price"`
+	WritePrice       int64         `json:"write_price"`
+	MinLockDemand    float64       `json:"min_lock_demand"`
+	MaxOfferDuration time.Duration `json:"max_offer_duration"`
 }
 
 type BlobberInfo struct {

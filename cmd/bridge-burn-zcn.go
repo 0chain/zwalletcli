@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/0chain/gosdk/zcncore"
 
 	"github.com/0chain/gosdk/zcnbridge"
 )
@@ -14,15 +15,15 @@ func init() {
 			"burn zcn tokens",
 			"burn zcn tokens that will be minted for WZCN tokens",
 			commandBurnZCN,
-			WithAmount("ZCN token amount to be burned"),
+			WithToken("ZCN tokens quantity to be burned"),
 		))
 }
 
 func commandBurnZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
-	amount := GetAmount(args)
+	amount := GetToken(args)
 
 	fmt.Println("Starting burn transaction")
-	transaction, err := b.BurnZCN(context.Background(), amount)
+	transaction, err := b.BurnZCN(context.Background(), zcncore.ConvertToValue(amount))
 	if err == nil {
 		fmt.Printf("Submitted burn transaction %s\n", transaction.Hash)
 	} else {
@@ -30,5 +31,10 @@ func commandBurnZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	}
 
 	fmt.Printf("Starting transaction verification %s\n", transaction.Hash)
-	verify(transaction.Hash)
+	err = transaction.Verify(context.Background())
+	if err != nil {
+		ExitWithError(err)
+	}
+
+	fmt.Printf("Transaction completed successfully: %s\n", transaction.Hash)
 }
