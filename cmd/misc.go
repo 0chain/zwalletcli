@@ -35,19 +35,18 @@ var getidcmd = &cobra.Command{
 }
 
 type Terms struct {
-	ReadPrice               int64         `json:"read_price"`
-	WritePrice              int64         `json:"write_price"`
-	MinLockDemand           float64       `json:"min_lock_demand"`
-	MaxOfferDuration        time.Duration `json:"max_offer_duration"`
-	ChallengeCompletionTime time.Duration `json:"challenge_completion_time"`
+	ReadPrice        int64         `json:"read_price"`
+	WritePrice       int64         `json:"write_price"`
+	MinLockDemand    float64       `json:"min_lock_demand"`
+	MaxOfferDuration time.Duration `json:"max_offer_duration"`
 }
 
 type BlobberInfo struct {
-	Id       string `json:"id"`
-	Url      string `json:"url"`
-	Terms    Terms  `json:"terms"`
-	Capacity int64  `json:"capacity"`
-	Used     int64  `json:"used"`
+	Id        string `json:"id"`
+	Url       string `json:"url"`
+	Terms     Terms  `json:"terms"`
+	Capacity  int64  `json:"capacity"`
+	Allocated int64  `json:"allocated"`
 }
 
 type BlobberNodes struct {
@@ -78,7 +77,7 @@ func printBlobberList(nodes BlobberNodes) {
 			child.Url,
 			child.Id,
 			fmt.Sprintf("%s / %s",
-				byteCountIEC(child.Used), byteCountIEC(child.Capacity)),
+				byteCountIEC(child.Allocated), byteCountIEC(child.Capacity)),
 			fmt.Sprintf("%f / %f",
 				zcncore.ConvertToToken(child.Terms.ReadPrice),
 				zcncore.ConvertToToken(child.Terms.WritePrice)),
