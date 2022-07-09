@@ -16,7 +16,6 @@ var minerscKill = &cobra.Command{
 	Long:  "kill miner",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-
 		var (
 			flags = cmd.Flags()
 			id    string
