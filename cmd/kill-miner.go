@@ -76,11 +76,6 @@ var minerscKill = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(minerscKill)
-
-	minerscKill.PersistentFlags().Bool("json", false, "as JSON")
-	minerscKill.PersistentFlags().Bool("json", false, "as JSON")
-	minerscKill.PersistentFlags().Bool("all", false, "include all registered sharders")
-
 	minerscKill.PersistentFlags().String("id", "", "miner/sharder ID to update")
 	_ = minerscKill.MarkFlagRequired("id")
 
