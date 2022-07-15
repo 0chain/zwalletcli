@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-var minerscKill = &cobra.Command{
+var minerKill = &cobra.Command{
 	Use:   "mn-kill",
 	Short: "kill miner",
 	Long:  "kill miner",
@@ -74,8 +74,8 @@ var minerscKill = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(minerscKill)
-	minerscKill.PersistentFlags().String("id", "", "miner/sharder ID to update")
-	_ = minerscKill.MarkFlagRequired("id")
+	rootCmd.AddCommand(minerKill)
+	minerKill.PersistentFlags().String("id", "", "miner ID to update")
+	_ = minerKill.MarkFlagRequired("id")
 
 }
