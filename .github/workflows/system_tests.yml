@@ -58,7 +58,6 @@ jobs:
       zblock_branch: ${{ github.event.inputs.zblock_branch }}
       zdns_branch: staging
       explorer_branch: staging
-      zproxy_branch: staging
       zsearch_branch: staging
       test_file_filter: ${{ github.event.inputs.test_file_filter }}
       skip_tests: ${{ github.event.inputs.skip_tests }}
