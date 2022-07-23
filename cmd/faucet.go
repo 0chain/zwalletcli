@@ -36,7 +36,7 @@ var faucetcmd = &cobra.Command{
 		token := float64(0)
 		token, err = cmd.Flags().GetFloat64("tokens")
 		wg.Add(1)
-		err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress, methodName, input, zcncore.ConvertToValue(token))
+		_, err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress, methodName, input, zcncore.ConvertToValue(token))
 		if err == nil {
 			wg.Wait()
 		} else {
