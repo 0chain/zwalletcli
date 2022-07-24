@@ -20,7 +20,7 @@ func init() {
 func commandGetETHBurnTicket(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash := GetHash(args)
 
-	payload, err := b.QueryEthereumMintPayload(hash)
+	payload, err := b.QueryZChainMintPayload(hash)
 	if err != nil {
 		ExitWithError(err)
 	}
@@ -28,5 +28,6 @@ func commandGetETHBurnTicket(b *zcnbridge.BridgeClient, args ...*Arg) {
 	fmt.Println("WZCN burn ticket the completed consensus")
 	fmt.Printf("Transaction nonce: %d\n", payload.Nonce)
 	fmt.Printf("Transaction amount: %d\n", payload.Amount)
-	fmt.Printf("ZCN transaction ID: %s\n", payload.ZCNTxnID)
+	fmt.Printf("Ethereum transaction ID: %s\n", payload.EthereumTxnID)
+	fmt.Printf("ZCN receiving client ID: %s\n", payload.ReceivingClientID)
 }
