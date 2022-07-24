@@ -1054,7 +1054,7 @@ Sample reformatted JSON output
 | Parameter   | Required | Description                                                  | Default | Valid Values |
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--id`      | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
-| `--pool_id` | Yes      | Pool ID of a stake (get at `mn-info` or `mn-user-info`)      |         |              |
+| `--pool_id` | No       | Pool ID of a stake (get at `mn-info` or `mn-user-info`)      |         |              |
 
 ![Stake pool info](docs/mn-pool-info.png "Stake pool info")
 
@@ -1067,34 +1067,50 @@ Sample command
 Sample output
 
 ```json
-{"stats":{"delegate_id":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829"}}}
+{"pool_id":"4db8e916a7fa73f79097adf11d47bd535ac5fe3566e26b0e71d205c0171181df","balance":1000000000,"reward":152712000000,"status":0,"round_created":632,"delegate_id":"c542815b92849bae60032761e71eab2ba0c703589252cabbc38d48b5846e38bf","staked_at":1658695083}
 ```
 
 Reformatted output
 
 ```json
 {
-  "stats":{
-    "delegate_id":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829",
-    "high":0,
-    "low":-1,
-    "interest_paid":0,
-    "reward_paid":0,
-    "number_rounds":0,
-    "status":"PENDING"
-  },
-  "pool":{
-    "pool":{
-      "id":"b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85",
-      "balance":10000000000
-    },
-    "lock":{
-      "delete_view_change_set":false,
-      "delete_after_view_change":0,
-      "owner":"822700aa95b6719281999c66d49764e6a258ff3bf259b83a62353615fd904829"
-    }
-  }
+  "pool_id":"4db8e916a7fa73f79097adf11d47bd535ac5fe3566e26b0e71d205c0171181df",
+  "balance":1000000000,
+  "reward":152712000000,
+  "status":0,
+  "round_created":632,
+  "delegate_id":"c542815b92849bae60032761e71eab2ba0c703589252cabbc38d48b5846e38bf",
+  "staked_at":1658695083
 }
+```
+
+If the `pool-id` flag is not present, a list of pools will be returned.
+Sample command
+
+```sh
+./zwallet mn-pool-info --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
+```
+
+Sample output
+
+```json
+[{"pool_id":"4db8e916a7fa73f79097adf11d47bd535ac5fe3566e26b0e71d205c0171181df","balance":1000000000,"reward":12096000000,"status":1,"round_created":632,"delegate_id":"c542815b92849bae60032761e71eab2ba0c703589252cabbc38d48b5846e38bf","staked_at":1658695083}]
+```
+
+Reformatted output
+
+```json
+[
+  {
+    "pool_id":"4db8e916a7fa73f79097adf11d47bd535ac5fe3566e26b0e71d205c0171181df",
+    "balance":1000000000,
+    "reward":12096000000,
+    "status":1,
+    "round_created":632,
+    "delegate_id":"c542815b92849bae60032761e71eab2ba0c703589252cabbc38d48b5846e38bf",
+    "staked_at":1658695083
+  }
+]
 ```
 
 #### Unlock a stake - `mn-unlock`
