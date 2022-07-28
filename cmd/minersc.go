@@ -376,10 +376,6 @@ var minerscPoolInfo = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if !flags.Changed("pool_id") {
-			log.Fatal("missing pool_id flag")
-		}
-
 		if poolID, err = flags.GetString("pool_id"); err != nil {
 			log.Fatal(err)
 		}
@@ -581,7 +577,6 @@ func init() {
 	minerscPoolInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscPoolInfo.MarkFlagRequired("id")
 	minerscPoolInfo.PersistentFlags().String("pool_id", "", "pool ID to get info for")
-	minerscPoolInfo.MarkFlagRequired("pool_id")
 
 	minerscLock.PersistentFlags().String("id", "", "miner/sharder ID to lock stake for")
 	minerscLock.MarkFlagRequired("id")
