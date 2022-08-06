@@ -89,7 +89,6 @@ jobs:
           zsearch_image: staging
           zbox_cli_branch: staging
           zwallet_cli_branch: ${{ env.CURRENT_BRANCH }}
-          custom_go_sdk_version: staging
 
       - name: "Run System tests"
         uses: 0chain/actions/run-system-tests@master
