@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var getAuthorizerConfigCmd = &cobra.Command{
@@ -23,6 +24,8 @@ var getAuthorizerConfigCmd = &cobra.Command{
 			if ID, err = flags.GetString("id"); err != nil {
 				log.Fatalf("error in 'id' flag: %v", err)
 			}
+		} else {
+			ExitWithError("Error: id flag is missing")
 		}
 
 		var (
