@@ -1,21 +1,25 @@
 package cmd
 
 import (
-	"log"
-
-	// "github.com/0chain/gosdk/zcnbridge"
-	// "github.com/0chain/zwalletcli/util"
 	"context"
+	"log"
+	"strings"
 
+	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-type AddAuthorizerPayload struct {
-	// PublicKey         string                      `json:"public_key"`
-	URL string `json:"url"`
-	// StakePoolSettings AuthorizerStakePoolSettings `json:"stake_pool_settings"` // Used to initially create stake pool
+type addAuthorizerPayload struct {
+	URL           string
+	ClientID      string
+	ClientKey     string
+	MinStake      int64
+	MaxStake      int64
+	NumDelegates  int
+	ServiceCharge float64
 }
 
 var getAuthorizerRegisterCmd = &cobra.Command{
@@ -26,41 +30,35 @@ var getAuthorizerRegisterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			flags = cmd.Flags()
-			ID    string
-			URL   string
 			err   error
 		)
 
-		if flags.Changed("id") {
-			if ID, err = flags.GetString("id"); err != nil {
-				log.Fatalf("error in 'id' flag: %v", err)
-			}
-		} else {
-			ExitWithError("Error: id flag is missing")
-		}
-
+		payload := &addAuthorizerPayload{}
 		if flags.Changed("url") {
-			if URL, err = flags.GetString("url"); err != nil {
+			if payload.URL, err = flags.GetString("url"); err != nil {
 				log.Fatalf("error in 'url' flag: %v", err)
 			}
 		} else {
 			ExitWithError("Error: url flag is missing")
 		}
 
-		registerAuthorizerInChain(ID, URL)
-		// var (
-		// 	response = new(zcnbridge.AuthorizerResponse)
-		// 	cb       = NewJSONInfoCB(response)
-		// )
+		if flags.Changed("client_id") {
+			if payload.ClientID, err = flags.GetString("client_id"); err != nil {
+				log.Fatalf("error in 'client_id' flag: %v", err)
+			}
+		} else {
+			ExitWithError("Error: client_id flag is missing")
+		}
 
-		// if err = zcnbridge.GetAuthorizer(ID, cb); err != nil {
-		// 	log.Fatal(err)
-		// }
-		// if err = cb.Waiting(); err != nil {
-		// 	log.Fatal(err)
-		// }
+		if flags.Changed("client_key") {
+			if payload.ClientKey, err = flags.GetString("client_key"); err != nil {
+				log.Fatalf("error in 'client_key' flag: %v", err)
+			}
+		} else {
+			ExitWithError("Error: client_key flag is missing")
+		}
 
-		// util.PrettyPrintJSON(response)
+		registerAuthorizerInChain(payload)
 	},
 }
 
@@ -69,28 +67,43 @@ func init() {
 	cmd := getAuthorizerRegisterCmd
 	rootCmd.AddCommand(cmd)
 
-	cmd.PersistentFlags().String("id", "", "authorizer id")
 	cmd.PersistentFlags().String("url", "", "authorizer endpoint url")
-	cmd.MarkFlagRequired("id")
-	cmd.MarkFlagRequired("url")
+	cmd.PersistentFlags().String("client_id", "", "the client_id of the wallet")
+	cmd.PersistentFlags().String("client_key", "", "the client_key which is the public key of the wallet")
+	cmd.PersistentFlags().Int64("min_stake", 1, "the minimum stake value for the stake pool")
+	cmd.PersistentFlags().Int64("max_stake", 10, "the maximum stake value for the stake pool")
+	cmd.PersistentFlags().Int64("num_delegates", 5, "the number of delegates in the authorizer stake pool")
+	cmd.PersistentFlags().Float64("service_charge", 0.0, "the service charge for the authorizer stake pool")
 }
 
-func registerAuthorizerInChain(ID, URL string) {
-
+// registerAuthorizerInChain registers a new authorizer
+func registerAuthorizerInChain(addAuthorizerPayload *addAuthorizerPayload) {
 	input := &zcncore.AddAuthorizerPayload{
-		// PublicKey: authorizer.App.PublicKey,
-		URL: URL,
-		// StakePoolSettings: zcncore.AuthorizerStakePoolSettings{
-		// 	DelegateWallet: authorizer.App.ID,
-		// 	MinStake:       authorizer.App.MinStake,
-		// 	MaxStake:       authorizer.App.MaxStake,
-		// 	NumDelegates:   authorizer.App.NumDelegates,
-		// 	ServiceCharge:  authorizer.App.ServiceCharge,
-		// },
+		PublicKey: addAuthorizerPayload.ClientKey,
+		URL:       addAuthorizerPayload.URL,
+		StakePoolSettings: zcncore.AuthorizerStakePoolSettings{
+			DelegateWallet: addAuthorizerPayload.ClientID,
+			MinStake:       common.Balance(addAuthorizerPayload.MinStake),
+			MaxStake:       common.Balance(addAuthorizerPayload.MaxStake),
+			NumDelegates:   addAuthorizerPayload.NumDelegates,
+			ServiceCharge:  addAuthorizerPayload.ServiceCharge,
+		},
 	}
 
 	trx, err := transaction.AddAuthorizer(context.Background(), input)
 	if err != nil {
 		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.Hash)
+	}
+
+	log.Printf("Authorizer submitted OK... " + trx.Hash)
+	log.Printf("Starting verification: " + trx.Hash)
+
+	err = trx.Verify(context.Background())
+	if err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			log.Print("Authorizer has already been added to 0Chain...  Continue")
+		} else {
+			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", trx.Hash))
+		}
 	}
 }
