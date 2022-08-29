@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	// "0chain.net/chaincore/smartcontractinterface"
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
@@ -58,6 +59,22 @@ var getAuthorizerRegisterCmd = &cobra.Command{
 			ExitWithError("Error: client_key flag is missing")
 		}
 
+		if payload.MaxStake, err = flags.GetInt64("max_stake"); err != nil {
+			log.Fatalf("error in 'max_stake' flag: %v", err)
+		}
+
+		if payload.MinStake, err = flags.GetInt64("min_stake"); err != nil {
+			log.Fatalf("error in 'min_stake' flag: %v", err)
+		}
+
+		if payload.NumDelegates, err = flags.GetInt("num_delegates"); err != nil {
+			log.Fatalf("error in 'num_delegates' flag: %v", err)
+		}
+
+		if payload.ServiceCharge, err = flags.GetFloat64("service_charge"); err != nil {
+			log.Fatalf("error in 'service_charge' flag: %v", err)
+		}
+
 		registerAuthorizerInChain(payload)
 	},
 }
@@ -72,7 +89,7 @@ func init() {
 	cmd.PersistentFlags().String("client_key", "", "the client_key which is the public key of the wallet")
 	cmd.PersistentFlags().Int64("min_stake", 1, "the minimum stake value for the stake pool")
 	cmd.PersistentFlags().Int64("max_stake", 10, "the maximum stake value for the stake pool")
-	cmd.PersistentFlags().Int64("num_delegates", 5, "the number of delegates in the authorizer stake pool")
+	cmd.PersistentFlags().Int("num_delegates", 5, "the number of delegates in the authorizer stake pool")
 	cmd.PersistentFlags().Float64("service_charge", 0.0, "the service charge for the authorizer stake pool")
 }
 
@@ -94,6 +111,12 @@ func registerAuthorizerInChain(addAuthorizerPayload *addAuthorizerPayload) {
 	if err != nil {
 		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.Hash)
 	}
+
+	// if err := AuthorizeWithOwner("check_authorizer", func() bool {
+	// 	return gn.FaucetConfig.OwnerId == trx.ClientID
+	// }); err != nil {
+	// 	return "", err
+	// }
 
 	log.Printf("Authorizer submitted OK... " + trx.Hash)
 	log.Printf("Starting verification: " + trx.Hash)
