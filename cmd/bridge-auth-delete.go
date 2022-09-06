@@ -32,7 +32,7 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 			}
 		}
 
-		payload := &zcncore.DeleteAuthorizePayload{
+		payload := &zcncore.DeleteAuthorizerPayload{
 			ID: ID,
 		}
 
