@@ -40,13 +40,13 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	fmt.Println("Starting to mint ZCN")
 
-	tx, err := b.MintZCN(ctx, payload)
+	txnhash, err := b.MintZCN(ctx, payload)
 	if err != nil {
 		ExitWithError(err)
 	}
 
 	fmt.Println("Completed ZCN mint transaction")
-	fmt.Printf("Transaction hash: %s\n", tx.Hash)
+	fmt.Printf("Transaction hash: %s\n", txnhash)
 
 	fmt.Println("Done.")
 }
