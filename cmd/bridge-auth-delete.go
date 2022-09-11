@@ -16,25 +16,12 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 	Long:  `Delete ZCNSC authorizer by ID`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		const (
-			IDFlag = "id"
-		)
 
 		var (
-			flags = cmd.Flags()
-			ID    string
-			err   error
+			err error
 		)
 
-		if flags.Changed(IDFlag) {
-			if ID, err = flags.GetString(IDFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", IDFlag, err)
-			}
-		}
-
-		payload := &zcncore.DeleteAuthorizerPayload{
-			ID: ID,
-		}
+		payload := &zcncore.DeleteAuthorizerPayload{}
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
@@ -82,7 +69,4 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 func init() {
 	cmd := deleteAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
-
-	cmd.PersistentFlags().String("id", "", "authorizer ID")
-	cmd.MarkFlagRequired("id")
 }
