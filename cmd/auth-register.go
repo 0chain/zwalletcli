@@ -2,15 +2,13 @@ package cmd
 
 import (
 	"context"
-	"log"
-	"strings"
-
-	// "0chain.net/chaincore/smartcontractinterface"
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"log"
+	"strings"
 )
 
 type addAuthorizerPayload struct {
@@ -111,12 +109,6 @@ func registerAuthorizerInChain(addAuthorizerPayload *addAuthorizerPayload) {
 	if err != nil {
 		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.Hash)
 	}
-
-	// if err := AuthorizeWithOwner("check_authorizer", func() bool {
-	// 	return gn.FaucetConfig.OwnerId == trx.ClientID
-	// }); err != nil {
-	// 	return "", err
-	// }
 
 	log.Printf("Authorizer submitted OK... " + trx.Hash)
 	log.Printf("Starting verification: " + trx.Hash)
