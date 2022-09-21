@@ -361,9 +361,8 @@ var minerscPoolInfo = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			poolID string
+			flags = cmd.Flags()
+			id    string
 
 			err error
 		)
@@ -376,16 +375,12 @@ var minerscPoolInfo = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if poolID, err = flags.GetString("pool_id"); err != nil {
-			log.Fatal(err)
-		}
-
 		var (
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
 		wg.Add(1)
-		err = zcncore.GetMinerSCNodePool(id, poolID, statusBar)
+		err = zcncore.GetMinerSCNodePool(id, statusBar)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -483,10 +478,9 @@ var minerscUnlock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			poolID string
-			err    error
+			flags = cmd.Flags()
+			id    string
+			err   error
 		)
 
 		if !flags.Changed("id") {
@@ -494,14 +488,6 @@ var minerscUnlock = &cobra.Command{
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
-		}
-
-		if !flags.Changed("pool_id") {
-			log.Fatal("missing pool_id flag")
-		}
-
-		if poolID, err = flags.GetString("pool_id"); err != nil {
 			log.Fatal(err)
 		}
 
@@ -514,7 +500,7 @@ var minerscUnlock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCUnlock(id, poolID)
+		err = txn.MinerSCUnlock(id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -576,7 +562,6 @@ func init() {
 
 	minerscPoolInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscPoolInfo.MarkFlagRequired("id")
-	minerscPoolInfo.PersistentFlags().String("pool_id", "", "pool ID to get info for")
 
 	minerscLock.PersistentFlags().String("id", "", "miner/sharder ID to lock stake for")
 	minerscLock.MarkFlagRequired("id")
@@ -585,6 +570,4 @@ func init() {
 
 	minerscUnlock.PersistentFlags().String("id", "", "miner/sharder ID to unlock pool of")
 	minerscUnlock.MarkFlagRequired("id")
-	minerscUnlock.PersistentFlags().String("pool_id", "", "pool ID to unlock")
-	minerscUnlock.MarkFlagRequired("pool_id")
 }
