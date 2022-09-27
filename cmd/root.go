@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -178,53 +179,50 @@ func initZCNCoreContext() {
 func initZwalletContext() {
 	// create wallet
 	if !walletIsLoaded {
-		createWallet()
-		loadWallet()
+		createNLoadWallet()
 		walletIsLoaded = true
 	}
 }
 
-func createWallet() {
-
-	_, err := os.Stat(cfgWallet)
-
-	isNewWallet := os.IsNotExist(err)
-
-	if isNewWallet {
+func createNLoadWallet() {
+	// No wallet found
+	if _, err := os.Stat(cfgWallet); os.IsNotExist(err) {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-
-		wg.Add(1)
-
-		err = zcncore.CreateWallet(statusBar)
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
-		}
-
-		if len(statusBar.walletString) == 0 || !statusBar.success {
-			ExitWithError("Error creating the wallet." + statusBar.errMsg)
-		}
-
-		fmt.Println("ZCN wallet created!!")
-		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
+		statusBar, err := createWallet()
 		if err != nil {
 			ExitWithError(err.Error())
 		}
+		if err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644); err != nil {
+			ExitWithError(err.Error())
+		}
 
-	}
-
-	loadWallet()
-
-	if isNewWallet {
 		log.Print("Creating related read pool for storage smart-contract...")
 		if err := createReadPool(); err != nil {
 			log.Fatalf("Failed to create read pool: %v", err)
 		}
 		log.Printf("Read pool created successfully")
 	}
+
+	loadWallet()
+}
+
+func createWallet() (*ZCNStatus, error) {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+
+	if err := zcncore.CreateWallet(statusBar); err != nil {
+		return nil, err
+	}
+
+	wg.Add(1)
+	wg.Wait()
+
+	if len(statusBar.walletString) == 0 || !statusBar.success {
+		return nil, errors.New("Error creating the wallet." + statusBar.errMsg)
+	}
+
+	fmt.Println("ZCN wallet created!!")
+	return statusBar, nil
 }
 
 func loadWallet() {
@@ -244,11 +242,7 @@ func loadWallet() {
 
 	clientWallet = &wallet
 
-	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, false)
-	if err == nil {
-		wg.Wait()
-	} else {
-		ExitWithError(err.Error())
+	if err = zcncore.SetWalletInfo(clientConfig, false); err != nil {
+		ExitWithError(err)
 	}
 }
