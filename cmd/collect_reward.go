@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var minerScPayReward = &cobra.Command{
@@ -17,19 +18,9 @@ var minerScPayReward = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		flags := cmd.Flags()
-		if !flags.Changed("pool_id") && !flags.Changed("provider_id") {
-			log.Fatal("must have pool id or provider id")
-		}
 
-		var poolId, providerId string
+		var providerId string
 		var err error
-
-		if flags.Changed("pool_id") {
-			poolId, err = flags.GetString("pool_id")
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
 
 		if flags.Changed("provider_id") {
 			providerId, err = flags.GetString("provider_id")
@@ -54,9 +45,9 @@ var minerScPayReward = &cobra.Command{
 		wg.Add(1)
 		switch providerName {
 		case "miner":
-			err = txn.MinerSCCollectReward(providerId, poolId, zcncore.ProviderMiner)
+			err = txn.MinerSCCollectReward(providerId, zcncore.ProviderMiner)
 		case "sharder":
-			err = txn.MinerSCCollectReward(providerId, poolId, zcncore.ProviderSharder)
+			err = txn.MinerSCCollectReward(providerId, zcncore.ProviderSharder)
 		case "authorizer":
 			log.Fatal("not implemented yet")
 		default:
@@ -98,8 +89,6 @@ var minerScPayReward = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(minerScPayReward)
 
-	minerScPayReward.PersistentFlags().String("pool_id", "", "stake pool id")
-	minerScPayReward.MarkFlagRequired("pool_id")
 	minerScPayReward.PersistentFlags().String("provider_id", "", "miner or sharder id")
 	minerScPayReward.MarkFlagRequired("provider_id")
 	minerScPayReward.PersistentFlags().String("provider_type", "miner", "provider type, miner or sharder")
