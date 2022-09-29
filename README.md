@@ -1,6 +1,6 @@
 # zwallet - a CLI for 0chain wallet
 
-`zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain. 
+`zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain.
 
 The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
@@ -51,9 +51,9 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
 
 ## Architecture
 
-`zwallet` can be configured to work with any 0chain network. It uses a config and a wallet file stored on the local filesystem. 
+`zwallet` can be configured to work with any 0chain network. It uses a config and a wallet file stored on the local filesystem.
 
-For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.  
+For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.
 
 ![architecture](docs/architecture.png "Architecture")
 
@@ -67,7 +67,7 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 
 **Procedures**
 
-1. Clone the `zwalletcli` repo and install 
+1. Clone the `zwalletcli` repo and install
 
 ```sh
 git clone https://github.com/0chain/zwalletcli.git
@@ -109,7 +109,7 @@ The following steps assume that your terminal's working directory is inside the 
 
 1. Register a new wallet
 
-The wallet information is stored on `/.zcn/wallet.json`. 
+The wallet information is stored on `/.zcn/wallet.json`.
 
 Initially, you do not have a wallet file yet. When you execute any `zwallet` command, it will automatically create the wallet file.
 
@@ -129,7 +129,7 @@ Wallet registered
 
 To put tokens to your wallet, you can use the Faucet smart contract.
 
-Run the `faucet` command to receive 1 token. 
+Run the `faucet` command to receive 1 token.
 
 ```sh
 ./zwallet faucet --methodName pour --input "need token"
@@ -155,10 +155,10 @@ Balance: 5 (5.00 USD)
 
 4. Lock tokens to gain interest
 
-Run the `lock` command to lock some of your tokens to earn interest.  The following command lock `0.5` token for 5 minutes. 
+Run the `lock` command to lock some of your tokens to earn interest.  The following command lock `0.5` token for 5 minutes.
 
 ```sh
-./zwallet lock --tokens 0.5 --durationMin 5 
+./zwallet lock --tokens 0.5 --durationMin 5
 ```
 
 ```
@@ -179,7 +179,7 @@ Balance: 4.5000004743 (4.5000004743 USD)
 
 5. Stake tokens on a node to earn tokens
 
-You can stake tokens on a blockchain node to earn more tokens. 
+You can stake tokens on a blockchain node to earn more tokens.
 Any miner or sharder can be staked on provided the node is not yet full.
 
 In order to stake on a node, find out node's ID.
@@ -221,7 +221,7 @@ locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 To check if a stake pool is active, you can run `mn-pool-info` command. Normally, it would be activated in 5 minutes.
 
 ```sh
-./zwallet mn-pool-info --id cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2 --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+./zwallet mn-pool-info --id cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
 ```
 
 ```json
@@ -257,7 +257,7 @@ Run the `vp-add` command to vest 2 tokens to that address in 5 minutes. Replace 
 Vesting pool added successfully: 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:c40fbad99c1d5201394e001c0dbe1533957e593885ecfeb62735ca3d9b1e572c
 ```
 
-View the pool info and see that part of the tokens are now vested. 
+View the pool info and see that part of the tokens are now vested.
 Those can be unlocked by the destination.
 
 ```
@@ -271,7 +271,7 @@ can unlock:   0 (excess)
 sent:         0 (real value)
 pending:      2 (not sent, real value)
 vested:       0.72 (virtual, time based value)
-description:  
+description:
 start_time:   2021-06-05 01:43:11 +1000 AEST
 expire_at:    2021-06-05 01:48:11 +1000 AEST
 destinations:
@@ -285,7 +285,7 @@ destinations:
 client_id:    e51a5ee39a405c388a17232f3094c3773d8c97b3e49e701bdf04806494149ae2
 ```
 
-After 5 minutes, all tokens should now be unlockable by destination wallet. 
+After 5 minutes, all tokens should now be unlockable by destination wallet.
 Use `vp-unlock` on the destination wallet to move tokens into the wallet.
 
 ```
@@ -308,7 +308,7 @@ Balance: 2 (1.401328 USD)
 
 7. Dispensing tokens from a multisig wallet
 
-The CLI can be used to show that 0chain supports multisig wallet. 
+The CLI can be used to show that 0chain supports multisig wallet.
 With multisig wallet, moving tokens need multiple approvals from its signatories.
 This is perfect for dispensing funds of organization.
 
@@ -326,17 +326,17 @@ Sample command with 3 wallet signers and a threshold of 2 votes.
 First part of output shows 4 wallets are registered (3 signers + multisig wallet)
 
 ```
- registering 4 wallets 
+ registering 4 wallets
 
 Successfully registered group wallet
 
-Successfully registered signer wallet number 1 
+Successfully registered signer wallet number 1
 
 
-Successfully registered signer wallet number 2 
+Successfully registered signer wallet number 2
 
 
-Successfully registered signer wallet number 3 
+Successfully registered signer wallet number 3
 ```
 
 Next part of output shows multisig wallet is registered.
@@ -436,7 +436,7 @@ Here is a sample with `faucet` command and this creates a wallet at default loca
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
 
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json` 
+Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
@@ -507,7 +507,7 @@ Wallet registered
 
 #### Creating multisig wallet - `createmswallet`
 
-A multi-signature (multisig) wallet is supported by the chain through the Multisig smart contract. 
+A multi-signature (multisig) wallet is supported by the chain through the Multisig smart contract.
 
 A multisig wallet is a wallet where transactions are voted by its configured signers. A multisig wallet is created by providing the list of signer public keys and the minimum number of votes required to fully signed a transaction.
 
@@ -527,7 +527,7 @@ The Multisig smart contract allows the registration of new multisig wallets, and
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--numsigners` | Yes      | The number of signers of the multisig wallet                 |         |              |
 | `--threshold`  | Yes      | The number of signers required to vote a transaction         |         |              |
-| `--testn`      | No       | Whether to have all signers vote on the test transation, otherwise just the minimum threshold | false  
+| `--testn`      | No       | Whether to have all signers vote on the test transation, otherwise just the minimum threshold | false
 | `--offline`    | No       | create multiwallet without registration on blockchain        |  false  |              |
 
 ![Create multisignature wallet](docs/createmswallet.png "Create multisignature wallet")
@@ -541,17 +541,17 @@ Sample command with 3 wallet signers and a threshold of 2 votes.
 Sample output. 4 wallets are registered (3 signers + multisig wallet)
 
 ```sh
- registering 4 wallets 
+ registering 4 wallets
 
 Successfully registered group wallet
 
-Successfully registered signer wallet number 1 
+Successfully registered signer wallet number 1
 
 
-Successfully registered signer wallet number 2 
+Successfully registered signer wallet number 2
 
 
-Successfully registered signer wallet number 3 
+Successfully registered signer wallet number 3
 
 
 Multisig wallet SC registration requested. verifying status
@@ -614,7 +614,7 @@ Creating and testing a multisig wallet is successful!
 
 #### Listing all miners - `ls-miners`
 
-The list of miners are retrieved using the Miner smart contract. 
+The list of miners are retrieved using the Miner smart contract.
 
 | Parameter | Required | Description          | Default | Valid Values      |
 | --------- | -------- | -------------------- | ------- | ----------------- |
@@ -667,7 +667,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
   - N2NHost: one.devnet-0chain.net
   - Host: one.devnet-0chain.net
   - Port: 31101
-  
+
 Registered Sharders
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
   - N2NHost: one.devnet-0chain.net
@@ -702,11 +702,11 @@ Sample output
 
 ```
 Blobbers:
-                 URL                 |                                ID                                |          CAP           |     R / W PRICE     | DEMAND  
+                 URL                 |                                ID                                |          CAP           |     R / W PRICE     | DEMAND
 +------------------------------------+------------------------------------------------------------------+------------------------+---------------------+--------+
-  http://one.devnet-0chain.net:31305 | 011a5444c9fe53137da7c3d871f3bf4bbf3c01607b14aa95ff2de43b5537d4b6 | 271.5 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
-  http://one.devnet-0chain.net:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
-  http://one.devnet-0chain.net:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1  
+  http://one.devnet-0chain.net:31305 | 011a5444c9fe53137da7c3d871f3bf4bbf3c01607b14aa95ff2de43b5537d4b6 | 271.5 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
+  http://one.devnet-0chain.net:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
+  http://one.devnet-0chain.net:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
 ```
 
 #### Getting node ID by URL - `getid`
@@ -728,7 +728,7 @@ The following command get the details of the sharder on a given URL
 Output
 
 ```
-URL: http://one.devnet-0chain.net:31101 
+URL: http://one.devnet-0chain.net:31101
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
@@ -738,7 +738,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 #### Getting tokens with Faucet smart contract - `faucet`
 
-Tokens can be retrieved and added to your wallet through the Faucet smart contract. 
+Tokens can be retrieved and added to your wallet through the Faucet smart contract.
 
 | Parameter      | Required | Description                                                  | Default | Valid Values     |
 | -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
@@ -853,7 +853,7 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
 ```
 
-### Staking on miners and sharders 
+### Staking on miners and sharders
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
 
@@ -1012,7 +1012,7 @@ If the locking of stakes is failing, verify the following.
 Sample command
 
 ```sh
-./zwallet mn-user-info 
+./zwallet mn-user-info
 ```
 
 Sample output
@@ -1054,14 +1054,13 @@ Sample reformatted JSON output
 | Parameter   | Required | Description                                                  | Default | Valid Values |
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--id`      | Yes      | Node ID of a miner or sharder (get at `ls-miners` or `ls-sharders`) |         |              |
-| `--pool_id` | Yes      | Pool ID of a stake (get at `mn-info` or `mn-user-info`)      |         |              |
 
 ![Stake pool info](docs/mn-pool-info.png "Stake pool info")
 
 Sample command
 
 ```sh
-./zwallet mn-pool-info --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+./zwallet mn-pool-info --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
 ```
 
 Sample output
@@ -1102,12 +1101,11 @@ Reformatted output
 | Parameter   | Required | Description                                                  | Default | Valid Values |
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--id`      | Yes      | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) |         |              |
-| `--pool_id` | Yes      | Pool ID of a stake (get at `mn-user-info`)                   |         |              |
 
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
 ```sh
-./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --pool_id b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
 ```
 
 Output
@@ -1229,7 +1227,7 @@ Sample command
 ./zwallet vp-info --pool_id 2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
 ```
 
-Sample output 
+Sample output
 
 ```
 pool_id:      2bba5b05949ea59c80aed3ac3474d7379d3be737e8eb5a968c52295e48333ead:vestingpool:0cf77bb1e4b9d71968b84be60ca49b25d20da9f446985e2450c1145ea0f5964d
@@ -1238,7 +1236,7 @@ can unlock:   2 (excess)
 sent:         0 (real value)
 pending:      3 (not sent, real value)
 vested:       3 (virtual, time based value)
-description:  
+description:
 start_time:   2021-05-08 00:06:00 +1000 AEST
 expire_at:    2021-05-08 00:11:00 +1000 AEST
 destinations:
@@ -1291,7 +1289,7 @@ can unlock:   2 (excess)
 sent:         3 (real value)
 pending:      0 (not sent, real value)
 vested:       3 (virtual, time based value)
-description:  
+description:
 start_time:   2021-05-08 00:06:00 +1000 AEST
 expire_at:    2021-05-08 00:11:00 +1000 AEST
 destinations:
@@ -1396,11 +1394,11 @@ Vesting pool deleted successfully.
 | `min_confirmation`          | The desired minimum success ratio (in percent) to meet when verifying transactions on sharders | integer    |
 | `confirmation_chain_length` | The desired chain length to meet when verifying transactions | integer    |
 
-### (Optional) ~/.zcn/network.yaml 
+### (Optional) ~/.zcn/network.yaml
 
 Network nodes are automatically discovered using the `block_worker` provided on `~/.zcn/config.yaml`.
 
-To override/limit the nodes used on `zwallet`, create `~/.zcn/network.yaml` as shown below. 
+To override/limit the nodes used on `zwallet`, create `~/.zcn/network.yaml` as shown below.
 
 ```sh
 cat > ~/.zcn/network.yaml << EOF
