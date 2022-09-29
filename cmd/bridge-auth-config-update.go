@@ -20,6 +20,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		const (
 			IDFlag  = "id"
 			FeeFlag = "fee"
+			URLFlag = "url"
 		)
 
 		var (
@@ -27,6 +28,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 			ID         string
 			Fee        string
 			FeeBalance int64
+			URL        string
 			err        error
 		)
 
@@ -47,8 +49,15 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 			log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
 		}
 
+		if flags.Changed(URLFlag) {
+			if URL, err = flags.GetString(URLFlag); err != nil {
+				log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
+			}
+		}
+
 		node := &zcncore.AuthorizerNode{
-			ID: ID,
+			ID:  ID,
+			URL: URL,
 			Config: &zcncore.AuthorizerConfig{
 				Fee: common.Balance(FeeBalance),
 			},
