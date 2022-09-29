@@ -36,8 +36,6 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 		payload := &zcncore.DeleteAuthorizerPayload{
 			ID: ID,
 		}
-		fmt.Println(payload)
-		fmt.Println("Payload")
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
 		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
