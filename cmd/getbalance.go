@@ -32,12 +32,12 @@ var getbalancecmd = &cobra.Command{
 		}
 		b := statusBar.balance
 		usd, err := zcncore.ConvertTokenToUSD(b.ToToken())
-		
+
 		if doJSON {
-			j := map[string]string {
-  			"usd": fmt.Sprintf("%f", usd),
-  			"zcn": fmt.Sprintf("%f", b.ToToken()),
-			"fmt": fmt.Sprintf("%s", b) }
+			j := map[string]string{
+				"usd": fmt.Sprintf("%f", usd),
+				"zcn": fmt.Sprintf("%f", b.ToToken()),
+				"fmt": fmt.Sprintf("%s", b)}
 			util.PrintJSON(j)
 			return
 		}

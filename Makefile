@@ -23,7 +23,7 @@ build:
 
 $(ZWALLET): gomod-download
 	$(eval VERSION=$(shell git describe --tags --dirty --always))
-	CGO_ENABLED=1 go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION) -X main.MinTxFee=$(MIN_FEE)" -o $(ZWALLET) main.go
+	CGO_ENABLED=1 go build -x -v -tags bn256 -ldflags "-X main.VersionStr=$(VERSION)" -o $(ZWALLET) main.go
 
 install: $(ZWALLET) zwallet-test
 
