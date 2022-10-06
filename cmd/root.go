@@ -21,6 +21,11 @@ var cDir string
 var bSilent bool
 var nonce int64
 
+// MinTxFee sets the min tx fee that must be paid for a tx to occur.
+// making it public for the flexibility to set it through ldflags.
+var MinTxFee float64
+var txFee float64
+
 var clientConfig string
 var minSubmit int
 var minCfm int
@@ -51,6 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
+	rootCmd.PersistentFlags().Float64Var(&txFee, "withFee", MinTxFee, "tx fee that will be used in transaction (if skipped a minimum fee will be charged)")
 }
 
 func Execute() {
@@ -251,4 +257,18 @@ func loadWallet() {
 	} else {
 		ExitWithError(err.Error())
 	}
+}
+
+var once sync.Once
+
+func transactionFee() uint64 {
+	once.Do(func() {
+		// TODO: get latest 10 transaction fee from blockchain and update accordingly
+
+		if txFee < MinTxFee {
+			txFee = MinTxFee
+		}
+	})
+
+	return zcncore.ConvertToValue(txFee)
 }
