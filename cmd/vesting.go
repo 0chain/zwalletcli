@@ -203,16 +203,6 @@ var vestingPoolAddCmd = &cobra.Command{
 			log.Fatalf("parsing destinations: %v", err)
 		}
 
-		// fee
-		var fee uint64
-		if flags.Changed("fee") {
-			var feef float64
-			if feef, err = flags.GetFloat64("fee"); err != nil {
-				log.Fatalf("can't get 'fee' flag: %v", err)
-			}
-			fee = zcncore.ConvertToValue(feef)
-		}
-
 		var lock uint64
 		if flags.Changed("lock") {
 			var lockf float64
@@ -228,7 +218,7 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, fee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -291,7 +281,7 @@ var vestingPoolDeleteCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, 0, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -362,7 +352,7 @@ var vestingPoolStopCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, 0, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -427,7 +417,7 @@ var vestingPoolUnlockCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, 0, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -490,7 +480,7 @@ var vestingPoolTriggerCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, 0, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 			log.Fatal(err)
 		}
 

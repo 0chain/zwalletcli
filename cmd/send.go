@@ -57,14 +57,12 @@ var sendcmd = &cobra.Command{
 		}
 		doJSON, _ := cmd.Flags().GetBool("json")
 		desc := cmd.Flag("desc").Value.String()
-		fee := float64(0)
-		fee, err = cmd.Flags().GetFloat64("fee")
 
-		checkBalanceBeforeSend(token, fee)
+		checkBalanceBeforeSend(token, zcncore.ConvertToToken(int64(transactionFee())))
 
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
 		if err != nil {
 			ExitWithError(err)
 		}

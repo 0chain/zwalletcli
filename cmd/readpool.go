@@ -16,7 +16,7 @@ func createReadPool() (err error) {
 		statusBar = &ZCNStatus{wg: &wg}
 	)
 
-	if txn, err = zcncore.NewTransaction(statusBar, 0, nonce); err != nil {
+	if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
 		return
 	}
 
