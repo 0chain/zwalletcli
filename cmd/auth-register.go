@@ -6,6 +6,7 @@ import (
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
+	"github.com/0chain/gosdk/zcncore"
 	comm "github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"log"
