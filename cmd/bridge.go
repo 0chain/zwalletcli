@@ -30,9 +30,18 @@ const (
 	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename
 	OptionMnemonic         = "mnemonic"      // OptionMnemonic bridge config filename
 	OptionKeyPassword      = "password"      // OptionKeyPassword bridge config filename
+	OptionClientKey        = "client_key"
+	OptionClientID         = "client_id"
+	OptionEthereumAddress  = "ethereum_address"
+	OptionURL              = "url"
+	OptionMinStake         = "min_stake"
+	OptionMaxStake         = "max_stake"
+	OptionNumDelegates     = "num_delegates"
+	OptionServiceCharge    = "service_charge"
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
+type CommandWithBridgeOwner func(*zcnbridge.BridgeOwner, ...*Arg)
 type Command func(...*Arg)
 
 type Option struct {
@@ -151,6 +160,38 @@ func GetRetries(args []*Arg) int {
 	return getInt(args, OptionRetries)
 }
 
+func GetClientID(args []*Arg) string {
+	return getString(args, OptionClientID)
+}
+
+func GetClientKey(args []*Arg) string {
+	return getString(args, OptionClientKey)
+}
+
+func GetEthereumAddress(args []*Arg) string {
+	return getString(args, OptionEthereumAddress)
+}
+
+func GetURL(args []*Arg) string {
+	return getString(args, OptionURL)
+}
+
+func GetMinStake(args []*Arg) int64 {
+	return getInt64(args, OptionMinStake)
+}
+
+func GetMaxStake(args []*Arg) int64 {
+	return getInt64(args, OptionMaxStake)
+}
+
+func GetNumDelegates(args []*Arg) int {
+	return getInt(args, OptionNumDelegates)
+}
+
+func GetServiceCharge(args []*Arg) float64 {
+	return getFloat64(args, OptionServiceCharge)
+}
+
 func getString(args []*Arg, name string) string {
 	if len(args) == 0 {
 		ExitWithError("wrong number of arguments")
@@ -266,6 +307,27 @@ func createCommandWithBridge(use, short, long string, functor CommandWithBridge,
 	return command
 }
 
+// createCommandWithBridge Function to initialize bridge commands with DRY principle
+func createCommandWithBridgeOwner(use, short, long string, functor CommandWithBridgeOwner, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		folder := GetConfigFolder(parameters)
+		chainConfigFile := GetChainConfigFile(parameters)
+		bridgeConfigFile := GetBridgeConfigFile(parameters)
+
+		bridgeOwner := initBridgeOwner(folder, chainConfigFile, bridgeConfigFile)
+
+		functor(bridgeOwner, parameters...)
+	}
+
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
 func AppendOptions(opts []*Option, command *cobra.Command) {
 	for _, opt := range opts {
 		switch opt.typename {
@@ -304,6 +366,7 @@ func createBridgeComm(
 
 			for _, opt := range opts {
 				if !fflags.Changed(opt.name) && opt.required {
+					//TODO: add default missing error
 					ExitWithError(opt.missingError)
 				}
 
@@ -413,6 +476,42 @@ func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile str
 	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
 
 	return bridge
+}
+
+func initBridgeOwner(overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeOwner {
+	var (
+		configDir            = GetConfigDir()
+		configBridgeFileName = DefaultConfigBridgeFileName
+		configChainFileName  = DefaultConfigChainFileName
+		logPath              = "logs"
+		loglevel             = "info"
+		development          = false
+	)
+
+	if overrideConfigFolder != "" {
+		configDir = overrideConfigFolder
+	}
+
+	configBridgeFileName = overrideBridgeFile
+	configChainFileName = overrideConfigFile
+
+	configDir, err := filepath.Abs(configDir)
+	if err != nil {
+		ExitWithError(err)
+	}
+
+	cfg := &zcnbridge.BridgeSDKConfig{
+		ConfigDir:        &configDir,
+		ConfigBridgeFile: &configBridgeFileName,
+		ConfigChainFile:  &configChainFileName,
+		LogPath:          &logPath,
+		LogLevel:         &loglevel,
+		Development:      &development,
+	}
+
+	bridgeOwner := zcnbridge.SetupBridgeOwnerSDK(cfg)
+
+	return bridgeOwner
 }
 
 func check(cmd *cobra.Command, flags ...string) {
