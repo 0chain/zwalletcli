@@ -2,16 +2,13 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
-	comm "github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"log"
 	"strings"
-	"time"
 )
 
 //goland:noinspection ALL
@@ -41,13 +38,6 @@ func init() {
 				typename: "string",
 				value:    "",
 				usage:    "the client_key which is the public key of the wallet",
-				required: true,
-			},
-			&Option{
-				name:     "ethereum_address",
-				typename: "string",
-				value:    "",
-				usage:    "ethereum address which is authorizer linked to",
 				required: true,
 			},
 			&Option{
@@ -119,26 +109,5 @@ func registerAuthorizerInChain(bo *zcnbridge.BridgeOwner, args ...*Arg) {
 		} else {
 			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", trx.Hash))
 		}
-	}
-
-	ethereumAddress := GetEthereumAddress(args)
-
-	tx, err := bo.AddEthereumAuthorizer(context.Background(), comm.HexToAddress(ethereumAddress))
-	if err != nil {
-		ExitWithError(err)
-	}
-
-	hash := tx.Hash().String()
-	fmt.Printf("Confirming Ethereum mint transaction: %s\n", hash)
-
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 100, time.Second*5)
-	if err != nil {
-		ExitWithError(err)
-	}
-
-	if status == 1 {
-		fmt.Printf("\nTransaction verification success: %s\n", hash)
-	} else {
-		ExitWithError(fmt.Sprintf("\nVerification failed: %s\n", hash))
 	}
 }
