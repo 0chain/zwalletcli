@@ -38,9 +38,13 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 		}
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		wg.Add(1)

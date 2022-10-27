@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
@@ -20,11 +21,13 @@ var walletFile string
 var cDir string
 var bSilent bool
 var nonce int64
+var txVelocity *txEnum
 
 // MinTxFee sets the min tx fee that must be paid for a tx to occur.
 // making it public for the flexibility to set it through ldflags.
-var MinTxFee float64
-var txFee float64
+// It will be adjusted to the min fee required by the network based on
+// the network avg fee and the load at the time of tx is being committed.
+var MinTxFee uint64
 
 var clientConfig string
 var minSubmit int
@@ -56,7 +59,9 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
-	rootCmd.PersistentFlags().Float64Var(&txFee, "withFee", MinTxFee, "tx fee that will be used in transaction (if skipped a minimum fee will be charged)")
+
+	txVelocity = newTxEnum([]string{"r", "f", "ff"}, "r")
+	rootCmd.PersistentFlags().Var(txVelocity, "tx-speed", "set the priority & fee for a transaction to occur. One of ('r' - regular, 'f' - fast, 'ff' - faster")
 }
 
 func Execute() {
@@ -259,16 +264,49 @@ func loadWallet() {
 	}
 }
 
-var once sync.Once
+type txEnum struct {
+	Allowed []string
+	Value   string
+}
 
-func transactionFee() uint64 {
-	once.Do(func() {
-		// TODO: get latest 10 transaction fee from blockchain and update accordingly
+// newTxEnum give a list of allowed flag parameters, where the second argument is the default
+func newTxEnum(allowed []string, d string) *txEnum {
+	return &txEnum{
+		Allowed: allowed,
+		Value:   d,
+	}
+}
 
-		if txFee < MinTxFee {
-			txFee = MinTxFee
+func (a *txEnum) String() string {
+	return a.Value
+}
+
+func (a *txEnum) Set(p string) error {
+	isIncluded := func(opts []string, val string) bool {
+		for _, opt := range opts {
+			if val == opt {
+				return true
+			}
 		}
-	})
+		return false
+	}
+	if !isIncluded(a.Allowed, p) {
+		return fmt.Errorf("%s is not included in %s", p, strings.Join(a.Allowed, ","))
+	}
+	a.Value = p
+	return nil
+}
 
-	return zcncore.ConvertToValue(txFee)
+func (a *txEnum) Type() string {
+	return "string"
+}
+
+func (a *txEnum) toZCNFeeType() zcncore.TransactionVelocity {
+	switch a.Value {
+	case "f":
+		return zcncore.FastTransaction
+	case "ff":
+		return zcncore.FasterTransaction
+	}
+	return zcncore.RegularTransaction
 }

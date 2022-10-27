@@ -218,8 +218,12 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		statusBar.Begin()
@@ -281,8 +285,12 @@ var vestingPoolDeleteCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		statusBar.Begin()
@@ -352,8 +360,12 @@ var vestingPoolStopCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		var sr zcncore.VestingStopRequest
@@ -417,8 +429,12 @@ var vestingPoolUnlockCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		statusBar.Begin()
@@ -480,8 +496,12 @@ var vestingPoolTriggerCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, transactionFee(), nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
 			log.Fatal(err)
+		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		statusBar.Begin()

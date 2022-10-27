@@ -22,10 +22,14 @@ var verifycmd = &cobra.Command{
 		hash := cmd.Flag("hash").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			ExitWithError("failed to adjust transaction fee: ", err)
+		}
+
 		txn.SetTransactionHash(hash)
 		wg.Add(1)
 		err = txn.Verify()

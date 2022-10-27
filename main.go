@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/0chain/gosdk/zcncore"
 	"os"
 	"strconv"
 
@@ -18,7 +19,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "invalid min transaction fee, expecting float: %v", err)
 			os.Exit(1)
 		}
-		cmd.MinTxFee = fee
+		cmd.MinTxFee = zcncore.ConvertToValue(fee)
 	}
 
 	cmd.VersionStr = VersionStr

@@ -29,10 +29,15 @@ var faucetcmd = &cobra.Command{
 		input := cmd.Flag("input").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			ExitWithError("failed to adjust transaction fee: ", err)
+		}
+
 		token := float64(0)
 		token, err = cmd.Flags().GetFloat64("tokens")
 		wg.Add(1)

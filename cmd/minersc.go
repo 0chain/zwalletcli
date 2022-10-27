@@ -93,10 +93,15 @@ var minerscUpdateSettings = &cobra.Command{
 			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
+		}
+
 		wg.Add(1)
 		if err = txn.MinerSCMinerSettings(miner); err != nil {
 			log.Fatal(err)
@@ -431,10 +436,15 @@ var minerscLock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
+		}
+
 		wg.Add(1)
 		err = txn.MinerSCLock(id, zcncore.ConvertToValue(tokens))
 		if err != nil {
@@ -495,10 +505,15 @@ var minerscUnlock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, transactionFee(), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
+			log.Fatal("failed to adjust transaction fee: ", err)
+		}
+
 		wg.Add(1)
 		err = txn.MinerSCUnlock(id)
 		if err != nil {
