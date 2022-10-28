@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"log"
@@ -11,58 +10,32 @@ import (
 	"sync"
 )
 
-var updateAuthorizerConfigCmd = &cobra.Command{
-	Use:   "bridge-auth-config-update",
-	Short: "Update ZCNSC authorizer settings by ID",
-	Long:  `Update ZCNSC authorizer settings by ID.`,
+var deleteAuthorizerConfigCmd = &cobra.Command{
+	Use:   "bridge-auth-delete",
+	Short: "Delete ZCNSC authorizer by ID",
+	Long:  `Delete ZCNSC authorizer by ID`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		const (
-			IDFlag  = "id"
-			FeeFlag = "fee"
-			URLFlag = "url"
+			IDFlag = "id"
 		)
-
 		var (
-			flags      = cmd.Flags()
-			ID         string
-			Fee        string
-			FeeBalance int64
-			URL        string
-			err        error
+			flags = cmd.Flags()
+			err   error
+			ID    string
 		)
 
 		if flags.Changed(IDFlag) {
 			if ID, err = flags.GetString(IDFlag); err != nil {
 				log.Fatalf("error in '%s' flag: %v", IDFlag, err)
 			}
+		} else {
+			ExitWithError("Error: id flag is missing")
 		}
 
-		if flags.Changed(FeeFlag) {
-			if Fee, err = flags.GetString(FeeFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
-			}
+		payload := &zcncore.DeleteAuthorizerPayload{
+			ID: ID,
 		}
-
-		FeeBalance, err = strconv.ParseInt(Fee, 10, 64)
-		if err != nil {
-			log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
-		}
-
-		if flags.Changed(URLFlag) {
-			if URL, err = flags.GetString(URLFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
-			}
-		}
-
-		node := &zcncore.AuthorizerNode{
-			ID:  ID,
-			URL: URL,
-			Config: &zcncore.AuthorizerConfig{
-				Fee: common.Balance(FeeBalance),
-			},
-		}
-
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
 		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
@@ -71,7 +44,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		}
 
 		wg.Add(1)
-		if err = txn.ZCNSCUpdateAuthorizerConfig(node); err != nil {
+		if err = txn.ZCNSCDeleteAuthorizer(payload); err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
@@ -88,7 +61,6 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		wg.Wait()
 
 		if statusBar.success {
-			//fmt.Printf("Nonce:%v\n", txn.GetTransactionNonce())
 			switch txn.GetVerifyConfirmationStatus() {
 			case zcncore.ChargeableError:
 				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
@@ -108,12 +80,8 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 
 //goland:noinspection GoUnhandledErrorResult
 func init() {
-	cmd := updateAuthorizerConfigCmd
+	cmd := deleteAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
-
-	cmd.PersistentFlags().String("fee", "", "fee")
-	cmd.MarkFlagRequired("fee")
-
 	cmd.PersistentFlags().String("id", "", "authorizer ID")
 	cmd.MarkFlagRequired("id")
 }
