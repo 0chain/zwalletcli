@@ -210,11 +210,11 @@ func createWallet() (*ZCNStatus, error) {
 	wg := &sync.WaitGroup{}
 	statusBar := &ZCNStatus{wg: wg}
 
+	wg.Add(1)
 	if err := zcncore.CreateWallet(statusBar); err != nil {
 		return nil, err
 	}
 
-	wg.Add(1)
 	wg.Wait()
 
 	if len(statusBar.walletString) == 0 || !statusBar.success {
@@ -234,9 +234,8 @@ func loadWallet() {
 	clientConfig = string(clientBytes)
 
 	wallet := zcncrypto.Wallet{}
-	err = json.Unmarshal([]byte(clientConfig), &wallet)
 
-	if err != nil {
+	if err = json.Unmarshal([]byte(clientConfig), &wallet); err != nil {
 		ExitWithError("Invalid wallet at path:" + cfgWallet)
 	}
 

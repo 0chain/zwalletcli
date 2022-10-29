@@ -48,13 +48,11 @@ var createWalletCmd = &cobra.Command{
 			}
 		}
 
-		fmt.Fprintf(os.Stdout, "\n\t======WALLET_START======\n\n")
 		fmt.Fprintf(os.Stdout, walletStr)
-		fmt.Fprintf(os.Stdout, "\n\n\t======WALLET_END======\n")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(WithoutWallet(createWalletCmd))
-	createWalletCmd.PersistentFlags().Bool("register", false, "create wallet with registration on blockchain")
+	createWalletCmd.PersistentFlags().Bool("register", false, "create wallet with registration on blockchain (default false)")
 }
