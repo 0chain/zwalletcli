@@ -47,7 +47,7 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	hash = tx.Hash().String()
 	fmt.Printf("Confirming Ethereum mint transaction: %s\n", hash)
 
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 5, time.Second)
+	status, err := zcnbridge.ConfirmEthereumTransaction(hash, 20, time.Second*5)
 	if err != nil {
 		ExitWithError(err)
 	}
