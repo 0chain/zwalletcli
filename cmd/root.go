@@ -23,11 +23,10 @@ var bSilent bool
 var nonce int64
 var txVelocity *txEnum
 
-// MinTxFee sets the min tx fee that must be paid for a tx to occur.
-// making it public for the flexibility to set it through ldflags.
-// It will be adjusted to the min fee required by the network based on
-// the network avg fee and the load at the time of tx is being committed.
-var MinTxFee uint64
+// txFee is the user specified fee passed from client/user.
+// If the fee is absent/low it is adjusted to the min fee required
+// (acquired from miner) for the transaction to write into blockchain.
+var txFee float64
 
 var clientConfig string
 var minSubmit int
@@ -62,6 +61,7 @@ func init() {
 
 	txVelocity = newTxEnum([]string{"r", "f", "ff"}, "r")
 	rootCmd.PersistentFlags().Var(txVelocity, "tx-speed", "set the priority & fee for a transaction to occur. One of ('r' - regular, 'f' - fast, 'ff' - faster")
+	rootCmd.PersistentFlags().Float64Var(&txFee, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
 }
 
 func Execute() {

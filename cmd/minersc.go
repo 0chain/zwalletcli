@@ -93,7 +93,7 @@ var minerscUpdateSettings = &cobra.Command{
 			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -436,7 +436,7 @@ var minerscLock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -505,7 +505,7 @@ var minerscUnlock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -38,7 +38,7 @@ var minerScPayReward = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, 0)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), 0)
 		if err != nil {
 			log.Fatal(err)
 		}

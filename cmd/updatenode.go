@@ -95,7 +95,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}

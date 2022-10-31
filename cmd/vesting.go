@@ -218,7 +218,7 @@ var vestingPoolAddCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -285,7 +285,7 @@ var vestingPoolDeleteCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -360,7 +360,7 @@ var vestingPoolStopCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -429,7 +429,7 @@ var vestingPoolUnlockCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
 			log.Fatal(err)
 		}
 
@@ -496,7 +496,7 @@ var vestingPoolTriggerCmd = &cobra.Command{
 			statusBar = NewZCNStatus()
 			txn       zcncore.TransactionScheme
 		)
-		if txn, err = zcncore.NewTransaction(statusBar, MinTxFee, nonce); err != nil {
+		if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
 			log.Fatal(err)
 		}
 

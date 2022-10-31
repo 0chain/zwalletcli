@@ -65,7 +65,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, MinTxFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
