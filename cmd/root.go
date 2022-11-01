@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
@@ -65,15 +66,15 @@ func getConfigDir() string {
 	if cDir != "" {
 		return cDir
 	}
-	var configDir string
+
 	// Find home directory.
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	configDir = home + "/.zcn"
-	return configDir
+	// use join for platform agnostic path concat
+	return filepath.Join(home, ".zcn")
 }
 
 func initZCNCore() {
@@ -179,12 +180,12 @@ func initZCNCoreContext() {
 func initZwalletContext() {
 	// create wallet
 	if !walletIsLoaded {
-		createNLoadWallet()
+		createAndLoadWallet()
 		walletIsLoaded = true
 	}
 }
 
-func createNLoadWallet() {
+func createAndLoadWallet() {
 	// No wallet found
 	if _, err := os.Stat(cfgWallet); os.IsNotExist(err) {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")

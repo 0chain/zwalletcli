@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
@@ -40,7 +42,6 @@ var createWalletCmd = &cobra.Command{
 			}
 			log.Printf("Read pool created successfully")
 
-			// Lock read pool ? TODO: clarification from @dabasov
 		} else {
 			walletStr, err = zcncore.CreateWalletOffline()
 			if err != nil {
@@ -48,6 +49,17 @@ var createWalletCmd = &cobra.Command{
 			}
 		}
 
+		// write wallet into wallet dir
+		now := time.Now().UTC()
+		filename := filepath.Join(getConfigDir(),
+			fmt.Sprintf("%s_wallet_%x.json", now.Format("2006_01_02"), now.Unix()))
+
+		if err := os.WriteFile(filename, []byte(walletStr), 0644); err != nil {
+			// no return just print it
+			fmt.Fprintf(os.Stderr, "failed to dump wallet into zcn home directory %v", err)
+		} else {
+			log.Printf("wallet saved in %s", filename)
+		}
 		fmt.Fprintf(os.Stdout, walletStr)
 	},
 }
