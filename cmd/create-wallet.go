@@ -50,21 +50,37 @@ var createWalletCmd = &cobra.Command{
 		}
 
 		// write wallet into wallet dir
-		now := time.Now().UTC()
-		filename := filepath.Join(getConfigDir(),
-			fmt.Sprintf("%s_wallet_%x.json", now.Format("2006_01_02"), now.Unix()))
+		filename := walletFilename()
+		if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
+			// same wallet exists
+			ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists", filename))
+		}
 
 		if err := os.WriteFile(filename, []byte(walletStr), 0644); err != nil {
 			// no return just print it
 			fmt.Fprintf(os.Stderr, "failed to dump wallet into zcn home directory %v", err)
 		} else {
-			log.Printf("wallet saved in %s", filename)
+			log.Printf("wallet saved in %s\n", filename)
 		}
-		fmt.Fprintf(os.Stdout, walletStr)
+
+		if !bSilent {
+			fmt.Fprintf(os.Stdout, walletStr)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(WithoutWallet(createWalletCmd))
 	createWalletCmd.PersistentFlags().Bool("register", false, "create wallet with registration on blockchain (default false)")
+}
+
+func walletFilename() string {
+	cfgDir := getConfigDir()
+	if len(walletFile) > 0 {
+		return filepath.Join(cfgDir, walletFile)
+	}
+	now := time.Now().UTC()
+
+	return filepath.Join(getConfigDir(),
+		fmt.Sprintf("%s_wallet_%x.json", now.Format("2006_01_02"), now.UnixNano()))
 }

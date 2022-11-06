@@ -146,9 +146,9 @@ func loadConfigs() {
 	// TODO: move the private key storage to the keychain or secure storage
 	// ~/.zcn/wallet.json
 	if len(walletFile) > 0 {
-		cfgWallet = configDir + "/" + walletFile
+		cfgWallet = filepath.Join(configDir, walletFile)
 	} else {
-		cfgWallet = configDir + "/wallet.json"
+		cfgWallet = filepath.Join(configDir + "wallet.json")
 	}
 }
 
