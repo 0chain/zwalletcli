@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"sync"
 
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
@@ -72,19 +71,11 @@ var getblobberscmd = &cobra.Command{
 	Long:  `Get registered blobbers from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		blobbers, err := zcncore.GetBlobbers(statusBar, true)
+		blobbers, err := zcncore.GetBlobbers(true)
 		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
-		}
-		if statusBar.success {
 			printBlobberList(blobbers)
 		} else {
-			ExitWithError("\nERROR: Get blobbers failed. " + statusBar.errMsg + "\n")
+			ExitWithError("\nERROR: Get blobbers failed. " + err.Error() + "\n")
 		}
 	},
 }
