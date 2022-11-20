@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"sync"
-	"time"
 
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
@@ -34,25 +33,6 @@ var getidcmd = &cobra.Command{
 	},
 }
 
-type Terms struct {
-	ReadPrice        int64         `json:"read_price"`
-	WritePrice       int64         `json:"write_price"`
-	MinLockDemand    float64       `json:"min_lock_demand"`
-	MaxOfferDuration time.Duration `json:"max_offer_duration"`
-}
-
-type BlobberInfo struct {
-	Id        string `json:"id"`
-	Url       string `json:"url"`
-	Terms     Terms  `json:"terms"`
-	Capacity  int64  `json:"capacity"`
-	Allocated int64  `json:"allocated"`
-}
-
-type BlobberNodes struct {
-	Nodes []BlobberInfo `json:"Nodes"`
-}
-
 func byteCountIEC(b int64) string {
 	const unit = 1024
 	if b < unit {
@@ -66,21 +46,21 @@ func byteCountIEC(b int64) string {
 	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
 }
 
-func printBlobberList(nodes BlobberNodes) {
+func printBlobberList(nodes []*sdk.Blobber) {
 	fmt.Println("Blobbers:")
 	header := []string{
 		"URL", "ID", "CAP", "R / W PRICE", "DEMAND",
 	}
-	data := make([][]string, len(nodes.Nodes))
-	for idx, child := range nodes.Nodes {
+	data := make([][]string, len(nodes))
+	for idx, child := range nodes {
 		data[idx] = []string{
-			child.Url,
-			child.Id,
+			child.BaseURL,
+			string(child.ID),
 			fmt.Sprintf("%s / %s",
-				byteCountIEC(child.Allocated), byteCountIEC(child.Capacity)),
+				byteCountIEC(int64(child.Allocated)), byteCountIEC(int64(child.Capacity))),
 			fmt.Sprintf("%f / %f",
-				zcncore.ConvertToToken(child.Terms.ReadPrice),
-				zcncore.ConvertToToken(child.Terms.WritePrice)),
+				zcncore.ConvertToToken(int64(child.Terms.ReadPrice)),
+				zcncore.ConvertToToken(int64(child.Terms.WritePrice))),
 			fmt.Sprint(child.Terms.MinLockDemand),
 		}
 	}
@@ -97,25 +77,17 @@ var getblobberscmd = &cobra.Command{
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
-		err := zcncore.GetBlobbers(statusBar)
+		blobbers, err := sdk.GetBlobbers(true)
 		if err == nil {
 			wg.Wait()
 		} else {
 			ExitWithError(err.Error())
 		}
 		if statusBar.success {
-			var blobberNodes BlobberNodes
-			err = json.Unmarshal([]byte(statusBar.errMsg), &blobberNodes)
-			if err == nil {
-				printBlobberList(blobberNodes)
-			} else {
-				fmt.Println(err)
-				fmt.Printf("Blobbers: %v", statusBar.errMsg)
-			}
+			printBlobberList(blobbers)
 		} else {
 			ExitWithError("\nERROR: Get blobbers failed. " + statusBar.errMsg + "\n")
 		}
-		return
 	},
 }
 
