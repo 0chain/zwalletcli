@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sync"
 
@@ -19,7 +18,7 @@ var getidcmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
-		if fflags.Changed("url") == false {
+		if !fflags.Changed("url") {
 			ExitWithError("Error: url flag is missing")
 		}
 		url := cmd.Flag("url").Value.String()
@@ -29,7 +28,6 @@ var getidcmd = &cobra.Command{
 			ExitWithError("Error: ID not found")
 		}
 		fmt.Printf("\nURL: %v \nID: %v\n", url, id)
-		return
 	},
 }
 
@@ -77,7 +75,7 @@ var getblobberscmd = &cobra.Command{
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
-		blobbers, err := sdk.GetBlobbers(true)
+		blobbers, err := zcncore.GetBlobbers(statusBar, true)
 		if err == nil {
 			wg.Wait()
 		} else {
@@ -89,26 +87,6 @@ var getblobberscmd = &cobra.Command{
 			ExitWithError("\nERROR: Get blobbers failed. " + statusBar.errMsg + "\n")
 		}
 	},
-}
-
-func readFile(fileName string) (string, error) {
-	w, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return "", err
-	}
-	return string(w), nil
-}
-
-func writeToaFile(fileNameAndPath string, content string) error {
-
-	file, err := os.Create(fileNameAndPath)
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-	defer file.Close()
-	fmt.Fprintf(file, content)
-	return nil
 }
 
 func init() {
