@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/0chain/gosdk/zboxcore/sdk"
@@ -71,7 +72,11 @@ var getblobberscmd = &cobra.Command{
 	Long:  `Get registered blobbers from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		blobbers, err := zcncore.GetBlobbers(true)
+		active, err := cmd.Flags().GetBool("active")
+		if err != nil {
+			log.Fatal(err)
+		}
+		blobbers, err := zcncore.GetBlobbers(active)
 		if err == nil {
 			printBlobberList(blobbers)
 		} else {
@@ -85,4 +90,5 @@ func init() {
 	rootCmd.AddCommand(getblobberscmd)
 	getidcmd.PersistentFlags().String("url", "", "URL to get the ID")
 	getidcmd.MarkFlagRequired("url")
+	getblobberscmd.PersistentFlags().Bool("all", false, "Gets all blobbers, including inactive blobbers")
 }
