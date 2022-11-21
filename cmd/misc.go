@@ -72,11 +72,11 @@ var getblobberscmd = &cobra.Command{
 	Long:  `Get registered blobbers from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		active, err := cmd.Flags().GetBool("active")
+		active, err := cmd.Flags().GetBool("all")
 		if err != nil {
 			log.Fatal(err)
 		}
-		blobbers, err := zcncore.GetBlobbers(active)
+		blobbers, err := zcncore.GetBlobbers(!active)
 		if err == nil {
 			printBlobberList(blobbers)
 		} else {
