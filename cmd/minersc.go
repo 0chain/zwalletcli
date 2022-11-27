@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/core/common"
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
@@ -394,6 +395,69 @@ var minerscPoolInfo = &cobra.Command{
 	},
 }
 
+// spLock locks tokens a stake pool lack
+var spLock = &cobra.Command{
+	Use:   "sp-lock",
+	Short: "Lock tokens lacking in stake pool.",
+	Long:  `Lock tokens lacking in stake pool.`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags        = cmd.Flags()
+			providerID   string
+			providerType sdk.ProviderType
+			tokens       float64
+			fee          float64
+			err          error
+		)
+
+		if flags.Changed("blobber_id") {
+			if providerID, err = flags.GetString("blobber_id"); err != nil {
+				log.Fatalf("invalid 'blobber_id' flag: %v", err)
+			} else {
+				providerType = sdk.ProviderBlobber
+			}
+		} else if flags.Changed("validator_id") {
+			if providerID, err = flags.GetString("validator_id"); err != nil {
+				log.Fatalf("invalid 'validator_id' flag: %v", err)
+			} else {
+				providerType = sdk.ProviderValidator
+			}
+		}
+
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'blobber_id' or 'validator_id' is required")
+		}
+
+		if !flags.Changed("tokens") {
+			log.Fatal("missing required 'tokens' flag")
+		}
+
+		if tokens, err = flags.GetFloat64("tokens"); err != nil {
+			log.Fatal("invalid 'tokens' flag: ", err)
+		}
+
+		if tokens < 0 {
+			log.Fatal("invalid token amount: negative")
+		}
+
+		if flags.Changed("fee") {
+			if fee, err = flags.GetFloat64("fee"); err != nil {
+				log.Fatal("invalid 'fee' flag: ", err)
+			}
+		}
+
+		var hash string
+		hash, _, err = sdk.StakePoolLock(providerType, providerID,
+			zcncore.ConvertToValue(tokens), zcncore.ConvertToValue(fee))
+		if err != nil {
+			log.Fatalf("Failed to lock tokens in stake pool: %v", err)
+		}
+		fmt.Println("tokens locked, txn hash:", hash)
+	},
+}
+
 var minerscLock = &cobra.Command{
 	Use:   "mn-lock",
 	Short: "Add miner/sharder stake.",
@@ -402,18 +466,29 @@ var minerscLock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			tokens float64
-			err    error
+			flags        = cmd.Flags()
+			providerID   string
+			providerType zcncore.Provider
+			tokens       float64
+			err          error
 		)
 
-		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+		if flags.Changed("miner_id") {
+			if providerID, err = flags.GetString("miner_id"); err != nil {
+				log.Fatalf("invalid 'miner_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderMiner
+			}
+		} else if flags.Changed("sharder_id") {
+			if providerID, err = flags.GetString("sharder_id"); err != nil {
+				log.Fatalf("invalid 'sharder_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderSharder
+			}
 		}
 
-		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'miner_id' or 'sharder_id' is required")
 		}
 
 		if !flags.Changed("tokens") {
@@ -436,7 +511,7 @@ var minerscLock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCLock(id, zcncore.ConvertToValue(tokens))
+		err = txn.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -478,17 +553,28 @@ var minerscUnlock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags = cmd.Flags()
-			id    string
-			err   error
+			flags        = cmd.Flags()
+			providerID   string
+			providerType zcncore.Provider
+			err          error
 		)
 
-		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+		if flags.Changed("miner_id") {
+			if providerID, err = flags.GetString("miner_id"); err != nil {
+				log.Fatalf("invalid 'miner_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderMiner
+			}
+		} else if flags.Changed("sharder_id") {
+			if providerID, err = flags.GetString("sharder_id"); err != nil {
+				log.Fatalf("invalid 'sharder_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderSharder
+			}
 		}
 
-		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'miner_id' or 'sharder_id' is required")
 		}
 
 		var (
@@ -500,7 +586,7 @@ var minerscUnlock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCUnlock(id)
+		err = txn.MinerSCUnlock(providerID, providerType)
 		if err != nil {
 			log.Fatal(err)
 		}
