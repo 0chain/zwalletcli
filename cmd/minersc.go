@@ -649,11 +649,11 @@ func init() {
 	minerscPoolInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscPoolInfo.MarkFlagRequired("id")
 
-	minerscLock.PersistentFlags().String("id", "", "miner/sharder ID to lock stake for")
-	minerscLock.MarkFlagRequired("id")
+	minerscLock.PersistentFlags().String("miner_id", "", "miner ID to lock stake for")
+	minerscLock.PersistentFlags().String("sharder_id", "", "sharder ID to lock stake for")
 	minerscLock.PersistentFlags().Float64("tokens", 0, "tokens to lock")
 	minerscLock.MarkFlagRequired("tokens")
 
-	minerscUnlock.PersistentFlags().String("id", "", "miner/sharder ID to unlock pool of")
-	minerscUnlock.MarkFlagRequired("id")
+	minerscUnlock.PersistentFlags().String("miner_id", "", "miner ID to lock stake for")
+	minerscUnlock.PersistentFlags().String("sharder_id", "", "sharder ID to lock stake for")
 }
