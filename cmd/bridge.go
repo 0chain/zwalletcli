@@ -472,7 +472,6 @@ func initBridge(overrideWalletFile, overrideConfigFolder, overrideConfigFile, ov
 	if overrideWalletFile != "" {
 		walletFileName = overrideWalletFile
 	}
-	fmt.Println("Chosen wallet file: ", walletFileName)
 
 	if overrideConfigFolder != "" {
 		configDir = overrideConfigFolder
