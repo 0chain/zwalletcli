@@ -213,6 +213,7 @@ func getString(args []*Arg, name string) string {
 	}
 
 	for _, arg := range args {
+		fmt.Println(arg.value, arg.fieldName, arg.typeName)
 		if arg.fieldName == name {
 			return (arg.value).(string)
 		}
