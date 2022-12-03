@@ -608,7 +608,7 @@ var minerscUnlock = &cobra.Command{
 			case zcncore.ChargeableError:
 				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
 			case zcncore.Success:
-				fmt.Println("tokens will be unlocked next VC")
+				fmt.Println("tokens unlocked")
 			default:
 				ExitWithError("\nExecute miner unlock update smart contract failed. Unknown status code: " +
 					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
