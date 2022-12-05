@@ -393,7 +393,7 @@ var minerscPoolInfo = &cobra.Command{
 			if err != nil {
 				log.Fatal("fatal:", statusBar.errMsg)
 			}
-			fmt.Println(fields["error"])
+			ExitWithError(fields["error"])
 			return
 		}
 
