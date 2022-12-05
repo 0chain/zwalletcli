@@ -388,7 +388,13 @@ var minerscPoolInfo = &cobra.Command{
 		wg.Wait()
 
 		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
+			fields := map[string]string{}
+			err := json.Unmarshal([]byte(statusBar.errMsg), &fields)
+			if err != nil {
+				log.Fatal("fatal:", statusBar.errMsg)
+			}
+			fmt.Println(fields["error"])
+			return
 		}
 
 		fmt.Println(statusBar.errMsg)
