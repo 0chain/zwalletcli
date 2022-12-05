@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var deleteAuthorizerConfigCmd = &cobra.Command{
@@ -38,13 +39,9 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 		}
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, nonce)
 		if err != nil {
 			log.Fatal(err)
-		}
-
-		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
-			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		wg.Add(1)

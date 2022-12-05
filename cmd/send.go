@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func checkBalanceBeforeSend(tokens, fee float64) {
+func checkBalanceBeforeSend(tokens, fee uint64) {
 	wg := &sync.WaitGroup{}
 	statusBar := &ZCNStatus{wg: wg}
 	wg.Add(1)
@@ -24,7 +24,7 @@ func checkBalanceBeforeSend(tokens, fee float64) {
 	}
 	b := statusBar.balance
 
-	if b.ToToken() < tokens+fee {
+	if uint64(b) < tokens+fee {
 		ExitWithError("Insufficient balance for this transaction.")
 	}
 	return
@@ -47,34 +47,32 @@ var sendcmd = &cobra.Command{
 		if fflags.Changed("desc") == false {
 			ExitWithError("Error: Description flag is missing")
 		}
-		to_client_id := cmd.Flag("to_client_id").Value.String()
-		token, err := cmd.Flags().GetFloat64("tokens")
+		tokenZCN, err := cmd.Flags().GetFloat64("tokens")
 		if err != nil {
 			ExitWithError("Error: invalid 'tokens' flag", err)
 		}
-		if token < 0 {
-			ExitWithError("invalid token amount: negative")
+		if tokenZCN < 0 {
+			ExitWithError("invalid tokens amount: negative")
 		}
+
+		toClientID := cmd.Flag("to_client_id").Value.String()
 		doJSON, _ := cmd.Flags().GetBool("json")
 		desc := cmd.Flag("desc").Value.String()
-		fee := float64(0)
-		fee, err = cmd.Flags().GetFloat64("fee")
 
-		checkBalanceBeforeSend(token, fee)
+		tokens := zcncore.ConvertToValue(tokenZCN)
+		if gTxnFee > 0 {
+			checkBalanceBeforeSend(tokens, gTxnFee)
+		}
 
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(fee), nonce)
+		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
 
-		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
-			ExitWithError("failed to adjust transaction fee: ", err)
-		}
-
 		wg.Add(1)
-		err = txn.Send(to_client_id, zcncore.ConvertToValue(token), desc)
+		err = txn.Send(toClientID, tokens, desc)
 		if err == nil {
 			wg.Wait()
 		} else {

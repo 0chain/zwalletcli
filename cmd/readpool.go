@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,12 +16,7 @@ func createReadPool() (err error) {
 		statusBar = &ZCNStatus{wg: &wg}
 	)
 
-	if txn, err = zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), nonce); err != nil {
-		return
-	}
-
-	if err = txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
-		log.Printf("failed to adjust transaction fee: %v", err)
+	if txn, err = zcncore.NewTransaction(statusBar, gTxnFee, nonce); err != nil {
 		return
 	}
 

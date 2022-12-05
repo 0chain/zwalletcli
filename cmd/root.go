@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
@@ -21,12 +20,11 @@ var walletFile string
 var cDir string
 var bSilent bool
 var nonce int64
-var txVelocity *txEnum
 
-// txFee is the user specified fee passed from client/user.
+// gTxnFee is the user specified fee passed from client/user.
 // If the fee is absent/low it is adjusted to the min fee required
 // (acquired from miner) for the transaction to write into blockchain.
-var txFee float64
+var gTxnFee uint64
 
 var clientConfig string
 var minSubmit int
@@ -59,9 +57,9 @@ func init() {
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
 
-	txVelocity = newTxEnum([]string{"r", "f", "ff"}, "r")
-	rootCmd.PersistentFlags().Var(txVelocity, "tx-speed", "set the priority & fee for a transaction to occur. One of ('r' - regular, 'f' - fast, 'ff' - faster")
-	rootCmd.PersistentFlags().Float64Var(&txFee, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
+	var txnFeeZCN float64
+	rootCmd.PersistentFlags().Float64Var(&txnFeeZCN, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
+	gTxnFee = zcncore.ConvertToValue(txnFeeZCN)
 }
 
 func Execute() {
@@ -262,51 +260,4 @@ func loadWallet() {
 	} else {
 		ExitWithError(err.Error())
 	}
-}
-
-type txEnum struct {
-	Allowed []string
-	Value   string
-}
-
-// newTxEnum give a list of allowed flag parameters, where the second argument is the default
-func newTxEnum(allowed []string, d string) *txEnum {
-	return &txEnum{
-		Allowed: allowed,
-		Value:   d,
-	}
-}
-
-func (a *txEnum) String() string {
-	return a.Value
-}
-
-func (a *txEnum) Set(p string) error {
-	isIncluded := func(opts []string, val string) bool {
-		for _, opt := range opts {
-			if val == opt {
-				return true
-			}
-		}
-		return false
-	}
-	if !isIncluded(a.Allowed, p) {
-		return fmt.Errorf("%s is not included in %s", p, strings.Join(a.Allowed, ","))
-	}
-	a.Value = p
-	return nil
-}
-
-func (a *txEnum) Type() string {
-	return "string"
-}
-
-func (a *txEnum) toZCNFeeType() zcncore.TransactionVelocity {
-	switch a.Value {
-	case "f":
-		return zcncore.FastTransaction
-	case "ff":
-		return zcncore.FasterTransaction
-	}
-	return zcncore.RegularTransaction
 }

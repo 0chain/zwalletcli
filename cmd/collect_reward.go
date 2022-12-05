@@ -38,13 +38,9 @@ var minerScPayReward = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, zcncore.ConvertToValue(txFee), 0)
+		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, 0)
 		if err != nil {
 			log.Fatal(err)
-		}
-
-		if err := txn.AdjustTransactionFee(txVelocity.toZCNFeeType()); err != nil {
-			log.Fatal("failed to adjust transaction fee: ", err)
 		}
 
 		wg.Add(1)
