@@ -66,7 +66,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -111,9 +111,6 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 func init() {
 	cmd := updateAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
-
-	cmd.PersistentFlags().String("fee", "", "fee")
-	cmd.MarkFlagRequired("fee")
 
 	cmd.PersistentFlags().String("id", "", "authorizer ID")
 	cmd.MarkFlagRequired("id")

@@ -24,7 +24,7 @@ var nonce int64
 // gTxnFee is the user specified fee passed from client/user.
 // If the fee is absent/low it is adjusted to the min fee required
 // (acquired from miner) for the transaction to write into blockchain.
-var gTxnFee uint64
+var gTxnFee float64
 
 var clientConfig string
 var minSubmit int
@@ -57,9 +57,7 @@ func init() {
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
 
-	var txnFeeZCN float64
-	rootCmd.PersistentFlags().Float64Var(&txnFeeZCN, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
-	gTxnFee = zcncore.ConvertToValue(txnFeeZCN)
+	rootCmd.PersistentFlags().Float64Var(&gTxnFee, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
 }
 
 func Execute() {
@@ -260,4 +258,8 @@ func loadWallet() {
 	} else {
 		ExitWithError(err.Error())
 	}
+}
+
+func getTxnFee() uint64 {
+	return zcncore.ConvertToValue(gTxnFee)
 }

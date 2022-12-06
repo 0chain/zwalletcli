@@ -29,7 +29,7 @@ var faucetcmd = &cobra.Command{
 		input := cmd.Flag("input").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
@@ -37,7 +37,8 @@ var faucetcmd = &cobra.Command{
 		token := float64(0)
 		token, err = cmd.Flags().GetFloat64("tokens")
 		wg.Add(1)
-		_, err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress, methodName, input, zcncore.ConvertToValue(token))
+		_, err = txn.ExecuteSmartContract(zcncore.FaucetSmartContractAddress,
+			methodName, input, zcncore.ConvertToValue(token), zcncore.WithNoEstimateFee())
 		if err == nil {
 			wg.Wait()
 		} else {

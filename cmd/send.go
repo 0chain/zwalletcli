@@ -60,13 +60,14 @@ var sendcmd = &cobra.Command{
 		desc := cmd.Flag("desc").Value.String()
 
 		tokens := zcncore.ConvertToValue(tokenZCN)
-		if gTxnFee > 0 {
-			checkBalanceBeforeSend(tokens, gTxnFee)
+		fee := getTxnFee()
+		if fee > 0 {
+			checkBalanceBeforeSend(tokens, fee)
 		}
 
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, gTxnFee, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, fee, nonce)
 		if err != nil {
 			ExitWithError(err)
 		}

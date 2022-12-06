@@ -16,12 +16,12 @@ func createReadPool() (err error) {
 		statusBar = &ZCNStatus{wg: &wg}
 	)
 
-	if txn, err = zcncore.NewTransaction(statusBar, gTxnFee, nonce); err != nil {
+	if txn, err = zcncore.NewTransaction(statusBar, getTxnFee(), nonce); err != nil {
 		return
 	}
 
 	wg.Add(1)
-	if err = txn.CreateReadPool(0); err != nil {
+	if err = txn.CreateReadPool(); err != nil {
 		return
 	}
 	wg.Wait()
