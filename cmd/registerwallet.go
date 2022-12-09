@@ -23,7 +23,9 @@ var registerWalletCmd = &cobra.Command{
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
 		wg.Add(1)
-		zcncore.RegisterToMiners(clientWallet, statusBar)
+		if err := zcncore.RegisterToMiners(clientWallet, statusBar); err != nil {
+			ExitWithError(err)
+		}
 		wg.Wait()
 		if statusBar.success {
 			fmt.Println("Wallet registered")
