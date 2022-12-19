@@ -15,9 +15,6 @@ zwallet-test:
 gomod-download:
 	go mod download
 
-gomod-clean:
-	go clean -i -r -x -modcache  ./...
-
 build:
 	CGO_ENABLED=1 go build -v -tags bn256 -o $(ZWALLET) main.go
 
