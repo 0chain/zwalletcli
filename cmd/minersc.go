@@ -184,9 +184,33 @@ var minerscMiners = &cobra.Command{
 			cb    = NewJSONInfoCB(info)
 		)
 
-		if err = zcncore.GetMiners(cb); err != nil {
-			log.Fatal(err)
+		fmt.Println("info here :::::::::::::::::::::::::", info)
+
+		limit, offset := 20, 0
+		active := false
+
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
+
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		zcncore.GetMiners(cb, limit, offset, !active)
 
 		if err = cb.Waiting(); err != nil {
 			log.Fatal(err)
@@ -202,6 +226,9 @@ var minerscMiners = &cobra.Command{
 				return
 			}
 		}
+
+		fmt.Println("**************")
+		fmt.Println(info)
 
 		if len(info.Nodes) == 0 {
 			fmt.Println("no miners in Miner SC")
@@ -264,12 +291,30 @@ var minerscSharders = &cobra.Command{
 		if allFlag {
 			sharders := new(zcncore.MinerSCNodes)
 			callback := NewJSONInfoCB(sharders)
-			if err = zcncore.GetSharders(callback); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+
+			limit, offset := 20, 0
+			active := false
+			if flags.Changed("limit") {
+				limit, err = flags.GetInt("limit")
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
-			if err = callback.Waiting(); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+
+			if flags.Changed("offset") {
+				offset, err = flags.GetInt("offset")
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
+
+			if flags.Changed("active") {
+				active, err = flags.GetBool("active")
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			zcncore.GetSharders(callback, limit, offset, !active)
 			fmt.Println("Registered Sharders")
 			if jsonFlag {
 				util.PrettyPrintJSON(sharders.Nodes)
@@ -637,8 +682,14 @@ func init() {
 	rootCmd.AddCommand(minerscSharders)
 
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
+	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
+	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
+	minerscMiners.PersistentFlags().Bool("active", false, "Gets all miners, including inactive miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
+	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
+	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
 	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
+	minerscSharders.PersistentFlags().Bool("active", false, "Gets all sharders, including inactive sharders")
 
 	minerscUpdateSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
 	minerscUpdateSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
