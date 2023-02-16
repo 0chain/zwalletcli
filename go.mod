@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.8.11
+	github.com/0chain/gosdk v1.8.12
 	github.com/ethereum/go-ethereum v1.10.25
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -13,8 +13,9 @@ require (
 )
 
 require (
+	github.com/0chain/common v0.0.5 // indirect
 	github.com/0chain/errors v1.0.3 // indirect
-	github.com/Luzifer/go-openssl/v4 v4.1.0 // indirect
+	github.com/Luzifer/go-openssl/v3 v3.1.0 // indirect
 	github.com/btcsuite/btcd v0.23.2 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.0 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.2 // indirect
@@ -70,4 +71,4 @@ require (
 go 1.18
 
 // temporary, for development
-//replace github.com/0chain/gosdk => ../gosdk-master
+//replace github.com/0chain/gosdk => ../gosdk
