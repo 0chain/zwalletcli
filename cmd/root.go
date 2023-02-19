@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -225,13 +226,25 @@ func createWallet() {
 
 	loadWallet()
 
-	if isNewWallet {
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err := createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
+	_, err = sdk.GetReadPoolInfo(clientWallet.ClientID)
+	if err != nil {
+		if strings.Contains(err.Error(), "resource_not_found") {
+			fmt.Println("Creating related read pool for storage smart-contract...")
+			if _, _, err = sdk.CreateReadPool(); err != nil {
+				fmt.Printf("Failed to create read pool: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Println("Read pool created successfully")
 		}
-		log.Printf("Read pool created successfully")
 	}
+
+	//if isNewWallet {
+	//	log.Print("Creating related read pool for storage smart-contract...")
+	//	if err := createReadPool(); err != nil {
+	//		log.Fatalf("Failed to create read pool: %v", err)
+	//	}
+	//	log.Printf("Read pool created successfully")
+	//}
 }
 
 func loadWallet() {
