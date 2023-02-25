@@ -181,13 +181,21 @@ var minerscMiners = &cobra.Command{
 			flags = cmd.Flags()
 			err   error
 			info  = new(zcncore.MinerSCNodes)
-			cb    = NewJSONInfoCB(info)
 		)
 
 		fmt.Println("info here :::::::::::::::::::::::::", info)
 
 		limit, offset := 20, 0
 		active := false
+
+		var allFlag, jsonFlag bool
+
+		if flags.Changed("all") {
+			allFlag, err = flags.GetBool("all")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 
 		if flags.Changed("limit") {
 			limit, err = flags.GetInt("limit")
@@ -210,37 +218,81 @@ var minerscMiners = &cobra.Command{
 			}
 		}
 
-		zcncore.GetMiners(cb, limit, offset, !active)
-
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
-		}
-
 		if flags.Changed("json") {
-			var j bool
-			if j, err = flags.GetBool("json"); err != nil {
+			jsonFlag, err = flags.GetBool("json")
+			if err != nil {
 				log.Fatal(err)
 			}
-			if j {
+		}
+
+		if !allFlag {
+			cb := NewJSONInfoCB(info)
+			zcncore.GetMiners(cb, limit, offset, active)
+
+			if err = cb.Waiting(); err != nil {
+				log.Fatal(err)
+			}
+
+			if jsonFlag {
 				util.PrintJSON(info)
 				return
 			}
-		}
 
-		fmt.Println("**************")
-		fmt.Println(info)
+			fmt.Println("**************")
+			fmt.Println(info)
 
-		if len(info.Nodes) == 0 {
-			fmt.Println("no miners in Miner SC")
+			if len(info.Nodes) == 0 {
+				fmt.Println("no miners in Miner SC")
+				return
+			}
+
+			printMinerNodes(info.Nodes)
 			return
 		}
 
-		for _, node := range info.Nodes {
-			fmt.Println("- ID:        ", node.Miner.ID)
-			fmt.Println("- Host:      ", node.Miner.Host)
-			fmt.Println("- Port:      ", node.Miner.Port)
+		limit = 20
+		offset = 0
+
+		var nodes []zcncore.Node
+		for curOff := offset; ; curOff += limit {
+			cb := NewJSONInfoCB(info)
+			zcncore.GetMiners(cb, limit, curOff, active)
+
+			if err = cb.Waiting(); err != nil {
+				log.Fatal(err)
+			}
+
+			if jsonFlag {
+				util.PrintJSON(info)
+				if len(info.Nodes) == 0 {
+					break
+				}
+				continue
+			}
+
+			fmt.Println("**************")
+			fmt.Println(info)
+
+			if len(info.Nodes) == 0 {
+				if curOff == 0 {
+					fmt.Println("no miners in Miner SC")
+				}
+				break
+			}
+
+			nodes = append(nodes, info.Nodes...)
 		}
+
+		printMinerNodes(nodes)
 	},
+}
+
+func printMinerNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("- ID:        ", node.Miner.ID)
+		fmt.Println("- Host:      ", node.Miner.Host)
+		fmt.Println("- Port:      ", node.Miner.Port)
+	}
 }
 
 var minerscSharders = &cobra.Command{
@@ -685,6 +737,7 @@ func init() {
 	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
 	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
 	minerscMiners.PersistentFlags().Bool("active", false, "Gets all miners, including inactive miners")
+	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
 	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
