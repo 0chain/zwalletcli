@@ -325,6 +325,29 @@ var minerscSharders = &cobra.Command{
 			log.Fatalf("Failed to get MagicBlock: %v", err)
 		}
 
+		limit, offset := 20, 0
+		active := false
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		if mb != nil && mb.Sharders != nil {
 			fmt.Println("MagicBlock Sharders")
 			if jsonFlag {
@@ -342,44 +365,77 @@ var minerscSharders = &cobra.Command{
 
 		if allFlag {
 			sharders := new(zcncore.MinerSCNodes)
-			callback := NewJSONInfoCB(sharders)
-
-			limit, offset := 20, 0
-			active := false
-			if flags.Changed("limit") {
-				limit, err = flags.GetInt("limit")
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-
-			if flags.Changed("offset") {
-				offset, err = flags.GetInt("offset")
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-
-			if flags.Changed("active") {
-				active, err = flags.GetBool("active")
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-			zcncore.GetSharders(callback, limit, offset, !active)
 			fmt.Println("Registered Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(sharders.Nodes)
-			} else {
-				for _, node := range sharders.Nodes {
-					fmt.Println("ID:", node.Miner.ID)
-					fmt.Println("  - N2NHost:", node.Miner.N2NHost)
-					fmt.Println("  - Host:", node.Miner.Host)
-					fmt.Println("  - Port:", node.Miner.Port)
+
+			limit = 20
+			offset = 0
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				callback := NewJSONInfoCB(sharders)
+				zcncore.GetSharders(callback, limit, curOff, active)
+
+				if err = callback.Waiting(); err != nil {
+					log.Fatal(err)
 				}
+
+				if jsonFlag {
+					util.PrettyPrintJSON(sharders.Nodes)
+					if len(sharders.Nodes) == 0 {
+						break
+					}
+					continue
+				}
+
+				fmt.Println("**************")
+				fmt.Println(sharders)
+
+				if len(sharders.Nodes) == 0 {
+					if curOff == 0 {
+						fmt.Println("no sharders left to display")
+					}
+					break
+				}
+
+				nodes = append(nodes, sharders.Nodes...)
 			}
+
+			printSharderNodes(nodes)
+		} else {
+			sharders := new(zcncore.MinerSCNodes)
+			fmt.Println("Registered Sharders")
+			callback := NewJSONInfoCB(sharders)
+			zcncore.GetSharders(callback, limit, offset, active)
+
+			if err = callback.Waiting(); err != nil {
+				log.Fatal(err)
+			}
+
+			if jsonFlag {
+				util.PrintJSON(sharders)
+				return
+			}
+
+			fmt.Println("**************")
+			fmt.Println(sharders)
+
+			if len(sharders.Nodes) == 0 {
+				fmt.Println("no sharders left to display")
+				return
+			}
+
+			printSharderNodes(sharders.Nodes)
+			return
 		}
 	},
+}
+
+func printSharderNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("ID:", node.Miner.ID)
+		fmt.Println("  - N2NHost:", node.Miner.N2NHost)
+		fmt.Println("  - Host:", node.Miner.Host)
+		fmt.Println("  - Port:", node.Miner.Port)
+	}
 }
 
 var minerscUserInfo = &cobra.Command{
