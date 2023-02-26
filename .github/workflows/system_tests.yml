@@ -45,7 +45,7 @@ on:
         required: true
 jobs:
   system-tests:
-    uses: 0chain/actions/.github/workflows/manual_system_tests.yml@test
+    uses: 0chain/actions/.github/workflows/manual_system_tests.yml@master
     with:
       system_tests_branch: ${{ github.event.inputs.system_tests_branch }}
       miner_branch: ${{ github.event.inputs.miner_branch }}
@@ -72,5 +72,6 @@ jobs:
       DEV7KC: ${{ secrets.DEV7KC }}
       DEV8KC: ${{ secrets.DEV8KC }}
       DEV9KC: ${{ secrets.DEV9KC }}
+      TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
       DEVOPS_CHANNEL_WEBHOOK_URL: ${{ secrets.DEVOPS_CHANNEL_WEBHOOK_URL }}
 
