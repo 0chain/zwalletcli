@@ -183,8 +183,6 @@ var minerscMiners = &cobra.Command{
 			info  = new(zcncore.MinerSCNodes)
 		)
 
-		fmt.Println("info here :::::::::::::::::::::::::", info)
-
 		limit, offset := 20, 0
 		active := false
 
@@ -238,9 +236,6 @@ var minerscMiners = &cobra.Command{
 				return
 			}
 
-			fmt.Println("**************")
-			fmt.Println(info)
-
 			if len(info.Nodes) == 0 {
 				fmt.Println("no miners in Miner SC")
 				return
@@ -269,9 +264,6 @@ var minerscMiners = &cobra.Command{
 				}
 				continue
 			}
-
-			fmt.Println("**************")
-			fmt.Println(info)
 
 			if len(info.Nodes) == 0 {
 				if curOff == 0 {
@@ -386,9 +378,6 @@ var minerscSharders = &cobra.Command{
 					continue
 				}
 
-				fmt.Println("**************")
-				fmt.Println(sharders)
-
 				if len(sharders.Nodes) == 0 {
 					if curOff == 0 {
 						fmt.Println("no sharders left to display")
@@ -414,9 +403,6 @@ var minerscSharders = &cobra.Command{
 				util.PrintJSON(sharders)
 				return
 			}
-
-			fmt.Println("**************")
-			fmt.Println(sharders)
 
 			if len(sharders.Nodes) == 0 {
 				fmt.Println("no sharders left to display")
