@@ -17,6 +17,7 @@ const (
 	DefaultConfigBridgeFileName = "bridge.yaml"
 	DefaultConfigOwnerFileName  = "owner.yaml"
 	DefaultConfigChainFileName  = "config.yaml"
+	DefaultWalletFileName       = "wallet.json"
 )
 
 const (
@@ -30,9 +31,19 @@ const (
 	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename
 	OptionMnemonic         = "mnemonic"      // OptionMnemonic bridge config filename
 	OptionKeyPassword      = "password"      // OptionKeyPassword bridge config filename
+	OptionClientKey        = "client_key"
+	OptionClientID         = "client_id"
+	OptionEthereumAddress  = "ethereum_address"
+	OptionURL              = "url"
+	OptionMinStake         = "min_stake"
+	OptionMaxStake         = "max_stake"
+	OptionNumDelegates     = "num_delegates"
+	OptionServiceCharge    = "service_charge"
+	OptionWalletFile       = "wallet"
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
+type CommandWithBridgeOwner func(*zcnbridge.BridgeOwner, ...*Arg)
 type Command func(...*Arg)
 
 type Option struct {
@@ -51,6 +62,15 @@ type Arg struct {
 }
 
 var (
+	walletFileOption = &Option{
+		name:         OptionWalletFile,
+		value:        "wallet.json",
+		typename:     "string",
+		usage:        "Wallet file",
+		missingError: "Wallet file not specified",
+		required:     false,
+	}
+
 	configFolderOption = &Option{
 		name:         OptionConfigFolder,
 		value:        GetConfigDir(),
@@ -140,7 +160,7 @@ func GetHash(args []*Arg) string {
 }
 
 func GetAmount(args []*Arg) uint64 {
-	return getUint64(args, OptionAmount)
+	return uint64(getInt64(args, OptionAmount))
 }
 
 func GetToken(args []*Arg) float64 {
@@ -149,6 +169,42 @@ func GetToken(args []*Arg) float64 {
 
 func GetRetries(args []*Arg) int {
 	return getInt(args, OptionRetries)
+}
+
+func GetClientID(args []*Arg) string {
+	return getString(args, OptionClientID)
+}
+
+func GetClientKey(args []*Arg) string {
+	return getString(args, OptionClientKey)
+}
+
+func GetEthereumAddress(args []*Arg) string {
+	return getString(args, OptionEthereumAddress)
+}
+
+func GetURL(args []*Arg) string {
+	return getString(args, OptionURL)
+}
+
+func GetMinStake(args []*Arg) int64 {
+	return getInt64(args, OptionMinStake)
+}
+
+func GetMaxStake(args []*Arg) int64 {
+	return getInt64(args, OptionMaxStake)
+}
+
+func GetNumDelegates(args []*Arg) int {
+	return getInt(args, OptionNumDelegates)
+}
+
+func GetServiceCharge(args []*Arg) float64 {
+	return getFloat64(args, OptionServiceCharge)
+}
+
+func GetWalletFile(args []*Arg) string {
+	return getString(args, OptionWalletFile)
 }
 
 func getString(args []*Arg, name string) string {
@@ -253,8 +309,29 @@ func createCommandWithBridge(use, short, long string, functor CommandWithBridge,
 		chainConfigFile := GetChainConfigFile(parameters)
 		bridgeConfigFile := GetBridgeConfigFile(parameters)
 
-		bridge := initBridge(folder, chainConfigFile, bridgeConfigFile)
+		bridge := initBridge(walletFile, folder, chainConfigFile, bridgeConfigFile)
 		functor(bridge, parameters...)
+	}
+
+	opts = append(opts, configFolderOption)
+	opts = append(opts, configBridgeFileOption)
+	opts = append(opts, configChainFileOption)
+
+	command := createBridgeComm(use, short, long, fn, opts)
+	AppendOptions(opts, command)
+	return command
+}
+
+// createCommandWithBridge Function to initialize bridge commands with DRY principle
+func createCommandWithBridgeOwner(use, short, long string, functor CommandWithBridgeOwner, opts ...*Option) *cobra.Command {
+	fn := func(parameters ...*Arg) {
+		folder := GetConfigFolder(parameters)
+		chainConfigFile := GetChainConfigFile(parameters)
+		bridgeConfigFile := GetBridgeConfigFile(parameters)
+
+		bridgeOwner := initBridgeOwner(walletFile, folder, chainConfigFile, bridgeConfigFile)
+
+		functor(bridgeOwner, parameters...)
 	}
 
 	opts = append(opts, configFolderOption)
@@ -304,6 +381,7 @@ func createBridgeComm(
 
 			for _, opt := range opts {
 				if !fflags.Changed(opt.name) && opt.required {
+					//TODO: add default missing error
 					ExitWithError(opt.missingError)
 				}
 
@@ -379,8 +457,9 @@ func GetConfigDir() string {
 	return configDir
 }
 
-func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeClient {
+func initBridge(overrideWalletFile, overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeClient {
 	var (
+		walletFileName       = DefaultWalletFileName
 		configDir            = GetConfigDir()
 		configBridgeFileName = DefaultConfigBridgeFileName
 		configChainFileName  = DefaultConfigChainFileName
@@ -388,6 +467,10 @@ func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile str
 		loglevel             = "info"
 		development          = false
 	)
+
+	if overrideWalletFile != "" {
+		walletFileName = overrideWalletFile
+	}
 
 	if overrideConfigFolder != "" {
 		configDir = overrideConfigFolder
@@ -410,9 +493,50 @@ func initBridge(overrideConfigFolder, overrideConfigFile, overrideBridgeFile str
 		Development:      &development,
 	}
 
-	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
+	bridge := zcnbridge.SetupBridgeClientSDK(cfg, walletFileName)
 
 	return bridge
+}
+
+func initBridgeOwner(overrideWalletFile, overrideConfigFolder, overrideConfigFile, overrideBridgeFile string) *zcnbridge.BridgeOwner {
+	var (
+		walletFileName       = DefaultWalletFileName
+		configDir            = GetConfigDir()
+		configBridgeFileName = DefaultConfigBridgeFileName
+		configChainFileName  = DefaultConfigChainFileName
+		logPath              = "logs"
+		loglevel             = "info"
+		development          = false
+	)
+
+	if overrideWalletFile != "" {
+		walletFileName = overrideWalletFile
+	}
+
+	if overrideConfigFolder != "" {
+		configDir = overrideConfigFolder
+	}
+
+	configBridgeFileName = overrideBridgeFile
+	configChainFileName = overrideConfigFile
+
+	configDir, err := filepath.Abs(configDir)
+	if err != nil {
+		ExitWithError(err)
+	}
+
+	cfg := &zcnbridge.BridgeSDKConfig{
+		ConfigDir:        &configDir,
+		ConfigBridgeFile: &configBridgeFileName,
+		ConfigChainFile:  &configChainFileName,
+		LogPath:          &logPath,
+		LogLevel:         &loglevel,
+		Development:      &development,
+	}
+
+	bridgeOwner := zcnbridge.SetupBridgeOwnerSDK(cfg, walletFileName)
+
+	return bridgeOwner
 }
 
 func check(cmd *cobra.Command, flags ...string) {

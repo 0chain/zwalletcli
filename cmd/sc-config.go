@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -25,10 +26,16 @@ var scConfig = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		doJSON, _ := cmd.Flags().GetBool("json")
+		if doJSON {
+			util.PrintJSON(fields.Fields)
+			return
+		}
 		printMap(fields.Fields)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(scConfig)
+	scConfig.Flags().Bool("json", false, "pass this option to print response as json data")
 }
