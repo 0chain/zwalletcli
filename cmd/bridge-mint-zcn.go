@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcncore"
 )
 
 func init() {
@@ -20,33 +20,54 @@ func init() {
 }
 
 func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
-	hash := GetHash(args)
+	var cb zcncore.GetZCNProcessedMintNoncesCallbackStub
 
-	fmt.Printf("Query ticket for Ethereum transaction hash: %s\n", hash)
-
-	payload, err := b.QueryZChainMintPayload(hash)
+	cb.Add(1)
+	err := zcncore.GetZCNProcessedMintNonces(&cb)
 	if err != nil {
 		ExitWithError(err)
 	}
+	cb.Wait()
 
-	fmt.Printf("Sending mint transaction to ZCN\n")
-	fmt.Printf("Ethereum transaction ID: %s\n", payload.EthereumTxnID)
-	fmt.Printf("Payload amount: %d\n", payload.Amount)
-	fmt.Printf("Payload nonce: %d\n", payload.Nonce)
-	fmt.Printf("Receiving ZCN ClientID: %s\n", payload.ReceivingClientID)
+	fmt.Println("HERE")
 
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*20)
-	defer cancelFunc()
-
-	fmt.Println("Starting to mint ZCN")
-
-	txHash, err := b.MintZCN(ctx, payload)
+	burnTickets, err := b.GetNotProcessedWZCNBurnTickets(context.Background(), cb.Value)
 	if err != nil {
 		ExitWithError(err)
 	}
+	fmt.Println(burnTickets)
 
-	fmt.Println("Completed ZCN mint transaction")
-	fmt.Printf("Transaction hash: %s\n", txHash)
+	fmt.Printf("Found %d not processed WZCN burn transactions\n", len(burnTickets))
 
-	fmt.Println("Done.")
+	return
+	// for _, burnTicket := range burnTickets {
+	// 	fmt.Printf("Query ticket for Ethereum transaction hash: %s\n", burnTicket.TransactionHash)
+
+	// 	payload, err := b.QueryZChainMintPayload(burnTicket.TransactionHash)
+	// 	if err != nil {
+	// 		ExitWithError(err)
+	// 	}
+
+	// 	fmt.Printf("Sending mint transaction to ZCN\n")
+	// 	fmt.Printf("Ethereum transaction ID: %s\n", payload.EthereumTxnID)
+	// 	fmt.Printf("Payload amount: %d\n", payload.Amount)
+	// 	fmt.Printf("Payload nonce: %d\n", payload.Nonce)
+	// 	fmt.Printf("Receiving ZCN ClientID: %s\n", payload.ReceivingClientID)
+
+	// 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*20)
+	// 	defer cancelFunc()
+
+	// 	fmt.Println("Starting to mint ZCN")
+
+	// 	txHash, err := b.MintZCN(ctx, payload)
+	// 	if err != nil {
+	// 		ExitWithError(err)
+	// 	}
+
+	// 	fmt.Println("Completed ZCN mint transaction")
+	// 	fmt.Printf("Transaction hash: %s\n", txHash)
+
+	// }
+
+	// fmt.Println("Done.")
 }
