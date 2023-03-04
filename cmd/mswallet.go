@@ -409,7 +409,12 @@ func checkBalance(wallet string) bool {
 		return false
 	}
 	fmt.Printf("\nBalance: %v\n", statusBar.balance)
-	return statusBar.balance.ToToken() > 0
+	token, err := statusBar.balance.ToToken()
+	if err != nil {
+		ExitWithError(err)
+		return false
+	}
+	return token > 0
 }
 
 func createAWallet() string {
