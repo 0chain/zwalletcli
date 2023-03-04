@@ -24,7 +24,11 @@ func checkBalanceBeforeSend(tokens, fee float64) {
 	}
 	b := statusBar.balance
 
-	if b.ToToken() < tokens+fee {
+	token, err := b.ToToken()
+	if err != nil {
+		return
+	}
+	if token < tokens+fee {
 		ExitWithError("Insufficient balance for this transaction.")
 	}
 	return
