@@ -126,7 +126,7 @@ jobs:
   
   build-macos:
     name: Build-MacOS
-    runs-on: macos-latest
+    runs-on: macos-runner-binary
     steps:
       - name: Setup go 1.18
         uses: actions/setup-go@v2
