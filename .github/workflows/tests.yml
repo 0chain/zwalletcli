@@ -88,6 +88,7 @@ jobs:
           zsearch_image: staging
           zbox_cli_branch: staging
           zwallet_cli_branch: ${{ env.CURRENT_BRANCH }}
+          SUBGRAPH_API_URL: ${{ secrets.SUBGRAPH_API_URL }}
           TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
 
       - name: "Run System tests"
