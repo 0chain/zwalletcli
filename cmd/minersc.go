@@ -241,7 +241,6 @@ var minerscSharders = &cobra.Command{
 
 		if allFlag {
 			sharders := new(zcncore.MinerSCNodes)
-			fmt.Println("Registered Sharders")
 
 			limit = 20
 			offset = 0
@@ -275,7 +274,6 @@ var minerscSharders = &cobra.Command{
 			printSharderNodes(nodes)
 		} else {
 			sharders := new(zcncore.MinerSCNodes)
-			fmt.Println("Registered Sharders")
 			callback := NewJSONInfoCB(sharders)
 			zcncore.GetSharders(callback, limit, offset, active)
 
