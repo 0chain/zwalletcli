@@ -75,10 +75,10 @@ var createmswalletcmd = &cobra.Command{
 		//register wallet to miners
 		initZCNCoreContext()
 		//register all wallets
-		err = registerMSWallets(wallets)
-		if err != nil {
-			ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
-		}
+		// err = registerMSWallets(wallets)
+		// if err != nil {
+		// 	ExitWithError(fmt.Sprintf("Error while registering ms sub wallets. The error is:\n %v\n", err))
+		// }
 
 		groupWallet := wallets[0]
 		signerWallets := wallets[1:]
@@ -253,42 +253,41 @@ func testMSVotingForAllN(msw string, toClientID string, grpClientID string, sign
 	return true
 }
 
-func registerAWallet(w string) error {
-	wg := &sync.WaitGroup{}
-	statusBar := &ZCNStatus{wg: wg}
-	wg.Add(1)
-	zcncore.RegisterWallet(w, statusBar)
-	wg.Wait()
-	if statusBar.success {
-		return nil
-	}
-	return fmt.Errorf(statusBar.errMsg)
+// func registerAWallet(w string) error {
+// 	wg := &sync.WaitGroup{}
+// 	statusBar := &ZCNStatus{wg: wg}
+// 	wg.Add(1)
+// 	zcncore.RegisterWallet(w, statusBar)
+// 	wg.Wait()
+// 	if statusBar.success {
+// 		return nil
+// 	}
+// 	return fmt.Errorf(statusBar.errMsg)
+// }
 
-}
+// func registerMSWallets(wallets []string) error {
 
-func registerMSWallets(wallets []string) error {
+// 	fmt.Printf("\n registering %d wallets \n", len(wallets))
+// 	i := 0
+// 	for _, wallet := range wallets {
 
-	fmt.Printf("\n registering %d wallets \n", len(wallets))
-	i := 0
-	for _, wallet := range wallets {
+// 		var walletName string
+// 		if i == 0 {
+// 			walletName = "group wallet"
+// 		} else {
+// 			walletName = fmt.Sprintf("signer wallet number %d \n", i)
+// 		}
+// 		err := registerAWallet(wallet)
+// 		if err != nil {
+// 			fmt.Printf("\nFailed ot register wallet number %s\nAborting...", walletName)
+// 			return err
+// 		}
+// 		fmt.Printf("\nSuccessfully registered %s\n", walletName)
 
-		var walletName string
-		if i == 0 {
-			walletName = "group wallet"
-		} else {
-			walletName = fmt.Sprintf("signer wallet number %d \n", i)
-		}
-		err := registerAWallet(wallet)
-		if err != nil {
-			fmt.Printf("\nFailed ot register wallet number %s\nAborting...", walletName)
-			return err
-		}
-		fmt.Printf("\nSuccessfully registered %s\n", walletName)
-
-		i++
-	}
-	return nil
-}
+// 		i++
+// 	}
+// 	return nil
+// }
 
 func registerMultiSig(grw string, msw string) error {
 	wg := &sync.WaitGroup{}
