@@ -14,7 +14,7 @@ import (
 )
 
 var minerscUpdateNodeSettings = &cobra.Command{
-	Use:   "mn-update-node-settings",
+	Use:   "mn-update-settings",
 	Short: "Change miner/sharder settings in Miner SC.",
 	Long:  "Change miner/sharder settings in Miner SC by delegate wallet.",
 	Args:  cobra.MinimumNArgs(0),
