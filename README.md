@@ -63,7 +63,7 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 
 **Prerequisites**
 
-- go 1.13
+- Go: Installation instructions for Mac, LInux and Windows can be found here.
 
 **Procedures**
 
@@ -81,7 +81,7 @@ The following script sets `https://beta.0chain.net` as your 0chain network.
 
 ```sh
 cat > ~/.zcn/config.yaml << EOF
-block_worker: https://beta.0chain.net/dns
+block_worker: https://demo.zus.network/dns
 signature_scheme: bls0chain
 min_submit: 50 # in percentage
 min_confirmation: 50 # in percentage
@@ -630,13 +630,13 @@ Sample output
 
 ```
 - ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
-- Host:       one.devnet-0chain.net
+- Host:       demo1.zus.network
 - Port:       31203
 - ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
-- Host:       one.devnet-0chain.net
+- Host:       demo2.zus.network
 - Port:       31201
 - ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
-- Host:       one.devnet-0chain.net
+- Host:       demo3.zus.network
 - Port:       31202
 ```
 
@@ -660,30 +660,30 @@ Sample output
 ```
 MagicBlock Sharders
 ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
-  - N2NHost: one.devnet-0chain.net
-  - Host: one.devnet-0chain.net
+  - N2NHost: demo1.zus.network
+  - Host: demo1.zus.network
   - Port: 31102
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
-  - N2NHost: one.devnet-0chain.net
-  - Host: one.devnet-0chain.net
+  - N2NHost: demo2.zus.network
+  - Host: demo2.zus.network
   - Port: 31101
 
 Registered Sharders
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
-  - N2NHost: one.devnet-0chain.net
-  - Host: one.devnet-0chain.net
+  - N2NHost: demo1.zus.network
+  - Host: demo1.zus.network
   - Port: 31101
 ID: 12e317e5d7a4a0a914ec26074e28f00502c735ddf7ac7d156b34e83e39792a9d
-  - N2NHost: one.devnet-0chain.net
-  - Host: one.devnet-0chain.net
+  - N2NHost: demo2.zus.network
+  - Host: demo2.zus.network
   - Port: 31102
 ID: 43f4f011698db6f2078e6ceb1cd981ab3bd35d07b7ac6fdf7c77aec1feee09be
-  - N2NHost: 144.76.91.241
-  - Host: test4.devnet-0chain.net
+  - N2NHost: demo3.zus.network
+  - Host: demo3.zus.network
   - Port: 31101
 ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
-  - N2NHost: 144.76.91.241
-  - Host: test4.devnet-0chain.net
+  - N2NHost: demo4.zus.network
+  - Host: demo4.zus.network
   - Port: 31102
 
 ```
@@ -1412,11 +1412,6 @@ EOF
 ```
 
 Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
-
-## Video resources
-
-- [Send and receive token](https://youtu.be/Eiz9mqdFtZo)
-- [Lock tokens and earn interest](https://youtu.be/g44VczBzmXo)
 
 
 ## Troubleshooting
