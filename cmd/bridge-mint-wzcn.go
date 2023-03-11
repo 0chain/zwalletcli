@@ -27,8 +27,8 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err)
 	}
 
-	var cb zcncore.GetZCNNotProcessedBurnTicketsCallbackStub
-	err = zcncore.GetZCNNotProcessedBurnTickets(ethereumAddress, userNonce.Int64(), &cb)
+	var cb zcncore.GetNotProcessedZCNBurnTicketsCallbackStub
+	err = zcncore.GetNotProcessedZCNBurnTickets(ethereumAddress, userNonce.Int64(), &cb)
 	if err != nil {
 		ExitWithError(err)
 	}

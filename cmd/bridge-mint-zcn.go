@@ -20,10 +20,10 @@ func init() {
 }
 
 func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
-	var cb zcncore.GetZCNProcessedMintNoncesCallbackStub
+	var cb zcncore.GetMintNonceCallbackStub
 
 	cb.Add(1)
-	err := zcncore.GetZCNProcessedMintNonces(&cb)
+	err := zcncore.GetMintNonce(&cb)
 	if err != nil {
 		ExitWithError(err)
 	}
