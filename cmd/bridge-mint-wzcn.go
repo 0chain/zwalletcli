@@ -16,25 +16,30 @@ func init() {
 			"mint WZCN tokens using the hash of ZCN burn transaction",
 			"mint WZCN tokens after burning ZCN tokens in ZCN chain",
 			commandMintEth,
-			WithHash("Ethereum transaction hash"),
 		))
 }
 
 func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
-	ethereumAddress := GetEthereumAddress(args)
-	userNonce, err := b.GetUserNonceMinted(context.Background(), ethereumAddress)
+	userNonce, err := b.GetUserNonceMinted(context.Background(), b.EthereumAddress)
 	if err != nil {
 		ExitWithError(err)
 	}
 
 	var cb zcncore.GetNotProcessedZCNBurnTicketsCallbackStub
-	err = zcncore.GetNotProcessedZCNBurnTickets(ethereumAddress, userNonce.Int64(), &cb)
+	cb.Add(1)
+
+	err = zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.Int64(), &cb)
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	fmt.Printf("Found %d not processed ZCN burn transactions", len(cb.Value))
-	return
+	cb.Wait()
+
+	if cb.Status == zcncore.StatusError{
+		ExitWithError(cb.Info)
+	}
+
+	fmt.Printf("Found %d not processed ZCN burn transactions\n", len(cb.Value))
 
 	for _, burnTicket := range cb.Value {
 		fmt.Printf("Query ticket for ZCN transaction hash: %s\n", burnTicket.Hash)
