@@ -140,25 +140,18 @@ var minerscMiners = &cobra.Command{
 					log.Fatal(err)
 				}
 
-				if jsonFlag {
-					util.PrintJSON(info)
-					if len(info.Nodes) == 0 {
-						break
-					}
-					continue
-				}
-
 				if len(info.Nodes) == 0 {
-					if curOff == 0 {
-						fmt.Println("no miners in Miner SC")
-					}
 					break
 				}
 
 				nodes = append(nodes, info.Nodes...)
 			}
 
-			printMinerNodes(nodes)
+			if jsonFlag {
+				util.PrintJSON(nodes)
+			} else {
+				printMinerNodes(nodes)
+			}
 		}
 	},
 }
