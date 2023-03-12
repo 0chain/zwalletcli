@@ -224,22 +224,22 @@ var minerscSharders = &cobra.Command{
 			}
 		}
 
-		if mb != nil && mb.Sharders != nil {
-			fmt.Println("MagicBlock Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(mb.Sharders.Nodes)
-			} else {
-				for _, node := range mb.Sharders.Nodes {
-					fmt.Println("ID:", node.ID)
-					fmt.Println("  - N2NHost:", node.N2NHost)
-					fmt.Println("  - Host:", node.Host)
-					fmt.Println("  - Port:", node.Port)
+		if !allFlag {
+			if mb != nil && mb.Sharders != nil {
+				fmt.Println("MagicBlock Sharders")
+				if jsonFlag {
+					util.PrettyPrintJSON(mb.Sharders.Nodes)
+				} else {
+					for _, node := range mb.Sharders.Nodes {
+						fmt.Println("ID:", node.ID)
+						fmt.Println("  - N2NHost:", node.N2NHost)
+						fmt.Println("  - Host:", node.Host)
+						fmt.Println("  - Port:", node.Port)
+					}
 				}
+				fmt.Println()
 			}
-			fmt.Println()
-		}
-
-		if allFlag {
+		} else {
 			sharders := new(zcncore.MinerSCNodes)
 
 			limit = 20
@@ -254,9 +254,6 @@ var minerscSharders = &cobra.Command{
 				}
 
 				if len(sharders.Nodes) == 0 {
-					if curOff == 0 {
-						fmt.Println("no sharders left to display")
-					}
 					break
 				}
 
