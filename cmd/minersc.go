@@ -127,39 +127,39 @@ var minerscMiners = &cobra.Command{
 
 			printMinerNodes(info.Nodes)
 			return
-		}
+		} else {
+			limit = 20
+			offset = 0
 
-		limit = 20
-		offset = 0
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				cb := NewJSONInfoCB(info)
+				zcncore.GetMiners(cb, limit, curOff, active)
 
-		var nodes []zcncore.Node
-		for curOff := offset; ; curOff += limit {
-			cb := NewJSONInfoCB(info)
-			zcncore.GetMiners(cb, limit, curOff, active)
+				if err = cb.Waiting(); err != nil {
+					log.Fatal(err)
+				}
 
-			if err = cb.Waiting(); err != nil {
-				log.Fatal(err)
-			}
+				if jsonFlag {
+					util.PrintJSON(info)
+					if len(info.Nodes) == 0 {
+						break
+					}
+					continue
+				}
 
-			if jsonFlag {
-				util.PrintJSON(info)
 				if len(info.Nodes) == 0 {
+					if curOff == 0 {
+						fmt.Println("no miners in Miner SC")
+					}
 					break
 				}
-				continue
+
+				nodes = append(nodes, info.Nodes...)
 			}
 
-			if len(info.Nodes) == 0 {
-				if curOff == 0 {
-					fmt.Println("no miners in Miner SC")
-				}
-				break
-			}
-
-			nodes = append(nodes, info.Nodes...)
+			printMinerNodes(nodes)
 		}
-
-		printMinerNodes(nodes)
 	},
 }
 
@@ -253,14 +253,6 @@ var minerscSharders = &cobra.Command{
 					log.Fatal(err)
 				}
 
-				if jsonFlag {
-					util.PrettyPrintJSON(sharders.Nodes)
-					if len(sharders.Nodes) == 0 {
-						break
-					}
-					continue
-				}
-
 				if len(sharders.Nodes) == 0 {
 					if curOff == 0 {
 						fmt.Println("no sharders left to display")
@@ -271,28 +263,11 @@ var minerscSharders = &cobra.Command{
 				nodes = append(nodes, sharders.Nodes...)
 			}
 
-			printSharderNodes(nodes)
-		} else {
-			sharders := new(zcncore.MinerSCNodes)
-			callback := NewJSONInfoCB(sharders)
-			zcncore.GetSharders(callback, limit, offset, active)
-
-			if err = callback.Waiting(); err != nil {
-				log.Fatal(err)
-			}
-
 			if jsonFlag {
-				util.PrintJSON(sharders)
-				return
+				util.PrettyPrintJSON(nodes)
+			} else {
+				printSharderNodes(nodes)
 			}
-
-			if len(sharders.Nodes) == 0 {
-				fmt.Println("no sharders left to display")
-				return
-			}
-
-			printSharderNodes(sharders.Nodes)
-			return
 		}
 	},
 }
