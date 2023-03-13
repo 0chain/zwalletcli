@@ -65,39 +65,103 @@ var minerscMiners = &cobra.Command{
 			flags = cmd.Flags()
 			err   error
 			info  = new(zcncore.MinerSCNodes)
-			cb    = NewJSONInfoCB(info)
 		)
 
-		if err = zcncore.GetMiners(cb); err != nil {
-			log.Fatal(err)
+		limit, offset := 20, 0
+		active := false
+
+		var allFlag, jsonFlag bool
+
+		if flags.Changed("all") {
+			allFlag, err = flags.GetBool("all")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if flags.Changed("json") {
-			var j bool
-			if j, err = flags.GetBool("json"); err != nil {
+			jsonFlag, err = flags.GetBool("json")
+			if err != nil {
 				log.Fatal(err)
 			}
-			if j {
+		}
+
+		if !allFlag {
+			cb := NewJSONInfoCB(info)
+			zcncore.GetMiners(cb, limit, offset, active)
+
+			if err = cb.Waiting(); err != nil {
+				log.Fatal(err)
+			}
+
+			if jsonFlag {
 				util.PrintJSON(info)
 				return
 			}
-		}
 
-		if len(info.Nodes) == 0 {
-			fmt.Println("no miners in Miner SC")
+			if len(info.Nodes) == 0 {
+				fmt.Println("no miners in Miner SC")
+				return
+			}
+
+			printMinerNodes(info.Nodes)
 			return
-		}
+		} else {
+			limit = 20
+			offset = 0
 
-		for _, node := range info.Nodes {
-			fmt.Println("- ID:        ", node.Miner.ID)
-			fmt.Println("- Host:      ", node.Miner.Host)
-			fmt.Println("- Port:      ", node.Miner.Port)
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				cb := NewJSONInfoCB(info)
+				zcncore.GetMiners(cb, limit, curOff, active)
+
+				if err = cb.Waiting(); err != nil {
+					log.Fatal(err)
+				}
+
+				if len(info.Nodes) == 0 {
+					break
+				}
+
+				nodes = append(nodes, info.Nodes...)
+			}
+
+			if jsonFlag {
+				util.PrintJSON(nodes)
+			} else {
+				printMinerNodes(nodes)
+			}
 		}
 	},
+}
+
+func printMinerNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("- ID:        ", node.Miner.ID)
+		fmt.Println("- Host:      ", node.Miner.Host)
+		fmt.Println("- Port:      ", node.Miner.Port)
+	}
 }
 
 var minerscSharders = &cobra.Command{
@@ -130,43 +194,81 @@ var minerscSharders = &cobra.Command{
 			log.Fatalf("Failed to get MagicBlock: %v", err)
 		}
 
-		if mb != nil && mb.Sharders != nil {
-			fmt.Println("MagicBlock Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(mb.Sharders.Nodes)
-			} else {
-				for _, node := range mb.Sharders.Nodes {
-					fmt.Println("ID:", node.ID)
-					fmt.Println("  - N2NHost:", node.N2NHost)
-					fmt.Println("  - Host:", node.Host)
-					fmt.Println("  - Port:", node.Port)
-				}
+		limit, offset := 20, 0
+		active := false
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println()
 		}
 
-		if allFlag {
-			sharders := new(zcncore.MinerSCNodes)
-			callback := NewJSONInfoCB(sharders)
-			if err = zcncore.GetSharders(callback); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
 			}
-			if err = callback.Waiting(); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println("Registered Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(sharders.Nodes)
-			} else {
-				for _, node := range sharders.Nodes {
-					fmt.Println("ID:", node.Miner.ID)
-					fmt.Println("  - N2NHost:", node.Miner.N2NHost)
-					fmt.Println("  - Host:", node.Miner.Host)
-					fmt.Println("  - Port:", node.Miner.Port)
+		}
+
+		if !allFlag {
+			if mb != nil && mb.Sharders != nil {
+				fmt.Println("MagicBlock Sharders")
+				if jsonFlag {
+					util.PrettyPrintJSON(mb.Sharders.Nodes)
+				} else {
+					for _, node := range mb.Sharders.Nodes {
+						fmt.Println("ID:", node.ID)
+						fmt.Println("  - N2NHost:", node.N2NHost)
+						fmt.Println("  - Host:", node.Host)
+						fmt.Println("  - Port:", node.Port)
+					}
 				}
+				fmt.Println()
+			}
+		} else {
+			sharders := new(zcncore.MinerSCNodes)
+
+			limit = 20
+			offset = 0
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				callback := NewJSONInfoCB(sharders)
+				zcncore.GetSharders(callback, limit, curOff, active)
+
+				if err = callback.Waiting(); err != nil {
+					log.Fatal(err)
+				}
+
+				if len(sharders.Nodes) == 0 {
+					break
+				}
+
+				nodes = append(nodes, sharders.Nodes...)
+			}
+
+			if jsonFlag {
+				util.PrettyPrintJSON(nodes)
+			} else {
+				printSharderNodes(nodes)
 			}
 		}
 	},
+}
+
+func printSharderNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("ID:", node.Miner.ID)
+		fmt.Println("  - N2NHost:", node.Miner.N2NHost)
+		fmt.Println("  - Host:", node.Miner.Host)
+		fmt.Println("  - Port:", node.Miner.Port)
+	}
 }
 
 var minerscUserInfo = &cobra.Command{
@@ -522,8 +624,15 @@ func init() {
 	rootCmd.AddCommand(minerscSharders)
 
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
+	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
+	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
+	minerscMiners.PersistentFlags().Bool("active", false, "Gets all miners, including inactive miners")
+	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
+	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
+	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
 	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
+	minerscSharders.PersistentFlags().Bool("active", false, "Gets all sharders, including inactive sharders")
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")
