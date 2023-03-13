@@ -35,7 +35,7 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	cb.Wait()
 
-	if cb.Status == zcncore.StatusError{
+	if cb.Status == zcncore.StatusError {
 		ExitWithError(cb.Info)
 	}
 
