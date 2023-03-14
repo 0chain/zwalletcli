@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -25,15 +26,17 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err)
 	}
 
-	var cb zcncore.GetNotProcessedZCNBurnTicketsCallbackStub
-	cb.Add(1)
+	cb := zcncore.GetNotProcessedZCNBurnTicketsCallbackStub{
+		Wg: new(sync.WaitGroup),
+	}
+	cb.Wg.Add(1)
 
 	err = zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.Int64(), &cb)
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	cb.Wait()
+	cb.Wg.Wait()
 
 	if cb.Status == zcncore.StatusError {
 		ExitWithError(cb.Info)

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -20,15 +21,17 @@ func init() {
 }
 
 func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
-	var cb zcncore.GetMintNonceCallbackStub
-	cb.Add(1)
+	cb := zcncore.GetMintNonceCallbackStub{
+		Wg: new(sync.WaitGroup),
+	}
+	cb.Wg.Add(1)
 
 	err := zcncore.GetMintNonce(&cb)
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	cb.Wait()
+	cb.Wg.Wait()
 
 	if cb.Status == zcncore.StatusError {
 		ExitWithError(cb.Info)
@@ -38,7 +41,6 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	if err != nil {
 		ExitWithError(err)
 	}
-	fmt.Println(burnTickets)
 
 	fmt.Printf("Found %d not processed WZCN burn transactions\n", len(burnTickets))
 
