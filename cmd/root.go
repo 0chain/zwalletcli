@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -204,11 +203,11 @@ func createAndLoadWallet() {
 			ExitWithError(err.Error())
 		}
 
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err := createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
-		}
-		log.Printf("Read pool created successfully")
+		// log.Print("Creating related read pool for storage smart-contract...")
+		// if err := createReadPool(); err != nil {
+		// 	log.Fatalf("Failed to create read pool: %v", err)
+		// }
+		// log.Printf("Read pool created successfully")
 	}
 
 	loadWallet()
