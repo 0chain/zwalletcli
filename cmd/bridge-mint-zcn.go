@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcnbridge/wallet"
 	"github.com/0chain/gosdk/zcncore"
 )
 
@@ -21,23 +21,25 @@ func init() {
 }
 
 func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
-	cb := zcncore.GetMintNonceCallbackStub{
-		Wg: new(sync.WaitGroup),
-	}
-	cb.Wg.Add(1)
+	var mintNonce int64
+	cb := wallet.NewZCNStatus(&mintNonce)
 
-	err := zcncore.GetMintNonce(&cb)
+	cb.Begin()
+
+	err := zcncore.GetMintNonce(cb)
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	cb.Wg.Wait()
-
-	if cb.Status == zcncore.StatusError {
-		ExitWithError(cb.Info)
+	if err := cb.Wait(); err != nil {
+		ExitWithError(err)
 	}
 
-	burnTickets, err := b.GetNotProcessedWZCNBurnTickets(context.Background(), cb.Value)
+	if !cb.Success {
+		ExitWithError(cb.Err)
+	}
+
+	burnTickets, err := b.GetNotProcessedWZCNBurnTickets(context.Background(), mintNonce)
 	if err != nil {
 		ExitWithError(err)
 	}

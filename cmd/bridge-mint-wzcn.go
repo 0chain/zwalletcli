@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk/zcnbridge/wallet"
 	"github.com/0chain/gosdk/zcncore"
 )
 
@@ -26,25 +26,27 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err)
 	}
 
-	cb := zcncore.GetNotProcessedZCNBurnTicketsCallbackStub{
-		Wg: new(sync.WaitGroup),
-	}
-	cb.Wg.Add(1)
+	var burnTickets []zcncore.BurnTicket
+	cb := wallet.NewZCNStatus(&burnTickets)
 
-	err = zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.Int64(), &cb)
+	cb.Begin()
+
+	err = zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.String(), cb)
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	cb.Wg.Wait()
-
-	if cb.Status == zcncore.StatusError {
-		ExitWithError(cb.Info)
+	if err := cb.Wait(); err != nil {
+		ExitWithError(err)
 	}
 
-	fmt.Printf("Found %d not processed ZCN burn transactions\n", len(cb.Value))
+	if !cb.Success {
+		ExitWithError(cb.Err)
+	}
 
-	for _, burnTicket := range cb.Value {
+	fmt.Printf("Found %d not processed ZCN burn transactions\n", len(burnTickets))
+
+	for _, burnTicket := range burnTickets {
 		fmt.Printf("Query ticket for ZCN transaction hash: %s\n", burnTicket.Hash)
 
 		payload, err := b.QueryEthereumMintPayload(burnTicket.Hash)
