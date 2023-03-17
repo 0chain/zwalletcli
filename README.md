@@ -46,7 +46,6 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) ~/.zcn/network.yaml](#optional-zcnnetworkyaml)
-  - [Video resources](#video-resources)
   - [Troubleshooting](#troubleshooting)
 
 ## Architecture
@@ -60,44 +59,6 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 ## Getting started
 
 ### 1. Installation
-
-**Prerequisites**
-
-- Go: Installation instructions for Mac, Linux and Windows can be found [here](https://go.dev/doc/install).
-
-**Procedures**
-
-1. Clone the `zwalletcli` repo and install
-
-```sh
-git clone https://github.com/0chain/zwalletcli.git
-cd zwalletcli
-make install
-```
-
-2. Add config yaml at `~/.zcn/config.yaml`
-
-The following script sets `https://beta.0chain.net` as your 0chain network.
-
-```sh
-cat > ~/.zcn/config.yaml << EOF
-block_worker: https://demo.zus.network/dns
-signature_scheme: bls0chain
-min_submit: 50 # in percentage
-min_confirmation: 50 # in percentage
-confirmation_chain_length: 3
-EOF
-```
-
-To understand more about the config properties, head over [here](#zcnconfigyaml).
-
-3. Run `zwallet` to display the list of supported commands.
-
-```sh
-./zwallet
-```
-
-----
 For detailed steps on the installation, follow any of the following:
 
 - [How to build on Linux/Mac](https://github.com/0chain/zwalletcli/wiki/Build-on-Linux-and-Mac)
