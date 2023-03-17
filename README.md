@@ -63,7 +63,7 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 
 **Prerequisites**
 
-- Go: Installation instructions for Mac, LInux and Windows can be found here.
+- Go: Installation instructions for Mac, Linux and Windows can be found [here](https://go.dev/doc/install).
 
 **Procedures**
 
@@ -100,7 +100,7 @@ To understand more about the config properties, head over [here](#zcnconfigyaml)
 ----
 For detailed steps on the installation, follow any of the following:
 
-- [How to build on Linux](https://github.com/0chain/zwalletcli/wiki/Build-Linux)
+- [How to build on Linux/Mac](https://github.com/0chain/zwalletcli/wiki/Build-on-Linux-and-Mac)
 - [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
 
 ### 2. Run `zwallet` commands
@@ -192,13 +192,13 @@ For example, run `ls-miners` command to see miners on the network.
 
 ```
 - ID:         cdb9b5a29cb5f48b350481694c4645c2db24500e3af210e22e2d10477a68bad2
-- Host:       one.devnet-0chain.net
+- Host:       demo.zus.network
 - Port:       31203
 - ID:         3d9a10dac6fb3903d4a5283a42ae07b29d8e5d228afcce9bfc14e3e9dbc82748
-- Host:       one.devnet-0chain.net
+- Host:       demo.zus.network
 - Port:       31201
 - ID:         aaa721d5fbf4ca83e20c8c40874ebcb144b86f57173633ff1702968677c2fa98
-- Host:       one.devnet-0chain.net
+- Host:       demo.zus.network
 - Port:       31202
 ```
 
@@ -728,7 +728,7 @@ The following command get the details of the sharder on a given URL
 Output
 
 ```
-URL: http://one.devnet-0chain.net:31101
+URL: https://demo.zus.network:31101
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
@@ -1429,12 +1429,12 @@ Response:
 ```
 0chain-core-sdk [INFO]   2021/05/17 21:23:13.040121 wallet.go:276: ******* Wallet SDK Version:v1.2.4 *******
 0chain-core-sdk [INFO]   2021/05/17 21:23:13.115804 wallet.go:359: *******  Wallet SDK Version:v1.2.4 *******
-0chain-core-sdk [INFO]   2021/05/17 21:23:13.116083 wallet.go:453: https://five.devnet-0chain.net/miner01/v1/client/put
-0chain-core-sdk [INFO]   2021/05/17 21:23:13.116289 wallet.go:453: https://five.devnet-0chain.net/miner03/v1/client/put
-0chain-core-sdk [INFO]   2021/05/17 21:23:13.117002 wallet.go:453: https://five.devnet-0chain.net/miner02/v1/client/put
-0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.120009 wallet.go:475: https://five.devnet-0chain.net/miner01/v1/client/put200 OK
-0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139268 wallet.go:475: https://five.devnet-0chain.net/miner03/v1/client/put200 OK
-0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139654 wallet.go:475: https://five.devnet-0chain.net/miner02/v1/client/put200 OK
+0chain-core-sdk [INFO]   2021/05/17 21:23:13.116083 wallet.go:453: https://demo.zus.network/miner01/v1/client/put
+0chain-core-sdk [INFO]   2021/05/17 21:23:13.116289 wallet.go:453: https://demo.zus.network/miner03/v1/client/put
+0chain-core-sdk [INFO]   2021/05/17 21:23:13.117002 wallet.go:453: https:///demo.zus.network/miner02/v1/client/put
+0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.120009 wallet.go:475: https://demo.zus.network/miner01/v1/client/put200 OK
+0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139268 wallet.go:475: https://demo.zus.network/miner03/v1/client/put200 OK
+0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139654 wallet.go:475: https://demo.zus.network/miner02/v1/client/put200 OK
 Wallet registered
 
 ```
