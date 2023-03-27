@@ -69,7 +69,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-go 1.18
+go 1.20
 
 // temporary, for development
 // replace github.com/0chain/gosdk => ../gosdk
+replace github.com/herumi/bls-go-binary => github.com/cnlangzi/bls-go-binary v1.29.0
