@@ -203,12 +203,6 @@ func createAndLoadWallet() {
 		if err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644); err != nil {
 			ExitWithError(err.Error())
 		}
-
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err := createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
-		}
-		log.Printf("Read pool created successfully")
 	}
 
 	loadWallet()
