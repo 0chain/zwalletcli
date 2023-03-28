@@ -49,6 +49,7 @@ jobs:
         run: |
           lsb_release -a
           sudo apt-get update
+          apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
           gcc --version
           # sudo apt-get upgrade libpcap-dev -y
 
