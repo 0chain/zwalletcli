@@ -40,7 +40,8 @@ jobs:
   
       - name: Build ZWallet
         run: |
-          apt show libpcap
+          sudo apt-get install apt-file -y
+          apt-file find libpcap.pc
           gcc --version
           make install
 
