@@ -27,7 +27,7 @@ jobs:
         run: make zwallet-test
 
   build-linux:
-    runs-on: [self-hosted, arc-runner3]
+    runs-on: [self-hosted, arc-runner]
 #     runs-on: ubuntu-latest
     needs: unit-test
     steps:
