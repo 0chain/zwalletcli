@@ -38,17 +38,25 @@ jobs:
       - name: Clone ZWallet
         uses: actions/checkout@v2
   
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+
       - name: check software
         run: |
           lsb_release -a
           sudo apt update
-          sudo apt remove libpcap-dev -y
           gcc --version
-          sudo apt install libpcap-dev -y
-          
+          sudo apt upgrade libpcap-dev -y
+
+ 
 
       - name: Build ZWallet
-        run: make install
+        run: |
+          gcc --version
+          make install
 
   system-tests:
     if: github.event_name != 'workflow_dispatch'
