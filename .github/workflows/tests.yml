@@ -44,7 +44,7 @@ jobs:
           apt-file update
           apt-file find libpcap.pc
 
-          sudo apt-get install libpcap-dev -y
+          sudo apt-get upgrade libpcap-dev -y
           gcc --version
           make install
 
