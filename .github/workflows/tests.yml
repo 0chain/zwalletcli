@@ -38,18 +38,18 @@ jobs:
       - name: Clone ZWallet
         uses: actions/checkout@v2
   
-      - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: latest
-          platform: x64
+      # - name: Set up GCC
+      #   uses: egor-tensin/setup-gcc@v1
+      #   with:
+      #     version: latest
+      #     platform: x64
 
       - name: check software
         run: |
           lsb_release -a
           sudo apt-get update
           gcc --version
-          sudo apt-get upgrade libpcap-dev -y
+          # sudo apt-get upgrade libpcap-dev -y
 
  
 
