@@ -46,6 +46,7 @@ jobs:
           gcc --version
           sudo apt install build-essential -y
           gcc --version
+          clang++ -v
           make install
 
   system-tests:
