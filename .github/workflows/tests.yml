@@ -40,6 +40,7 @@ jobs:
   
       - name: Build ZWallet
         run: |
+          lsb_release -a
           sudo apt update
           sudo apt upgrade libpcap-dev -y
           gcc --version
