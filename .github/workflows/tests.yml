@@ -38,7 +38,7 @@ jobs:
       - name: Clone ZWallet
         uses: actions/checkout@v2
   
-      - name: Build ZWallet
+      - name: check software
         run: |
           lsb_release -a
           sudo apt update
@@ -47,7 +47,9 @@ jobs:
           sudo apt install build-essential -y
           gcc --version
           clang++ -v
-          make install
+
+      - name: Build ZWallet
+        run: make install
 
   system-tests:
     if: github.event_name != 'workflow_dispatch'
