@@ -42,11 +42,10 @@ jobs:
         run: |
           lsb_release -a
           sudo apt update
-          sudo apt upgrade libpcap-dev -y
+          sudo apt remove libpcap-dev -y
           gcc --version
-          sudo apt install build-essential -y
-          gcc --version
-          clang++ -v
+          sudo apt install libpcap-dev -y
+          
 
       - name: Build ZWallet
         run: make install
