@@ -34,7 +34,6 @@ jobs:
           else
             echo "TAG=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_ENV
           fi
-          gcc --version
 
       - name: Install
         run: make install

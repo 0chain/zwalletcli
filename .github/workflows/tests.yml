@@ -47,9 +47,9 @@ jobs:
       - name: check software
         run: |
           lsb_release -a
-          sudo apt update
+          sudo apt-get update
           gcc --version
-          sudo apt upgrade libpcap-dev -y
+          sudo apt-get upgrade libpcap-dev -y
 
  
 
