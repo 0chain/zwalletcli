@@ -40,11 +40,10 @@ jobs:
   
       - name: Build ZWallet
         run: |
-          sudo apt-get install apt-file -y
-          apt-file update
-          apt-file find libpcap.pc
-
-          sudo apt-get upgrade libpcap-dev -y
+          sudo apt update
+          sudo apt upgrade libpcap-dev -y
+          gcc --version
+          sudo apt install build-essential -y
           gcc --version
           make install
 
