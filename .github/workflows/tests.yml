@@ -27,7 +27,7 @@ jobs:
         run: make zwallet-test
 
   build-linux:
-    runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
     needs: unit-test
     steps:
       - name: Setup go 1.18
