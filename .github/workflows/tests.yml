@@ -27,8 +27,8 @@ jobs:
         run: make zwallet-test
 
   build-linux:
-    # runs-on: [self-hosted, build]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, arc-runner]
+#     runs-on: ubuntu-latest
     needs: unit-test
     steps:
       - name: Setup go
@@ -49,6 +49,7 @@ jobs:
         run: |
           lsb_release -a
           sudo apt-get update
+          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
           gcc --version
           # sudo apt-get upgrade libpcap-dev -y
 
