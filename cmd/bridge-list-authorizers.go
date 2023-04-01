@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 // listAuthorizers prints all authorizers
@@ -20,7 +21,7 @@ var listAuthorizers = &cobra.Command{
 			cb       = NewJSONInfoCB(response)
 			err      error
 		)
-		if err = zcnbridge.GetAuthorizers(cb); err != nil {
+		if err = zcnbridge.GetAuthorizers(true, cb); err != nil {
 			log.Fatal(err)
 		}
 		if err = cb.Waiting(); err != nil {
