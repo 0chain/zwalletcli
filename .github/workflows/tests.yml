@@ -13,7 +13,7 @@ on:
 
 jobs:
   unit-test:
-    runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Setup go
         uses: actions/setup-go@v2
@@ -22,6 +22,12 @@ jobs:
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
+
+      - name: Install Packages
+        run: |
+          lsb_release -a
+          sudo apt-get update
+          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
   
       - name: Run Tests
         run: make zwallet-test
@@ -38,6 +44,14 @@ jobs:
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
+
+      - name: check software
+        run: |
+          lsb_release -a
+          sudo apt-get update
+          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
+          gcc --version
+          # sudo apt-get upgrade libpcap-dev -y
   
       # - name: Set up GCC
       #   uses: egor-tensin/setup-gcc@v1
