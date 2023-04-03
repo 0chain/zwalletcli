@@ -40,10 +40,8 @@ github.com/0chain/common v0.0.6-0.20221123040931-4a3feacdb97c h1:TDqF7VJa7uLLlEs
 github.com/0chain/common v0.0.6-0.20221123040931-4a3feacdb97c/go.mod h1:OxV9kVgVzAPgGHHPcS/aUSL2ZxNvKDU6jPoggKMbqns=
 github.com/0chain/errors v1.0.3 h1:QQZPFxTfnMcRdt32DXbzRQIfGWmBsKoEdszKQDb0rRM=
 github.com/0chain/errors v1.0.3/go.mod h1:xymD6nVgrbgttWwkpSCfLLEJbFO6iHGQwk/yeSuYkIc=
-github.com/0chain/gosdk v1.8.16-0.20230328010122-78ed4d818ee4 h1:mWs1lYwWM4hLmviLWRrUOomcjO2t1arq52TcgPdhuMM=
-github.com/0chain/gosdk v1.8.16-0.20230328010122-78ed4d818ee4/go.mod h1:CP85H8cBZSiG3rcBTKh3tfuwcKDbfMQkbS5wZYV2B3o=
-github.com/0chain/gosdk v1.8.16-0.20230328062808-859ec2c6cead h1:xDX+KKrNOjbfvavLKKBk4oHBgTz8dfrU/k8Ao6W3R4s=
-github.com/0chain/gosdk v1.8.16-0.20230328062808-859ec2c6cead/go.mod h1:4t400txTcn2PW/OQqqJNdK9LETR4P16h/M0V0XDBZv8=
+github.com/0chain/gosdk v1.8.16-0.20230403014115-8202836c6055 h1:CZkkHuuxFe1iVe1IKMLLWrmKvJvXhdJGu3ZRvFzojTc=
+github.com/0chain/gosdk v1.8.16-0.20230403014115-8202836c6055/go.mod h1:4t400txTcn2PW/OQqqJNdK9LETR4P16h/M0V0XDBZv8=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/Luzifer/go-openssl/v3 v3.1.0 h1:QqKqo6kYXGGUsvtUoCpRZm8lHw+jDfhbzr36gVj+/gw=

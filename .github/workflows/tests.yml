@@ -63,7 +63,8 @@ jobs:
   system-tests:
     if: github.event_name != 'workflow_dispatch'
     needs: build-linux
-    runs-on: [ tests-suite ]
+    # runs-on: [ tests-suite ]
+    runs-on: [self-hosted, arc-runner]
     timeout-minutes: 90
     steps:
 
