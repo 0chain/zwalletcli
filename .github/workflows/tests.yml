@@ -14,6 +14,7 @@ on:
 jobs:
   unit-test:
     runs-on: [self-hosted, arc-runner]
+    # runs-on: ubuntu-20.04
     steps:
       - name: Setup go
         uses: actions/setup-go@v2
@@ -33,8 +34,8 @@ jobs:
         run: make zwallet-test
 
   build-linux:
-    runs-on: [self-hosted, arc-runner]
-#     runs-on: ubuntu-latest
+    # runs-on: [self-hosted, arc-runner]
+    runs-on: ubuntu-20.04
     needs: unit-test
     steps:
       - name: Setup go
