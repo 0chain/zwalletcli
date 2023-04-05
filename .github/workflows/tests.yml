@@ -17,9 +17,9 @@ jobs:
     # runs-on: ubuntu-20.04
     steps:
       - name: Setup go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
-          go-version: ^1.20 # The Go version to download (if necessary) and use.
+          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
@@ -39,9 +39,9 @@ jobs:
     needs: unit-test
     steps:
       - name: Setup go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
-          go-version: ^1.20 # The Go version to download (if necessary) and use.
+          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
@@ -95,7 +95,7 @@ jobs:
           echo "CURRENT_BRANCH=$(echo $(([ -z '${{ github.head_ref }}' ] && echo  ${GITHUB_REF#refs/*/}) || echo '${{ github.head_ref }}'))" >> $GITHUB_ENV
 
       - name: "Set PR status as pending"
-        uses: 0chain/actions/set-pr-status@helm
+        uses: 0chain/actions/set-pr-status@master
         if: steps.findPr.outputs.number
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
@@ -107,7 +107,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: "Deploy 0Chain"
-        uses: 0chain/actions/deploy-0chain@helm
+        uses: 0chain/actions/deploy-0chain@master
         with:
           kube_config: ${{ secrets[format('DEV{0}KC', env.RUNNER_NUMBER)] }}
           teardown_condition: "TESTS_PASSED"
@@ -126,7 +126,7 @@ jobs:
           TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
 
       - name: "Run System tests"
-        uses: 0chain/actions/run-system-tests@helm
+        uses: 0chain/actions/run-system-tests@master
         with:
           system_tests_branch: master
           network: ${{ env.NETWORK_URL }}
@@ -142,7 +142,7 @@ jobs:
 
       - name: "Set PR status as ${{ job.status }}"
         if: ${{ (success() || failure()) && steps.findPr.outputs.number }}
-        uses: 0chain/actions/set-pr-status@helm
+        uses: 0chain/actions/set-pr-status@master
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
           description: "System tests with default config ${{ job.status }}"
