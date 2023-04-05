@@ -1392,7 +1392,7 @@ Response:
 0chain-core-sdk [INFO]   2021/05/17 21:23:13.115804 wallet.go:359: *******  Wallet SDK Version:v1.2.4 *******
 0chain-core-sdk [INFO]   2021/05/17 21:23:13.116083 wallet.go:453: https://demo.zus.network/miner01/v1/client/put
 0chain-core-sdk [INFO]   2021/05/17 21:23:13.116289 wallet.go:453: https://demo.zus.network/miner03/v1/client/put
-0chain-core-sdk [INFO]   2021/05/17 21:23:13.117002 wallet.go:453: https:///demo.zus.network/miner02/v1/client/put
+0chain-core-sdk [INFO]   2021/05/17 21:23:13.117002 wallet.go:453: https://demo.zus.network/miner02/v1/client/put
 0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.120009 wallet.go:475: https://demo.zus.network/miner01/v1/client/put200 OK
 0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139268 wallet.go:475: https://demo.zus.network/miner03/v1/client/put200 OK
 0chain-core-sdk [DEBUG]  2021/05/17 21:23:13.139654 wallet.go:475: https://demo.zus.network/miner02/v1/client/put200 OK
