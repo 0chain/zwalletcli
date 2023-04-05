@@ -24,9 +24,8 @@ jobs:
       - name: Clone ZWallet
         uses: actions/checkout@v2
 
-      - name: Install Packages
+      - name: Install deps
         run: |
-          lsb_release -a
           sudo apt-get update
           sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
   
@@ -35,7 +34,6 @@ jobs:
 
   build-linux:
     runs-on: [self-hosted, arc-runner2]
-    # runs-on: ubuntu-20.04
     needs: unit-test
     steps:
       - name: Setup go
@@ -46,33 +44,13 @@ jobs:
       - name: Clone ZWallet
         uses: actions/checkout@v2
 
-      - name: check software
+      - name: Install deps
         run: |
-          lsb_release -a
           sudo apt-get update
           sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
-          gcc --version
-          # sudo apt-get upgrade libpcap-dev -y
-  
-      # - name: Set up GCC
-      #   uses: egor-tensin/setup-gcc@v1
-      #   with:
-      #     version: latest
-      #     platform: x64
-
-      - name: check software
-        run: |
-          lsb_release -a
-          sudo apt-get update
-          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
-          gcc --version
-          # sudo apt-get upgrade libpcap-dev -y
-
- 
 
       - name: Build ZWallet
         run: |
-          gcc --version
           make install
 
   system-tests:
