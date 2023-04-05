@@ -95,7 +95,7 @@ jobs:
           echo "CURRENT_BRANCH=$(echo $(([ -z '${{ github.head_ref }}' ] && echo  ${GITHUB_REF#refs/*/}) || echo '${{ github.head_ref }}'))" >> $GITHUB_ENV
 
       - name: "Set PR status as pending"
-        uses: 0chain/actions/set-pr-status@master
+        uses: 0chain/actions/set-pr-status@helm
         if: steps.findPr.outputs.number
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
@@ -126,7 +126,7 @@ jobs:
           TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
 
       - name: "Run System tests"
-        uses: 0chain/actions/run-system-tests@master
+        uses: 0chain/actions/run-system-tests@helm
         with:
           system_tests_branch: master
           network: ${{ env.NETWORK_URL }}
@@ -142,7 +142,7 @@ jobs:
 
       - name: "Set PR status as ${{ job.status }}"
         if: ${{ (success() || failure()) && steps.findPr.outputs.number }}
-        uses: 0chain/actions/set-pr-status@master
+        uses: 0chain/actions/set-pr-status@helm
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
           description: "System tests with default config ${{ job.status }}"
