@@ -107,7 +107,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: "Deploy 0Chain"
-        uses: 0chain/actions/deploy-0chain@master
+        uses: 0chain/actions/deploy-0chain@helm
         with:
           kube_config: ${{ secrets[format('DEV{0}KC', env.RUNNER_NUMBER)] }}
           teardown_condition: "TESTS_PASSED"
