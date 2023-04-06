@@ -57,7 +57,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     needs: build-linux
     runs-on: [ tests-suite07 ]
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
 
       - name: "Get current PR"
