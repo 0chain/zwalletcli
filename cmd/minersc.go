@@ -10,126 +10,11 @@ import (
 	"sync"
 
 	"github.com/0chain/gosdk/core/common"
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )
-
-var minerscUpdateSettings = &cobra.Command{
-	Use:   "mn-update-settings",
-	Short: "Change miner/sharder settings in Miner SC.",
-	Long:  "Change miner/sharder settings in Miner SC by delegate wallet.",
-	Args:  cobra.MinimumNArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		var (
-			flags = cmd.Flags()
-			id    string
-			err   error
-		)
-
-		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
-		}
-
-		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
-		}
-
-		var (
-			miner     *zcncore.MinerSCMinerInfo
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		if err = zcncore.GetMinerSCNodeInfo(id, statusBar); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		miner = new(zcncore.MinerSCMinerInfo)
-		err = json.Unmarshal([]byte(statusBar.errMsg), miner)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		miner = &zcncore.MinerSCMinerInfo{
-			SimpleMiner: zcncore.SimpleMiner{
-				ID: id,
-			},
-			MinerSCDelegatePool: zcncore.MinerSCDelegatePool{
-				Settings: zcncore.StakePoolSettings{
-					NumDelegates: miner.Settings.NumDelegates,
-					MinStake:     miner.Settings.MinStake,
-					MaxStake:     miner.Settings.MaxStake,
-				},
-			},
-		}
-
-		if flags.Changed("num_delegates") {
-			miner.Settings.NumDelegates, err = flags.GetInt("num_delegates")
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		if flags.Changed("min_stake") {
-			var min float64
-			if min, err = flags.GetFloat64("min_stake"); err != nil {
-				log.Fatal(err)
-			}
-			miner.Settings.MinStake = common.Balance(zcncore.ConvertToValue(min))
-		}
-
-		if flags.Changed("max_stake") {
-			var max float64
-			if max, err = flags.GetFloat64("max_stake"); err != nil {
-				log.Fatal(err)
-			}
-			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
-		}
-
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Add(1)
-		if err = txn.MinerSCMinerSettings(miner); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
-			default:
-				ExitWithError("\nExecute settings update update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-	},
-}
 
 var minerscInfo = &cobra.Command{
 	Use:   "mn-info",
@@ -180,39 +65,103 @@ var minerscMiners = &cobra.Command{
 			flags = cmd.Flags()
 			err   error
 			info  = new(zcncore.MinerSCNodes)
-			cb    = NewJSONInfoCB(info)
 		)
 
-		if err = zcncore.GetMiners(cb); err != nil {
-			log.Fatal(err)
+		limit, offset := 20, 0
+		active := false
+
+		var allFlag, jsonFlag bool
+
+		if flags.Changed("all") {
+			allFlag, err = flags.GetBool("all")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		if err = cb.Waiting(); err != nil {
-			log.Fatal(err)
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if flags.Changed("json") {
-			var j bool
-			if j, err = flags.GetBool("json"); err != nil {
+			jsonFlag, err = flags.GetBool("json")
+			if err != nil {
 				log.Fatal(err)
 			}
-			if j {
+		}
+
+		if !allFlag {
+			cb := NewJSONInfoCB(info)
+			zcncore.GetMiners(cb, limit, offset, active)
+
+			if err = cb.Waiting(); err != nil {
+				log.Fatal(err)
+			}
+
+			if jsonFlag {
 				util.PrintJSON(info)
 				return
 			}
-		}
 
-		if len(info.Nodes) == 0 {
-			fmt.Println("no miners in Miner SC")
+			if len(info.Nodes) == 0 {
+				fmt.Println("no miners in Miner SC")
+				return
+			}
+
+			printMinerNodes(info.Nodes)
 			return
-		}
+		} else {
+			limit = 20
+			offset = 0
 
-		for _, node := range info.Nodes {
-			fmt.Println("- ID:        ", node.Miner.ID)
-			fmt.Println("- Host:      ", node.Miner.Host)
-			fmt.Println("- Port:      ", node.Miner.Port)
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				cb := NewJSONInfoCB(info)
+				zcncore.GetMiners(cb, limit, curOff, active)
+
+				if err = cb.Waiting(); err != nil {
+					log.Fatal(err)
+				}
+
+				if len(info.Nodes) == 0 {
+					break
+				}
+
+				nodes = append(nodes, info.Nodes...)
+			}
+
+			if jsonFlag {
+				util.PrintJSON(nodes)
+			} else {
+				printMinerNodes(nodes)
+			}
 		}
 	},
+}
+
+func printMinerNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("- ID:        ", node.Miner.ID)
+		fmt.Println("- Host:      ", node.Miner.Host)
+		fmt.Println("- Port:      ", node.Miner.Port)
+	}
 }
 
 var minerscSharders = &cobra.Command{
@@ -245,43 +194,81 @@ var minerscSharders = &cobra.Command{
 			log.Fatalf("Failed to get MagicBlock: %v", err)
 		}
 
-		if mb != nil && mb.Sharders != nil {
-			fmt.Println("MagicBlock Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(mb.Sharders.Nodes)
-			} else {
-				for _, node := range mb.Sharders.Nodes {
-					fmt.Println("ID:", node.ID)
-					fmt.Println("  - N2NHost:", node.N2NHost)
-					fmt.Println("  - Host:", node.Host)
-					fmt.Println("  - Port:", node.Port)
-				}
+		limit, offset := 20, 0
+		active := false
+		if flags.Changed("limit") {
+			limit, err = flags.GetInt("limit")
+			if err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println()
 		}
 
-		if allFlag {
-			sharders := new(zcncore.MinerSCNodes)
-			callback := NewJSONInfoCB(sharders)
-			if err = zcncore.GetSharders(callback); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+		if flags.Changed("offset") {
+			offset, err = flags.GetInt("offset")
+			if err != nil {
+				log.Fatal(err)
 			}
-			if err = callback.Waiting(); err != nil {
-				log.Fatalf("Failed to get registered sharders: %v", err)
+		}
+
+		if flags.Changed("active") {
+			active, err = flags.GetBool("active")
+			if err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println("Registered Sharders")
-			if jsonFlag {
-				util.PrettyPrintJSON(sharders.Nodes)
-			} else {
-				for _, node := range sharders.Nodes {
-					fmt.Println("ID:", node.Miner.ID)
-					fmt.Println("  - N2NHost:", node.Miner.N2NHost)
-					fmt.Println("  - Host:", node.Miner.Host)
-					fmt.Println("  - Port:", node.Miner.Port)
+		}
+
+		if !allFlag {
+			if mb != nil && mb.Sharders != nil {
+				fmt.Println("MagicBlock Sharders")
+				if jsonFlag {
+					util.PrettyPrintJSON(mb.Sharders.Nodes)
+				} else {
+					for _, node := range mb.Sharders.Nodes {
+						fmt.Println("ID:", node.ID)
+						fmt.Println("  - N2NHost:", node.N2NHost)
+						fmt.Println("  - Host:", node.Host)
+						fmt.Println("  - Port:", node.Port)
+					}
 				}
+				fmt.Println()
+			}
+		} else {
+			sharders := new(zcncore.MinerSCNodes)
+
+			limit = 20
+			offset = 0
+			var nodes []zcncore.Node
+			for curOff := offset; ; curOff += limit {
+				callback := NewJSONInfoCB(sharders)
+				zcncore.GetSharders(callback, limit, curOff, active)
+
+				if err = callback.Waiting(); err != nil {
+					log.Fatal(err)
+				}
+
+				if len(sharders.Nodes) == 0 {
+					break
+				}
+
+				nodes = append(nodes, sharders.Nodes...)
+			}
+
+			if jsonFlag {
+				util.PrettyPrintJSON(nodes)
+			} else {
+				printSharderNodes(nodes)
 			}
 		}
 	},
+}
+
+func printSharderNodes(nodes []zcncore.Node) {
+	for _, node := range nodes {
+		fmt.Println("ID:", node.Miner.ID)
+		fmt.Println("  - N2NHost:", node.Miner.N2NHost)
+		fmt.Println("  - Host:", node.Miner.Host)
+		fmt.Println("  - Port:", node.Miner.Port)
+	}
 }
 
 var minerscUserInfo = &cobra.Command{
@@ -361,9 +348,8 @@ var minerscPoolInfo = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			poolID string
+			flags = cmd.Flags()
+			id    string
 
 			err error
 		)
@@ -376,26 +362,91 @@ var minerscPoolInfo = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if poolID, err = flags.GetString("pool_id"); err != nil {
-			log.Fatal(err)
-		}
-
 		var (
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
 		wg.Add(1)
-		err = zcncore.GetMinerSCNodePool(id, poolID, statusBar)
+		err = zcncore.GetMinerSCNodePool(id, statusBar)
 		if err != nil {
 			log.Fatal(err)
 		}
 		wg.Wait()
 
 		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
+			fields := map[string]string{}
+			err := json.Unmarshal([]byte(statusBar.errMsg), &fields)
+			if err != nil {
+				log.Fatal("fatal:", statusBar.errMsg)
+			}
+			ExitWithError(fields["error"])
+			return
 		}
 
 		fmt.Println(statusBar.errMsg)
+	},
+}
+
+// spLock locks tokens a stake pool lack
+var spLock = &cobra.Command{
+	Use:   "sp-lock",
+	Short: "Lock tokens lacking in stake pool.",
+	Long:  `Lock tokens lacking in stake pool.`,
+	Args:  cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var (
+			flags        = cmd.Flags()
+			providerID   string
+			providerType sdk.ProviderType
+			tokens       float64
+			fee          float64
+			err          error
+		)
+
+		if flags.Changed("blobber_id") {
+			if providerID, err = flags.GetString("blobber_id"); err != nil {
+				log.Fatalf("invalid 'blobber_id' flag: %v", err)
+			} else {
+				providerType = sdk.ProviderBlobber
+			}
+		} else if flags.Changed("validator_id") {
+			if providerID, err = flags.GetString("validator_id"); err != nil {
+				log.Fatalf("invalid 'validator_id' flag: %v", err)
+			} else {
+				providerType = sdk.ProviderValidator
+			}
+		}
+
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'blobber_id' or 'validator_id' is required")
+		}
+
+		if !flags.Changed("tokens") {
+			log.Fatal("missing required 'tokens' flag")
+		}
+
+		if tokens, err = flags.GetFloat64("tokens"); err != nil {
+			log.Fatal("invalid 'tokens' flag: ", err)
+		}
+
+		if tokens <= 0 {
+			log.Fatal("invalid token amount: negative")
+		}
+
+		if flags.Changed("fee") {
+			if fee, err = flags.GetFloat64("fee"); err != nil {
+				log.Fatal("invalid 'fee' flag: ", err)
+			}
+		}
+
+		var hash string
+		hash, _, err = sdk.StakePoolLock(providerType, providerID,
+			zcncore.ConvertToValue(tokens), zcncore.ConvertToValue(fee))
+		if err != nil {
+			log.Fatalf("Failed to lock tokens in stake pool: %v", err)
+		}
+		fmt.Println("tokens locked, txn hash:", hash)
 	},
 }
 
@@ -407,18 +458,29 @@ var minerscLock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			tokens float64
-			err    error
+			flags        = cmd.Flags()
+			providerID   string
+			providerType zcncore.Provider
+			tokens       float64
+			err          error
 		)
 
-		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+		if flags.Changed("miner_id") {
+			if providerID, err = flags.GetString("miner_id"); err != nil {
+				log.Fatalf("invalid 'miner_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderMiner
+			}
+		} else if flags.Changed("sharder_id") {
+			if providerID, err = flags.GetString("sharder_id"); err != nil {
+				log.Fatalf("invalid 'sharder_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderSharder
+			}
 		}
 
-		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'miner_id' or 'sharder_id' is required")
 		}
 
 		if !flags.Changed("tokens") {
@@ -428,7 +490,7 @@ var minerscLock = &cobra.Command{
 		if tokens, err = flags.GetFloat64("tokens"); err != nil {
 			log.Fatal(err)
 		}
-		if tokens < 0 {
+		if tokens <= 0 {
 			log.Fatal("invalid token amount: negative")
 		}
 
@@ -441,7 +503,7 @@ var minerscLock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCLock(id, zcncore.ConvertToValue(tokens))
+		err = txn.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -483,26 +545,28 @@ var minerscUnlock = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
-			flags  = cmd.Flags()
-			id     string
-			poolID string
-			err    error
+			flags        = cmd.Flags()
+			providerID   string
+			providerType zcncore.Provider
+			err          error
 		)
 
-		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+		if flags.Changed("miner_id") {
+			if providerID, err = flags.GetString("miner_id"); err != nil {
+				log.Fatalf("invalid 'miner_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderMiner
+			}
+		} else if flags.Changed("sharder_id") {
+			if providerID, err = flags.GetString("sharder_id"); err != nil {
+				log.Fatalf("invalid 'sharder_id' flag: %v", err)
+			} else {
+				providerType = zcncore.ProviderSharder
+			}
 		}
 
-		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
-		}
-
-		if !flags.Changed("pool_id") {
-			log.Fatal("missing pool_id flag")
-		}
-
-		if poolID, err = flags.GetString("pool_id"); err != nil {
-			log.Fatal(err)
+		if providerType == 0 || providerID == "" {
+			log.Fatal("missing flag: one of 'miner_id' or 'sharder_id' is required")
 		}
 
 		var (
@@ -514,7 +578,7 @@ var minerscUnlock = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCUnlock(id, poolID)
+		err = txn.MinerSCUnlock(providerID, providerType)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -536,7 +600,7 @@ var minerscUnlock = &cobra.Command{
 			case zcncore.ChargeableError:
 				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
 			case zcncore.Success:
-				fmt.Println("tokens will be unlocked next VC")
+				fmt.Println("tokens unlocked")
 			default:
 				ExitWithError("\nExecute miner unlock update smart contract failed. Unknown status code: " +
 					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
@@ -549,7 +613,6 @@ var minerscUnlock = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(minerscUpdateSettings)
 	rootCmd.AddCommand(minerscInfo)
 	rootCmd.AddCommand(minerscUserInfo)
 	rootCmd.AddCommand(minerscPoolInfo)
@@ -559,14 +622,15 @@ func init() {
 	rootCmd.AddCommand(minerscSharders)
 
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
+	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
+	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
+	minerscMiners.PersistentFlags().Bool("active", false, "Gets all miners, including inactive miners")
+	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
+	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
+	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
 	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
-
-	minerscUpdateSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
-	minerscUpdateSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
-	minerscUpdateSettings.PersistentFlags().Float64("min_stake", 0.0, "min stake allowed")
-	minerscUpdateSettings.PersistentFlags().Float64("max_stake", 0.0, "max stake allowed")
-	minerscUpdateSettings.MarkFlagRequired("id")
+	minerscSharders.PersistentFlags().Bool("active", false, "Gets all sharders, including inactive sharders")
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")
@@ -576,15 +640,12 @@ func init() {
 
 	minerscPoolInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscPoolInfo.MarkFlagRequired("id")
-	minerscPoolInfo.PersistentFlags().String("pool_id", "", "pool ID to get info for")
 
-	minerscLock.PersistentFlags().String("id", "", "miner/sharder ID to lock stake for")
-	minerscLock.MarkFlagRequired("id")
+	minerscLock.PersistentFlags().String("miner_id", "", "miner ID to lock stake for")
+	minerscLock.PersistentFlags().String("sharder_id", "", "sharder ID to lock stake for")
 	minerscLock.PersistentFlags().Float64("tokens", 0, "tokens to lock")
 	minerscLock.MarkFlagRequired("tokens")
 
-	minerscUnlock.PersistentFlags().String("id", "", "miner/sharder ID to unlock pool of")
-	minerscUnlock.MarkFlagRequired("id")
-	minerscUnlock.PersistentFlags().String("pool_id", "", "pool ID to unlock")
-	minerscUnlock.MarkFlagRequired("pool_id")
+	minerscUnlock.PersistentFlags().String("miner_id", "", "miner ID to lock stake for")
+	minerscUnlock.PersistentFlags().String("sharder_id", "", "sharder ID to lock stake for")
 }

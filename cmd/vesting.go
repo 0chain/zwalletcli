@@ -136,7 +136,7 @@ func vestingDests(dd []string) (vds []*zcncore.VestingDest, err error) {
 			return nil, fmt.Errorf("negative amount: %f", amount)
 		}
 		vds = append(vds, &zcncore.VestingDest{
-			ID:     common.Key(id),
+			ID:     id,
 			Amount: common.Balance(zcncore.ConvertToValue(amount)),
 		})
 	}
@@ -367,8 +367,8 @@ var vestingPoolStopCmd = &cobra.Command{
 		}
 
 		var sr zcncore.VestingStopRequest
-		sr.PoolID = common.Key(poolID)
-		sr.Destination = common.Key(dest)
+		sr.PoolID = poolID
+		sr.Destination = dest
 
 		statusBar.Begin()
 		if err = txn.VestingStop(&sr); err != nil {

@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
@@ -37,7 +39,7 @@ var rootCmd = &cobra.Command{
 	Use:   "zwallet",
 	Short: "Use Zwallet to store, send and execute smart contract on 0Chain platform",
 	Long: `Use Zwallet to store, send and execute smart contract on 0Chain platform.
-			Complete documentation is available at https://0chain.net`,
+			Complete documentation is available at https://docs.zus.network/guides/zwallet-cli`,
 	PersistentPreRun: initCmdContext,
 }
 
@@ -71,7 +73,7 @@ func getConfigDir() string {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	configDir = home + "/.zcn"
+	configDir = filepath.Join(home, "/.zcn")
 	return configDir
 }
 
@@ -144,9 +146,9 @@ func loadConfigs() {
 	// TODO: move the private key storage to the keychain or secure storage
 	// ~/.zcn/wallet.json
 	if len(walletFile) > 0 {
-		cfgWallet = configDir + "/" + walletFile
+		cfgWallet = filepath.Join(configDir, walletFile)
 	} else {
-		cfgWallet = configDir + "/wallet.json"
+		cfgWallet = filepath.Join(configDir, "/wallet.json")
 	}
 }
 
@@ -178,13 +180,12 @@ func initZCNCoreContext() {
 func initZwalletContext() {
 	// create wallet
 	if !walletIsLoaded {
-		createWallet()
-		loadWallet()
+		createAndLoadWallet()
 		walletIsLoaded = true
 	}
 }
 
-func createWallet() {
+func createAndLoadWallet() {
 
 	_, err := os.Stat(cfgWallet)
 
@@ -192,39 +193,44 @@ func createWallet() {
 
 	if isNewWallet {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
 
-		wg.Add(1)
+		statusBar, err := createWallet()
 
-		err = zcncore.CreateWallet(statusBar)
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
-		}
-
-		if len(statusBar.walletString) == 0 || !statusBar.success {
-			ExitWithError("Error creating the wallet." + statusBar.errMsg)
-		}
-
-		fmt.Println("ZCN wallet created!!")
-		err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644)
 		if err != nil {
+			ExitWithError(err)
+		}
+
+		if err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644); err != nil {
 			ExitWithError(err.Error())
 		}
 
-	}
-
-	loadWallet()
-
-	if isNewWallet {
 		log.Print("Creating related read pool for storage smart-contract...")
 		if err := createReadPool(); err != nil {
 			log.Fatalf("Failed to create read pool: %v", err)
 		}
 		log.Printf("Read pool created successfully")
 	}
+
+	loadWallet()
+}
+
+func createWallet() (*ZCNStatus, error) {
+	wg := &sync.WaitGroup{}
+	statusBar := &ZCNStatus{wg: wg}
+
+	wg.Add(1)
+	if err := zcncore.CreateWallet(statusBar); err != nil {
+		return nil, err
+	}
+
+	wg.Wait()
+
+	if len(statusBar.walletString) == 0 || !statusBar.success {
+		return nil, errors.New("Error creating the wallet." + statusBar.errMsg)
+	}
+
+	fmt.Println("ZCN wallet created!!")
+	return statusBar, nil
 }
 
 func loadWallet() {

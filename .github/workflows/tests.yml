@@ -13,7 +13,7 @@ on:
 
 jobs:
   unit-test:
-    runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Setup go 1.18
         uses: actions/setup-go@v2
@@ -22,12 +22,18 @@ jobs:
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
+
+      - name: Install Packages
+        run: |
+          lsb_release -a
+          sudo apt-get update
+          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
   
       - name: Run Tests
         run: make zwallet-test
 
   build-linux:
-    runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
     needs: unit-test
     steps:
       - name: Setup go 1.18
@@ -37,6 +43,14 @@ jobs:
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
+
+      - name: check software
+        run: |
+          lsb_release -a
+          sudo apt-get update
+          sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
+          gcc --version
+          # sudo apt-get upgrade libpcap-dev -y
   
       - name: Build ZWallet
         run: make install
@@ -61,17 +75,16 @@ jobs:
           echo "CURRENT_BRANCH=$(echo $(([ -z '${{ github.head_ref }}' ] && echo  ${GITHUB_REF#refs/*/}) || echo '${{ github.head_ref }}'))" >> $GITHUB_ENV
 
       - name: "Set PR status as pending"
-        uses: niteoweb/pull_request_status_action@v1.0.0
+        uses: 0chain/actions/set-pr-status@master
         if: steps.findPr.outputs.number
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
           description: "System tests running with default config..."
           state: "pending"
           repository: ${{ github.repository }}
-          context: "0Chain System Tests"
+          status_name: "0Chain System Tests"
           target_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          github_token: ${{ github.token }}
 
       - name: "Deploy 0Chain"
         uses: 0chain/actions/deploy-0chain@master
@@ -89,7 +102,8 @@ jobs:
           zsearch_image: staging
           zbox_cli_branch: staging
           zwallet_cli_branch: ${{ env.CURRENT_BRANCH }}
-          custom_go_sdk_version: staging
+          SUBGRAPH_API_URL: ${{ secrets.SUBGRAPH_API_URL }}
+          TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
 
       - name: "Run System tests"
         uses: 0chain/actions/run-system-tests@master
@@ -103,17 +117,17 @@ jobs:
           archive_results: true
           run_flaky_tests: false
           retry_failures: true
+          TENDERLY_FORK_ID: ${{ secrets.TENDERLY_FORK_ID }}
           DEVOPS_CHANNEL_WEBHOOK_URL: ${{ secrets.DEVOPS_CHANNEL_WEBHOOK_URL }}
 
       - name: "Set PR status as ${{ job.status }}"
         if: ${{ (success() || failure()) && steps.findPr.outputs.number }}
-        uses: niteoweb/pull_request_status_action@v1.0.0
+        uses: 0chain/actions/set-pr-status@master
         with:
           pr_number: ${{ steps.findPr.outputs.pr }}
           description: "System tests with default config ${{ job.status }}"
           state: ${{ job.status }}
           repository: ${{ github.repository }}
-          context: "0Chain System Tests"
+          status_name: "0Chain System Tests"
           target_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          github_token: ${{ github.token }}
