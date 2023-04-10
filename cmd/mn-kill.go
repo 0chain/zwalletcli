@@ -39,7 +39,7 @@ var minerKill = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCKillMiner(id)
+		err = txn.MinerSCKill(id, zcncore.ProviderMiner)
 		if err != nil {
 			log.Fatal(err)
 		}

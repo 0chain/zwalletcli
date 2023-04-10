@@ -39,7 +39,7 @@ var sharderKill = &cobra.Command{
 			log.Fatal(err)
 		}
 		wg.Add(1)
-		err = txn.MinerSCKillSharder(id)
+		err = txn.MinerSCKill(id, zcncore.ProviderSharder)
 		if err != nil {
 			log.Fatal(err)
 		}
