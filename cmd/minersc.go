@@ -68,7 +68,7 @@ var minerscMiners = &cobra.Command{
 		)
 
 		limit, offset := 20, 0
-		active := false
+		active := true
 
 		var allFlag, jsonFlag bool
 
@@ -195,7 +195,7 @@ var minerscSharders = &cobra.Command{
 		}
 
 		limit, offset := 20, 0
-		active := false
+		active := true
 		if flags.Changed("limit") {
 			limit, err = flags.GetInt("limit")
 			if err != nil {
