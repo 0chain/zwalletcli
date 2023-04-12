@@ -53,6 +53,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
+
 }
 
 func Execute() {
@@ -113,12 +114,13 @@ func loadConfigs() {
 		configDir = getConfigDir()
 	}
 
+	fmt.Println("config: ", cDir, configDir)
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
 	if cfgFile != "" {
-		cfgConfig.SetConfigFile(filepath.Join(configDir, cfgFile))
+		cfgConfig.SetConfigName(cfgFile)
 	} else {
-		cfgConfig.SetConfigFile(filepath.Join(configDir, "config.yaml"))
+		cfgConfig.SetConfigName("config.yaml")
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
