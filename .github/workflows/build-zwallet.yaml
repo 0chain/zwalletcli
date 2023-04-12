@@ -10,8 +10,7 @@ on:
 jobs:
   build-linux:
     name: Build-linux
-    runs-on: ubuntu-20.04
-    # runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
