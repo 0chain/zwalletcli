@@ -74,7 +74,7 @@ var sharderKill = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(minerKill)
+	rootCmd.AddCommand(sharderKill)
 	sharderKill.PersistentFlags().String("id", "", "sharder ID to update")
 	_ = minerKill.MarkFlagRequired("id")
 
