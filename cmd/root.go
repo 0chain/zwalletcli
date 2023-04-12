@@ -116,13 +116,13 @@ func loadConfigs() {
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
 	if cfgFile != "" {
-		cfgConfig.SetConfigFile(cfgFile)
+		cfgConfig.SetConfigFile(filepath.Join(configDir, cfgFile))
 	} else {
-		cfgConfig.SetConfigFile("config.yaml")
+		cfgConfig.SetConfigFile(filepath.Join(configDir, "config.yaml"))
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err, cDir, cfgFile)
+		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
@@ -136,9 +136,9 @@ func loadConfigs() {
 	// ~/.zcn/network.yaml
 	cfgNetwork.AddConfigPath(configDir)
 	if len(networkFile) > 0 {
-		cfgNetwork.SetConfigFile(configDir + "/" + networkFile)
+		cfgNetwork.SetConfigFile(filepath.Join(configDir, networkFile))
 	} else {
-		cfgNetwork.SetConfigFile(configDir + "/" + "network.yaml")
+		cfgNetwork.SetConfigFile(filepath.Join(configDir, "network.yaml"))
 	}
 
 	cfgNetwork.ReadInConfig() //nolint: errcheck
