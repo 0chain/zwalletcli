@@ -115,14 +115,14 @@ func loadConfigs() {
 
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
-	if &cfgFile != nil && len(cfgFile) > 0 {
-		cfgConfig.SetConfigFile(configDir + "/" + cfgFile)
+	if cfgFile != "" {
+		cfgConfig.SetConfigFile(cfgFile)
 	} else {
-		cfgConfig.SetConfigFile(configDir + "/" + "config.yaml")
+		cfgConfig.SetConfigFile("config.yaml")
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err)
+		ExitWithError("Can't read config:", err, cDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
