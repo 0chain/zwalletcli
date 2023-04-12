@@ -13,7 +13,7 @@ func WithoutZCNCore(c *cobra.Command) *cobra.Command {
 	return c
 }
 
-// WithoutWallet wallet information is unnecessary for this command. ~/.zcn/wallet.json will not be checked, and wallet will not be asked to register on blockchain
+// WithoutWallet wallet information is unnecessary for this command. ~/.zcn/wallet.json will not be checked
 func WithoutWallet(c *cobra.Command) *cobra.Command {
 	withoutWalletCmds[c] = true
 	return c

@@ -13,40 +13,13 @@ import (
 
 var createWalletCmd = &cobra.Command{
 	Use:   "create-wallet",
-	Short: "Create wallet and logs it into stdout (pass --register to register wallet to blockchain)",
-	Long:  `Create wallet and logs it into standard output (pass --register to register wallet to blockchain)`,
+	Short: "Create wallet and logs it into stdout",
+	Long:  `Create wallet and logs it into standard output`,
 	Args:  cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		online, err := cmd.Flags().GetBool("register")
+		walletStr, err := zcncore.CreateWalletOffline()
 		if err != nil {
-			ExitWithError("invalid register flag")
-		}
-
-		var walletStr string
-		if online {
-			statusBar, err := createWallet()
-			if err != nil {
-				ExitWithError(fmt.Printf("Failed to create wallet: %v", err))
-			}
-			walletStr = statusBar.walletString
-
-			// update gosdk wallet to use the newly generate wallet for following operation
-			if err = zcncore.SetWalletInfo(walletStr, false); err != nil {
-				ExitWithError("failed to use new wallet", err)
-			}
-
-			log.Print("Creating related read pool for storage smart-contract...")
-			if err := createReadPool(); err != nil {
-				log.Fatalf("Failed to create read pool: %v", err)
-			}
-			log.Printf("Read pool created successfully")
-
-		} else {
-			walletStr, err = zcncore.CreateWalletOffline()
-			if err != nil {
-				ExitWithError("failed to generate offline wallet", err)
-			}
+			ExitWithError("failed to generate offline wallet", err)
 		}
 
 		// write wallet into wallet dir
@@ -71,7 +44,6 @@ var createWalletCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(WithoutWallet(createWalletCmd))
-	createWalletCmd.PersistentFlags().Bool("register", false, "create wallet with registration on blockchain (default false)")
 	createWalletCmd.PersistentFlags().Bool("silent", false, "do not print wallet details in the standard output (default false)")
 	createWalletCmd.PersistentFlags().String("wallet", "", "give custom name to the wallet")
 }
