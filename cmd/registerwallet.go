@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
-	"sync"
 
-	"github.com/0chain/gosdk/zcncore"
+	// "sync"
+
+	// "github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 )
 
@@ -20,19 +20,20 @@ var registerWalletCmd = &cobra.Command{
 			PrintError("Invalid wallet. Wallet not initialized in sdk")
 			os.Exit(1)
 		}
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		if err := zcncore.RegisterToMiners(clientWallet, statusBar); err != nil {
-			ExitWithError(err)
-		}
-		wg.Wait()
-		if statusBar.success {
-			fmt.Println("Wallet registered")
-		} else {
-			PrintError("Wallet registration failed. " + statusBar.errMsg)
-			os.Exit(1)
-		}
+		// wg := &sync.WaitGroup{}
+		// statusBar := &ZCNStatus{wg: wg}
+		// wg.Add(1)
+		// if err := zcncore.RegisterToMiners(clientWallet, statusBar); err != nil {
+		// 	ExitWithError(err)
+		// }
+		// wg.Wait()
+		// if statusBar.success {
+		// 	fmt.Println("Wallet registered")
+		// } else {
+		// 	PrintError("Wallet registration failed. " + statusBar.errMsg)
+		// 	os.Exit(1)
+		// }
+		// fmt.Println("Wallet registered")
 	},
 }
 
