@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
-	"os"
-	"path/filepath"
 )
 
 const (
@@ -25,7 +26,7 @@ const (
 	OptionAmount           = "amount"        // OptionAmount amount passed to cmd
 	OptionToken            = "token"         // OptionToken token in SAS passed to cmd
 	OptionRetries          = "retries"       // OptionRetries retries
-	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
+	OptionConfigFolder     = "configDir"     // OptionConfigFolder config folder
 	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
 	OptionBridgeConfigFile = "bridge_config" // OptionBridgeConfigFile bridge config filename
 	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename
