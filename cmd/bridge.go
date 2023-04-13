@@ -26,7 +26,7 @@ const (
 	OptionAmount           = "amount"        // OptionAmount amount passed to cmd
 	OptionToken            = "token"         // OptionToken token in SAS passed to cmd
 	OptionRetries          = "retries"       // OptionRetries retries
-	OptionConfigFolder     = "configDir"     // OptionConfigFolder config folder
+	OptionConfigFolder     = "path"          // OptionConfigFolder config folder
 	OptionChainConfigFile  = "chain_config"  // OptionChainConfigFile sdk config filename
 	OptionBridgeConfigFile = "bridge_config" // OptionBridgeConfigFile bridge config filename
 	OptionOwnerConfigFile  = "owner_config"  // OptionOwnerConfigFile bridge owner config filename

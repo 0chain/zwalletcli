@@ -108,13 +108,13 @@ func loadConfigs() {
 	cfgConfig = viper.New()
 	cfgNetwork = viper.New()
 	var configDir string
+
 	if cDir != "" {
 		configDir = cDir
 	} else {
 		configDir = getConfigDir()
 	}
 
-	fmt.Println("config: ", cDir, configDir)
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
 	if cfgFile != "" {
