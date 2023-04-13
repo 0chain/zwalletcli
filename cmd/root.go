@@ -118,9 +118,9 @@ func loadConfigs() {
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
 	if cfgFile != "" {
-		cfgConfig.SetConfigName(cfgFile)
+		cfgConfig.SetConfigFile(filepath.Join(configDir, cfgFile))
 	} else {
-		cfgConfig.SetConfigName("config.yaml")
+		cfgConfig.SetConfigFile(filepath.Join(configDir, "config.yaml"))
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
