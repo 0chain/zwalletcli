@@ -22,10 +22,11 @@ var verifycmd = &cobra.Command{
 		hash := cmd.Flag("hash").Value.String()
 		wg := &sync.WaitGroup{}
 		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			ExitWithError(err)
 		}
+
 		txn.SetTransactionHash(hash)
 		wg.Add(1)
 		err = txn.Verify()
