@@ -498,10 +498,11 @@ var minerscLock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		err = txn.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
 		if err != nil {
@@ -573,10 +574,11 @@ var minerscUnlock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		err = txn.MinerSCUnlock(providerID, providerType)
 		if err != nil {
