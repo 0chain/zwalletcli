@@ -108,7 +108,6 @@ var getblobberscmd = &cobra.Command{
 			offset += limit
 		}
 
-		
 		printBlobberList(blobberList)
 	},
 }
