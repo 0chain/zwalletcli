@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/0chain/gosdk/core/conf"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/spf13/cobra"
-	"os"
-	"path/filepath"
 )
 
 const (
