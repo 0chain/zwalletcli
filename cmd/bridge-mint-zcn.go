@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -39,7 +40,7 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(cb.Err)
 	}
 
-	burnTickets, err := b.GetNotProcessedWZCNBurnTickets(context.Background(), mintNonce)
+	burnTickets, err := b.QueryEthereumBurnEvents(strconv.Itoa(int(mintNonce)))
 	if err != nil {
 		ExitWithError(err)
 	}
