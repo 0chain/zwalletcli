@@ -3,13 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/0chain/gosdk/core/common"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/0chain/gosdk/core/common"
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var minerscUpdateNodeSettings = &cobra.Command{
@@ -95,10 +96,11 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		if sharder {
 			err = txn.MinerSCSharderSettings(miner)
