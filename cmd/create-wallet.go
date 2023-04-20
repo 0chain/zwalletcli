@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
-	"time"
-
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 )
 
 var createWalletCmd = &cobra.Command{
@@ -21,9 +19,13 @@ var createWalletCmd = &cobra.Command{
 		if err != nil {
 			ExitWithError("failed to generate offline wallet", err)
 		}
+		walletName := cmd.Flags().Lookup("wallet").Value.String()
+		if len(walletName) == 0 {
+			ExitWithError("invalid wallet name")
+		}
 
 		// write wallet into wallet dir
-		filename := walletFilename()
+		filename := walletFilename(walletName)
 		if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
 			// same wallet exists
 			ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists", filename))
@@ -48,13 +50,12 @@ func init() {
 	createWalletCmd.PersistentFlags().String("wallet", "", "give custom name to the wallet")
 }
 
-func walletFilename() string {
+func walletFilename(walletName string) string {
 	cfgDir := getConfigDir()
 	if len(walletFile) > 0 {
 		return filepath.Join(cfgDir, walletFile)
 	}
-	now := time.Now().UTC()
 
 	return filepath.Join(getConfigDir(),
-		fmt.Sprintf("%s_wallet_%x.json", now.Format("2006_01_02"), now.UnixNano()))
+		fmt.Sprintf("%s_wallet.json", walletName))
 }
