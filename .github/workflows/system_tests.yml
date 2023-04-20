@@ -56,7 +56,6 @@ jobs:
       validator_branch: ${{ github.event.inputs.validator_branch }}
       zbox_branch: ${{ github.event.inputs.zbox_branch }}
       zdns_branch: staging
-      zsearch_branch: staging
       test_file_filter: ${{ github.event.inputs.test_file_filter }}
       skip_tests: ${{ github.event.inputs.skip_tests }}
     secrets:
