@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var createWalletCmd = &cobra.Command{
@@ -21,7 +22,7 @@ var createWalletCmd = &cobra.Command{
 		}
 		walletName := cmd.Flags().Lookup("wallet").Value.String()
 		if len(walletName) == 0 {
-			ExitWithError("invalid wallet name")
+			walletName = fmt.Sprintf("%d", time.Now().Unix())
 		}
 
 		// write wallet into wallet dir
