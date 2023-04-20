@@ -69,6 +69,6 @@ var updateMinerScConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateMinerScConfigCmd)
-	updateMinerScConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateMinerScConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	updateMinerScConfigCmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	updateMinerScConfigCmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }

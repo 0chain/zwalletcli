@@ -437,10 +437,10 @@ func createAWallet() string {
 
 func init() {
 	rootCmd.AddCommand(WithoutZCNCore(WithoutWallet(createmswalletcmd)))
-	createmswalletcmd.PersistentFlags().Int("numsigners", 0, "Number of signers")
-	createmswalletcmd.PersistentFlags().Int("threshold", 0, "Threshold number of signers required to sign the proposal")
-	createmswalletcmd.PersistentFlags().Bool("testn", false, "test Multiwallet with all signers. Default is false")
-	createmswalletcmd.PersistentFlags().Bool("offline", false, "create multiwallet without registration on blockchain")
+	createmswalletcmd.PersistentFlags().Int("numsigners int", 0, "Number of signers")
+	createmswalletcmd.PersistentFlags().Int("threshold int", 0, "Threshold number of signers required to sign the proposal")
+	createmswalletcmd.PersistentFlags().Bool("testn boolean", false, "test Multiwallet with all signers. Default is false")
+	createmswalletcmd.PersistentFlags().Bool("offline boolean", false, "create multiwallet without registration on blockchain")
 	createmswalletcmd.MarkFlagRequired("threshold")
 	createmswalletcmd.MarkFlagRequired("numsigners")
 }

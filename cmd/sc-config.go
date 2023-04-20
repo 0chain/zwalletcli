@@ -37,5 +37,5 @@ var scConfig = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scConfig)
-	scConfig.Flags().Bool("json", false, "pass this option to print response as json data")
+	scConfig.Flags().Bool("json boolean", false, "pass this option to print response as json data")
 }

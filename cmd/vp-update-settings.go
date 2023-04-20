@@ -67,6 +67,6 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateVestingPoolConfigCmd)
-	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	updateVestingPoolConfigCmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }

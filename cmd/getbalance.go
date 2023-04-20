@@ -56,5 +56,5 @@ var getbalancecmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getbalancecmd)
-	getbalancecmd.Flags().Bool("json", false, "pass this option to print response as json data")
+	getbalancecmd.Flags().Bool("json boolean", false, "pass this option to print response as json data")
 }

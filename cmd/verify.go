@@ -47,6 +47,6 @@ var verifycmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(verifycmd)
-	verifycmd.PersistentFlags().String("hash", "", "hash of the transaction")
+	verifycmd.PersistentFlags().String("hash string", "", "hash of the transaction")
 	verifycmd.MarkFlagRequired("hash")
 }

@@ -83,6 +83,6 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 func init() {
 	cmd := deleteAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
-	cmd.PersistentFlags().String("id", "", "authorizer ID")
+	cmd.PersistentFlags().String("id string", "", "authorizer ID")
 	cmd.MarkFlagRequired("id")
 }

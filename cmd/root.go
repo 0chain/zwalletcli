@@ -53,14 +53,14 @@ var clientWallet *zcncrypto.Wallet
 
 func init() {
 	cobra.OnInitialize(loadConfigs)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config.yaml)")
-	rootCmd.PersistentFlags().StringVar(&networkFile, "network", "", "network file to overwrite the network details (if required, default is network.yaml)")
-	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet", "", "wallet file (default is wallet.json)")
-	rootCmd.PersistentFlags().StringVar(&cDir, "configDir", "", "configuration directory (default is $HOME/.zcn)")
-	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
-	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config string", "", "config file (default is config.yaml)")
+	rootCmd.PersistentFlags().StringVar(&networkFile, "network string", "", "network file to overwrite the network details (if required, default is network.yaml)")
+	rootCmd.PersistentFlags().StringVar(&walletFile, "wallet string", "", "wallet file (default is wallet.json)")
+	rootCmd.PersistentFlags().StringVar(&cDir, "configDir string", "", "configuration directory (default is $HOME/.zcn)")
+	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce int", 0, "nonce that will be used in transaction (default is 0)")
+	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent float", false, "Do not print sdk logs in stderr (prints by default)")
 
-	rootCmd.PersistentFlags().Float64Var(&gTxnFee, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
+	rootCmd.PersistentFlags().Float64Var(&gTxnFee, "fee float", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
 }
 
 func Execute() {

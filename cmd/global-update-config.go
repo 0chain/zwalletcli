@@ -69,6 +69,6 @@ var updateGlobalConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateGlobalConfigCmd)
-	updateGlobalConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateGlobalConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	updateGlobalConfigCmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	updateGlobalConfigCmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }

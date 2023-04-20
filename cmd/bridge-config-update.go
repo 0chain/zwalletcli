@@ -71,6 +71,6 @@ func init() {
 	cmd := updateBridgeGlobalConfigCmd
 	rootCmd.AddCommand(cmd)
 
-	cmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	cmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	cmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	cmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }

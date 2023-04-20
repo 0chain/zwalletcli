@@ -140,10 +140,10 @@ var minerscUpdateNodeSettings = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(minerscUpdateNodeSettings)
-	minerscUpdateNodeSettings.PersistentFlags().String("id", "", "miner/sharder ID to update")
-	minerscUpdateNodeSettings.PersistentFlags().Bool("sharder", false, "set true for sharder node")
-	minerscUpdateNodeSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
-	minerscUpdateNodeSettings.PersistentFlags().Float64("min_stake", 0.0, "min stake allowed")
-	minerscUpdateNodeSettings.PersistentFlags().Float64("max_stake", 0.0, "max stake allowed")
+	minerscUpdateNodeSettings.PersistentFlags().String("id string", "", "miner/sharder ID to update")
+	minerscUpdateNodeSettings.PersistentFlags().Bool("sharder boolean", false, "set true for sharder node")
+	minerscUpdateNodeSettings.PersistentFlags().Int("num_delegates int", 0, "max number of delegate pools")
+	minerscUpdateNodeSettings.PersistentFlags().Float64("min_stake float", 0.0, "min stake allowed")
+	minerscUpdateNodeSettings.PersistentFlags().Float64("max_stake float", 0.0, "max stake allowed")
 	minerscUpdateNodeSettings.MarkFlagRequired("id")
 }

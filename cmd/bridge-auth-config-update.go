@@ -112,6 +112,6 @@ func init() {
 	cmd := updateAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
 
-	cmd.PersistentFlags().String("id", "", "authorizer ID")
+	cmd.PersistentFlags().String("id string", "", "authorizer ID")
 	cmd.MarkFlagRequired("id")
 }

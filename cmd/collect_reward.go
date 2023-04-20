@@ -90,8 +90,8 @@ var minerScPayReward = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(minerScPayReward)
 
-	minerScPayReward.PersistentFlags().String("provider_id", "", "miner or sharder id")
+	minerScPayReward.PersistentFlags().String("provider_id string", "", "miner or sharder id")
 	minerScPayReward.MarkFlagRequired("provider_id")
-	minerScPayReward.PersistentFlags().String("provider_type", "miner", "provider type, miner or sharder")
+	minerScPayReward.PersistentFlags().String("provider_type string", "miner", "provider type, miner or sharder")
 	minerScPayReward.MarkFlagRequired("provider_type")
 }

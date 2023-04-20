@@ -107,12 +107,12 @@ var sendcmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(sendcmd)
-	sendcmd.PersistentFlags().String("to_client_id", "", "to_client_id")
-	sendcmd.PersistentFlags().Float64("tokens", 0, "Token to send")
-	sendcmd.PersistentFlags().String("desc", "", "Description")
-	sendcmd.PersistentFlags().Float64("fee", 0, "Transaction Fee")
+	sendcmd.PersistentFlags().String("to_client_id string", "", "to_client_id")
+	sendcmd.PersistentFlags().Float64("tokens float", 0, "Token to send")
+	sendcmd.PersistentFlags().String("desc string", "", "Description")
+	sendcmd.PersistentFlags().Float64("fee float", 0, "Transaction Fee")
 	sendcmd.MarkFlagRequired("to_client_id")
 	sendcmd.MarkFlagRequired("tokens")
 	sendcmd.MarkFlagRequired("desc")
-	sendcmd.Flags().Bool("json", false, "pass this option to print response as json data")
+	sendcmd.Flags().Bool("json boolean", false, "pass this option to print response as json data")
 }

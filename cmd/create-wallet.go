@@ -71,9 +71,9 @@ var createWalletCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(WithoutWallet(createWalletCmd))
-	createWalletCmd.PersistentFlags().Bool("register", false, "create wallet with registration on blockchain (default false)")
-	createWalletCmd.PersistentFlags().Bool("silent", false, "do not print wallet details in the standard output (default false)")
-	createWalletCmd.PersistentFlags().String("wallet", "", "give custom name to the wallet")
+	createWalletCmd.PersistentFlags().Bool("register boolean", false, "create wallet with registration on blockchain (default false)")
+	createWalletCmd.PersistentFlags().Bool("silent boolean", false, "do not print wallet details in the standard output (default false)")
+	createWalletCmd.PersistentFlags().String("wallet string", "", "give custom name to the wallet")
 }
 
 func walletFilename() string {

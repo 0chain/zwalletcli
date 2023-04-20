@@ -529,38 +529,38 @@ func init() {
 	rootCmd.AddCommand(vestingPoolUnlockCmd)
 	rootCmd.AddCommand(vestingPoolTriggerCmd)
 
-	getVestingPoolInfoCmd.PersistentFlags().String("pool_id", "",
+	getVestingPoolInfoCmd.PersistentFlags().String("pool_id string", "",
 		"pool identifier")
 	getVestingPoolInfoCmd.MarkFlagRequired("pool_id")
 
-	getVestingClientPoolsCmd.PersistentFlags().String("client_id", "",
+	getVestingClientPoolsCmd.PersistentFlags().String("client_id string", "",
 		"client_id, default is current client")
 	getVestingClientPoolsCmd.MarkFlagRequired("client_id")
 
 	var addFlags = vestingPoolAddCmd.PersistentFlags()
-	addFlags.String("description", "", "pool description, optional")
-	addFlags.Int64("start_time", 0, "start_time, Unix seconds, default is now")
-	addFlags.Duration("duration", 0, "vesting duration till end, required")
-	addFlags.StringSlice("d", nil, `list of colon separated 'destination:amount' values,
+	addFlags.String("description string", "", "pool description, optional")
+	addFlags.Int64("start_time string", 0, "start_time, Unix seconds, default is now")
+	addFlags.Duration("duration string", 0, "vesting duration till end, required")
+	addFlags.StringSlice("d string(s)", nil, `list of colon separated 'destination:amount' values,
 use -d flag many times to provide few destinations, for example 'dst:1.2'`)
-	addFlags.Float64("fee", 0.0, "transaction fee, optional")
-	addFlags.Float64("lock", 0.0, "lock tokens for the pool")
+	addFlags.Float64("fee float", 0.0, "transaction fee, optional")
+	addFlags.Float64("lock float", 0.0, "lock tokens for the pool")
 
-	vestingPoolDeleteCmd.PersistentFlags().String("pool_id", "",
+	vestingPoolDeleteCmd.PersistentFlags().String("pool_id string", "",
 		"pool identifier, required")
 	vestingPoolDeleteCmd.MarkFlagRequired("pool_id")
 
-	vestingPoolStopCmd.PersistentFlags().String("pool_id", "",
+	vestingPoolStopCmd.PersistentFlags().String("pool_id string", "",
 		"pool identifier, required")
-	vestingPoolStopCmd.PersistentFlags().String("d", "",
+	vestingPoolStopCmd.PersistentFlags().String("d string", "",
 		"destination to stop vesting, required")
 	vestingPoolStopCmd.MarkFlagRequired("pool_id")
 	vestingPoolStopCmd.MarkFlagRequired("d")
 
-	vestingPoolUnlockCmd.PersistentFlags().String("pool_id", "",
+	vestingPoolUnlockCmd.PersistentFlags().String("pool_id string", "",
 		"pool identifier, required")
 
-	vestingPoolTriggerCmd.PersistentFlags().String("pool_id", "",
+	vestingPoolTriggerCmd.PersistentFlags().String("pool_id string", "",
 		"pool identifier, required")
 	vestingPoolTriggerCmd.MarkFlagRequired("pool_id")
 }

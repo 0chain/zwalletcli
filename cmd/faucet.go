@@ -72,9 +72,9 @@ var faucetcmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(faucetcmd)
-	faucetcmd.PersistentFlags().String("methodName", "", "methodName")
-	faucetcmd.PersistentFlags().String("input", "", "input")
-	faucetcmd.PersistentFlags().Float64("tokens", 0, "Token request")
+	faucetcmd.PersistentFlags().String("methodName string", "", "methodName")
+	faucetcmd.PersistentFlags().String("input string", "", "input")
+	faucetcmd.PersistentFlags().Float64("tokens float", 0, "Token request")
 	faucetcmd.MarkFlagRequired("methodName")
 	faucetcmd.MarkFlagRequired("input")
 }

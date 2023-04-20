@@ -115,7 +115,7 @@ var getblobberscmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(getidcmd)
 	rootCmd.AddCommand(getblobberscmd)
-	getidcmd.PersistentFlags().String("url", "", "URL to get the ID")
+	getidcmd.PersistentFlags().String("url string", "", "URL to get the ID")
 	getidcmd.MarkFlagRequired("url")
-	getblobberscmd.PersistentFlags().Bool("all", false, "Gets all blobbers, including inactive blobbers")
+	getblobberscmd.PersistentFlags().Bool("all boolean", false, "Gets all blobbers, including inactive blobbers")
 }

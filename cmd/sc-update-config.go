@@ -67,6 +67,6 @@ var updateStoragScConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateStoragScConfigCmd)
-	updateStoragScConfigCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateStoragScConfigCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	updateStoragScConfigCmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	updateStoragScConfigCmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }

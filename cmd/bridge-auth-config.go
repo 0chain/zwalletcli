@@ -48,6 +48,6 @@ func init() {
 	cmd := getAuthorizerConfigCmd
 	rootCmd.AddCommand(cmd)
 
-	cmd.PersistentFlags().String("id", "", "authorizer id")
+	cmd.PersistentFlags().String("id string", "", "authorizer id")
 	cmd.MarkFlagRequired("id")
 }

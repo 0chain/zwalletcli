@@ -74,6 +74,6 @@ var updateFaucetCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateFaucetCmd)
-	updateFaucetCmd.PersistentFlags().StringSlice("keys", nil, "list of keys")
-	updateFaucetCmd.PersistentFlags().StringSlice("values", nil, "list of new values")
+	updateFaucetCmd.PersistentFlags().StringSlice("keys string(s)", nil, "list of keys")
+	updateFaucetCmd.PersistentFlags().StringSlice("values string(s)", nil, "list of new values")
 }
