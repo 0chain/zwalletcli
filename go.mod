@@ -71,4 +71,4 @@ require (
 go 1.18
 
 // temporary, for development
-replace github.com/0chain/gosdk => ../gosdk
+// replace github.com/0chain/gosdk => ../gosdk
