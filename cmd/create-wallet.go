@@ -22,7 +22,7 @@ var createWalletCmd = &cobra.Command{
 		}
 		walletName := cmd.Flags().Lookup("wallet").Value.String()
 		if len(walletName) == 0 {
-			walletName = fmt.Sprintf("%d", time.Now().Unix())
+			walletName = fmt.Sprintf("%d_wallet.json", time.Now().Unix())
 		}
 
 		// write wallet into wallet dir
@@ -58,5 +58,5 @@ func walletFilename(walletName string) string {
 	}
 
 	return filepath.Join(getConfigDir(),
-		fmt.Sprintf("%s_wallet.json", walletName))
+		fmt.Sprintf(walletName))
 }
