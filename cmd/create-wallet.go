@@ -27,10 +27,10 @@ var createWalletCmd = &cobra.Command{
 
 		// write wallet into wallet dir
 		filename := walletFilename(walletName)
-		if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
-			// same wallet exists
-			ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists", filename))
-		}
+		//if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
+		//	// same wallet exists
+		//	ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists", filename))
+		//}
 
 		if err := os.WriteFile(filename, []byte(walletStr), 0644); err != nil {
 			// no return just print it
