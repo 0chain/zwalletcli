@@ -72,9 +72,8 @@ var createmswalletcmd = &cobra.Command{
 			return
 		}
 
-		//register wallet to miners
 		initZCNCoreContext()
-		//register all wallets
+
 		groupWallet := wallets[0]
 		signerWallets := wallets[1:]
 
