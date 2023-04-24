@@ -430,7 +430,7 @@ var spLock = &cobra.Command{
 			log.Fatal("invalid 'tokens' flag: ", err)
 		}
 
-		if tokens <= 0 {
+		if tokens < 0 {
 			log.Fatal("invalid token amount: negative")
 		}
 
@@ -490,7 +490,7 @@ var minerscLock = &cobra.Command{
 		if tokens, err = flags.GetFloat64("tokens"); err != nil {
 			log.Fatal(err)
 		}
-		if tokens <= 0 {
+		if tokens < 0 {
 			log.Fatal("invalid token amount: negative")
 		}
 
