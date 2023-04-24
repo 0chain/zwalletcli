@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -201,12 +200,12 @@ func createAndLoadWallet() {
 
 	if isNewWallet {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
-		statusBar, err := createWallet()
+		walletString, err := createWallet()
 		if err != nil {
 			ExitWithError(err)
 		}
 
-		if err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644); err != nil {
+		if err = os.WriteFile(cfgWallet, []byte(walletString), 0644); err != nil {
 			ExitWithError(err.Error())
 		}
 	}
@@ -226,23 +225,14 @@ func createAndLoadWallet() {
 	}
 }
 
-func createWallet() (*ZCNStatus, error) {
-	wg := &sync.WaitGroup{}
-	statusBar := &ZCNStatus{wg: wg}
-
-	wg.Add(1)
-	if err := zcncore.CreateWallet(statusBar); err != nil {
-		return nil, err
-	}
-
-	wg.Wait()
-
-	if len(statusBar.walletString) == 0 || !statusBar.success {
-		return nil, errors.New("Error creating the wallet." + statusBar.errMsg)
+func createWallet() (string, error) {
+	walletStr, err := zcncore.CreateWalletOffline()
+	if err != nil {
+		return "", err
 	}
 
 	fmt.Println("ZCN wallet created!!")
-	return statusBar, nil
+	return walletStr, nil
 }
 
 func loadWallet() {

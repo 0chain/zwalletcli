@@ -376,21 +376,13 @@ func checkBalance(wallet string) bool {
 }
 
 func createAWallet() string {
-	wg := &sync.WaitGroup{}
-	statusBar := &ZCNStatus{wg: wg}
-	wg.Add(1)
-	err := zcncore.CreateWallet(statusBar)
+	walletString, err := zcncore.CreateWalletOffline()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	wg.Wait()
-	if statusBar.success {
-		return statusBar.walletString
-	}
-	return ""
-
+	return walletString
 }
 
 func init() {
