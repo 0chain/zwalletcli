@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,6 +23,11 @@ var walletFile string
 var cDir string
 var bSilent bool
 var nonce int64
+
+// gTxnFee is the user specified fee passed from client/user.
+// If the fee is absent/low it is adjusted to the min fee required
+// (acquired from miner) for the transaction to write into blockchain.
+var gTxnFee float64
 
 var clientConfig string
 var minSubmit int
@@ -54,6 +60,7 @@ func init() {
 	rootCmd.PersistentFlags().Int64Var(&nonce, "withNonce", 0, "nonce that will be used in transaction (default is 0)")
 	rootCmd.PersistentFlags().BoolVar(&bSilent, "silent", false, "Do not print sdk logs in stderr (prints by default)")
 
+	rootCmd.PersistentFlags().Float64Var(&gTxnFee, "fee", 0, "transaction fee for the given transaction (if unset, it will be set to blockchain min fee)")
 }
 
 func Execute() {
@@ -195,9 +202,7 @@ func createAndLoadWallet() {
 
 	if isNewWallet {
 		fmt.Println("No wallet in path ", cfgWallet, "found. Creating wallet...")
-
 		statusBar, err := createWallet()
-
 		if err != nil {
 			ExitWithError(err)
 		}
@@ -205,15 +210,21 @@ func createAndLoadWallet() {
 		if err = os.WriteFile(cfgWallet, []byte(statusBar.walletString), 0644); err != nil {
 			ExitWithError(err.Error())
 		}
-
-		log.Print("Creating related read pool for storage smart-contract...")
-		if err := createReadPool(); err != nil {
-			log.Fatalf("Failed to create read pool: %v", err)
-		}
-		log.Printf("Read pool created successfully")
 	}
 
 	loadWallet()
+
+	_, err = sdk.GetReadPoolInfo(clientWallet.ClientID)
+	if err != nil {
+		if strings.Contains(err.Error(), "resource_not_found") {
+			fmt.Println("Creating related read pool for storage smart-contract...")
+			if _, _, err = sdk.CreateReadPool(); err != nil {
+				fmt.Printf("Failed to create read pool: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Println("Read pool created successfully")
+		}
+	}
 }
 
 func createWallet() (*ZCNStatus, error) {
@@ -259,4 +270,8 @@ func loadWallet() {
 	} else {
 		ExitWithError(err.Error())
 	}
+}
+
+func getTxnFee() uint64 {
+	return zcncore.ConvertToValue(gTxnFee)
 }
