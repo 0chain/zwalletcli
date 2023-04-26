@@ -2,18 +2,18 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
-	"time"
+
+	"github.com/0chain/gosdk/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var createWalletCmd = &cobra.Command{
 	Use:   "create-wallet",
-	Short: "Create wallet and logs it into stdout",
-	Long:  `Create wallet and logs it into standard output`,
+	Short: "Create wallet and logs it into stdout (pass --register to register wallet to blockchain)",
+	Long:  `Create wallet and logs it into standard output (pass --register to register wallet to blockchain)`,
 	Args:  cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		walletStr, err := zcncore.CreateWalletOffline()
@@ -21,16 +21,14 @@ var createWalletCmd = &cobra.Command{
 			ExitWithError("failed to generate offline wallet", err)
 		}
 		walletName := cmd.Flags().Lookup("wallet").Value.String()
-		if len(walletName) == 0 {
-			walletName = fmt.Sprintf("%d_wallet.json", time.Now().Unix())
-		}
 
 		// write wallet into wallet dir
 		filename := walletFilename(walletName)
-		//if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
-		//	// same wallet exists
-		//	ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists", filename))
-		//}
+		fmt.Print(filename)
+		if _, err := os.Stat(filename); err == nil || !os.IsNotExist(err) {
+			// same wallet exists
+			ExitWithError(fmt.Sprintf("unable to write wallet, file with %q name already exists. Please try a different wallet name or backup the current wallet file and delete it.", filename))
+		}
 
 		if err := os.WriteFile(filename, []byte(walletStr), 0644); err != nil {
 			// no return just print it
@@ -53,10 +51,8 @@ func init() {
 
 func walletFilename(walletName string) string {
 	cfgDir := getConfigDir()
-	if len(walletFile) > 0 {
-		return filepath.Join(cfgDir, walletFile)
+	if len(walletName) > 0 {
+		return filepath.Join(cfgDir, walletName)
 	}
-
-	return filepath.Join(getConfigDir(),
-		fmt.Sprintf(walletName))
+	return filepath.Join(cfgDir, "wallet.json")
 }
