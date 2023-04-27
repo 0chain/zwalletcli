@@ -13,6 +13,10 @@ jobs:
 #     runs-on: ubuntu-latest
     runs-on: [self-hosted, build]
     steps:
+       - name: Install deps
+        run: |
+          apt update
+          apt install make -y
       - name: Setup go 1.18
         uses: actions/setup-go@v2
         with:
