@@ -15,8 +15,9 @@ jobs:
     steps:
        - name: Install deps
         run: |
-          apt update
-          apt install make -y
+          sudo apt update
+          sudo apt -y install build-essential nghttp2 libnghttp2-dev libssl-dev
+  
       - name: Setup go 1.18
         uses: actions/setup-go@v2
         with:
