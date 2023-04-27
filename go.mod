@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.8.16-0.20230427161011-6fb50cdcb352
+	github.com/0chain/gosdk v1.8.16-0.20230427222547-3cc7ac66e28f
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -31,7 +31,7 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/herumi/bls-go-binary v1.28.3-0.20230130082002-6902be28593e // indirect
+	github.com/herumi/bls-go-binary v1.30.4 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/klauspost/reedsolomon v1.11.7 // indirect
@@ -75,4 +75,3 @@ go 1.20
 
 // temporary, for development
 //replace github.com/0chain/gosdk => ../gosdk
-replace github.com/herumi/bls-go-binary => github.com/cnlangzi/bls-go-binary v1.29.1
