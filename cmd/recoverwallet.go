@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"sync"
 
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
@@ -24,33 +23,9 @@ var recoverwalletcmd = &cobra.Command{
 			ExitWithError("Error: Invalid mnemonic")
 		}
 
-		offline, err := cmd.Flags().GetBool("offline")
+		walletString, err := zcncore.RecoverOfflineWallet(mnemonic)
 		if err != nil {
-			fmt.Println("offline is not used or not set to true. Setting it to false")
-		}
-
-		var walletString string
-		if offline {
-			walletString, err = zcncore.RecoverOfflineWallet(mnemonic)
-			if err != nil {
-				ExitWithError(err.Error())
-			}
-		} else {
-			initZCNCoreContext()
-			wg := &sync.WaitGroup{}
-			statusBar := &ZCNStatus{wg: wg}
-			wg.Add(1)
-			err = zcncore.RecoverWallet(mnemonic, statusBar)
-			if err == nil {
-				wg.Wait()
-			} else {
-				ExitWithError(err.Error())
-			}
-			if len(statusBar.walletString) == 0 || !statusBar.success {
-				ExitWithError("Error recovering the wallet." + statusBar.errMsg)
-			}
-
-			walletString = statusBar.walletString
+			ExitWithError(err.Error())
 		}
 
 		var walletFilePath string
