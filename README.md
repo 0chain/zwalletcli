@@ -107,25 +107,7 @@ For detailed steps on the installation, follow any of the following:
 
 The following steps assume that your terminal's working directory is inside the `zwalletcli` repo.
 
-1. Register a new wallet
-
-The wallet information is stored on `/.zcn/wallet.json`.
-
-Initially, you do not have a wallet file yet. When you execute any `zwallet` command, it will automatically create the wallet file.
-
-Run the `register` command which register your wallet to the blockchain.
-
-```sh
-./zwallet register
-```
-
-```
-Creating related read pool for storage smart-contract...
-Read pool created successfully
-Wallet registered
-```
-
-2. Get some tokens from faucet
+1. Get some tokens from faucet
 
 To put tokens to your wallet, you can use the Faucet smart contract.
 
@@ -141,7 +123,7 @@ Execute faucet smart contract success with txn :  915cfc6fa81eb3622c7082436a8ff7
 
 Repeat the `faucet` command for 5 times to get 5 tokens balance.
 
-3. Check wallet balance
+2. Check wallet balance
 
 Run the `getblance` command.
 
@@ -153,7 +135,7 @@ Run the `getblance` command.
 Balance: 5 (5.00 USD)
 ```
 
-4. Lock tokens to gain interest
+3. Lock tokens to gain interest
 
 Run the `lock` command to lock some of your tokens to earn interest.  The following command lock `0.5` token for 5 minutes.
 
@@ -177,7 +159,7 @@ Balance: 4.5000004743 (4.5000004743 USD)
 
 > Note: Tokens are not automatically released after lock duration. To get them back to wallet, need to run the `unlock` command. More info about this [here](#unlocking-tokens---unlock).
 
-5. Stake tokens on a node to earn tokens
+4. Stake tokens on a node to earn tokens
 
 You can stake tokens on a blockchain node to earn more tokens.
 Any miner or sharder can be staked on provided the node is not yet full.
@@ -230,17 +212,13 @@ To check if a stake pool is active, you can run `mn-pool-info` command. Normally
 
 Once it is active, check your balance to see earnings coming in.
 
-6. Vesting tokens to another wallet
+5. Vesting tokens to another wallet
 
 Vesting allows the transfer of tokens to one or more wallets. Tokens will be moved slowly to the wallet destinations until the time duration elapsed.
 
 A good use case for vesting is when paying tokens to employees.
 
 To vest tokens, first create another wallet which will be the token destinations.
-
-```sh
-./zwallet register --wallet vesting_wallet.json
-```
 
 Then get the client ID of that wallet.
 ```sh
@@ -306,7 +284,7 @@ Confirm balance of destination wallet.
 Balance: 2 (1.401328 USD)
 ```
 
-7. Dispensing tokens from a multisig wallet
+6. Dispensing tokens from a multisig wallet
 
 The CLI can be used to show that 0chain supports multisig wallet.
 With multisig wallet, moving tokens need multiple approvals from its signatories.
