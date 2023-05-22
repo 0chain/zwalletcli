@@ -47,7 +47,7 @@ var getbalancecmd = &cobra.Command{
 			return
 		}
 		if err != nil {
-			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", b, err))
+			fmt.Printf("\nBalance: %v (Failed to get USD: %v)\n", b, err)
 			return
 		}
 		fmt.Printf("\nBalance: %v (%.2f USD)\n", b, usd)
