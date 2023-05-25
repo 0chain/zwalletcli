@@ -103,12 +103,12 @@ The following steps assume that your terminal's working directory is inside the 
 | Parameter     | Description                     | Default        |
 | ------------- | ------------------------------- | -------------- |
 | `--h,--help`  | Show help/parameters for a particular command                       |                |
-| `--config`    | [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml)   | `config.yaml`  |
+| `--config`    | [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml)   | `config.yaml`  |
 | `--configDir` | Config directory                | `~/.zcn`       |
 | `--network`   | [Network file](#override-network) | `network.yaml` |
 | `--silent`    | Do not print detailed logs      | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
-| `--withNonce` | nonce that will be used in transaction    | `0`  |
+| `--withNonce` | Nonce that will be used in transaction    | `0`  |
 | `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
 
 ## Commands
@@ -1004,7 +1004,7 @@ Sample command
 
 ### Override Network
 
-Network nodes are automatically discovered using the `block_worker` provided on [config file].(https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml)
+Network nodes are automatically discovered using the `block_worker` provided on [config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml).
 
 To override/limit the nodes used on `zwallet`, create `~/.zcn/network.yaml` as shown below.
 
