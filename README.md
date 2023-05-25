@@ -1,8 +1,8 @@
-# zwallet - a CLI for 0chain wallet
+# zwallet - a CLI for 0Chain wallet
 
 `zwallet` is a command line interface (CLI) to demonstrate the functionalities of 0Chain.
 
-The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
+The CLI utilizes the [0chain GoSDK](https://github.com/0chain/gosdk).
 
 - [zwallet - a CLI for 0chain wallet](#zwallet---a-cli-for-0chain-wallet)
   - [Architecture](#architecture)
@@ -18,12 +18,18 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
       - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
       - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
       - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
+      - [Listing all authorizers - `bridge-list-auth`](#list-authorizers)
+      - [Getting Auhorizer Configuration - `bridge-auth-config`](#get-authorizer-configuration)
       - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
+      - [Getting Storage Smart Contract Configuration - `sc-config`](#show-storage-smart-contract-configuration)
+      - [Getting Global Configuration - `global-config`](#show-global-configurations)
+      - [Get Version - `get-version`](#get-version)
     - [Getting and sending tokens](#getting-and-sending-tokens)
       - [Getting tokens with Faucet smart contract - `faucet`](#getting-tokens-with-faucet-smart-contract---faucet)
       - [Checking balance - `getbalance`](#checking-balance---getbalance)
       - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
       - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
+      - [Collect rewards - `collect-reward`](#collect-rewards)  
     - [Staking on miners and sharders](#staking-on-miners-and-sharders)
       - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
       - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
@@ -34,7 +40,7 @@ The CLI utilizes the [0chain Go SDK](https://github.com/0chain/gosdk).
       - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
-    - [(Optional) ~/.zcn/network.yaml](#optional-zcnnetworkyaml)
+    - [(Optional) Override Network](#override-network)
  
 ## Architecture
 
@@ -75,16 +81,13 @@ min_confirmation: 50 # in percentage
 confirmation_chain_length: 3
 EOF
 ```
-
-To understand more about the config properties, head over [here](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml).
-
 3. Run `zwallet` to display the list of supported commands.
 
 ```sh
 ./zwallet
 ```
 ----
-For detailed steps on the installation, follow any of the following:
+For detailed steps on the installation, follow the guides below:
 
 - [How to build on Linux/Mac](https://github.com/0chain/zwalletcli/wiki/Build-on-Linux-and-Mac)
 - [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
@@ -99,12 +102,14 @@ The following steps assume that your terminal's working directory is inside the 
 
 | Parameter     | Description                     | Default        |
 | ------------- | ------------------------------- | -------------- |
-| `--help`      | Show help                       |                |
-| `--config`    | [Config file]()   | `config.yaml`  |
+| `--h,--help`  | Show help/parameters for a particular command                       |                |
+| `--config`    | [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml)   | `config.yaml`  |
 | `--configDir` | Config directory                | `~/.zcn`       |
-| `--network`   | [Network file](#zcnnetworkyaml) | `network.yaml` |
-| `--verbose`   | Enable verbose logging          | `false`        |
+| `--network`   | [Network file](#override-network) | `network.yaml` |
+| `--silent`    | Do not print detailed logs      | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
+| `--withNonce` | nonce that will be used in transaction    | `0`  |
+| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
 
 ## Commands
 
@@ -287,7 +292,66 @@ Blobbers:
   http://demo1.zus.network:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
   http://demo1.zus.network:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
 ```
+#### List Authorizers
 
+`./zwallet bridge-list-auth ` command can be used to list all authorizers available to validate client transactions.
+
+**Sample Command:**
+
+```
+./zwallet bridge-list-auth
+```
+
+**Sample Response:**
+
+```
+[
+  {
+   "id": "2f945f7310689f17afd8c8cb291e1e3ba21677243aa1d404a2293064e7983d60",
+   "url": "https://demo.zus.network/authorizer01/"
+  },
+  {
+   "id": "7b07c0489e2f35d7c13160f4da2866b4aa69aa4e8d2b2cd9c4fc002693dca5d7",
+   "url": "https://demo.zus.network/authorizer02/"
+  },
+  {
+    "id": "896c171639937a647f9e91d5ba676be580f6d2b7e0d708e4fe6ea36610a13ffd",
+    "url": "https://demo.zus.network/authorizer03/"
+  }
+]
+```
+
+#### Get Authorizer Configuration
+`./zwallet bridge-auth-config `command can be used to view authorizer configuration. Here are the parameters for the command.
+
+| Parameter | Required | Description                                       |
+| --------- | -------- | ------------------------------------------------- |
+| --id      | Yes      | Provide Authorizer ID to view its configuration . |
+| --help    |          | Syntax Help for the command                       |
+
+Sample Command:
+
+```
+./zwallet bridge-auth-config --id $AUTHORIZER_ID
+```
+
+Sample Response:
+
+```
+{
+  "id": "2f945f7310689f17afd8c8cb291e1e3ba21677243aa1d404a2293064e7983d60",
+  "url": "https://demo.zus.network/authorizer01/",
+  "fee": 0,
+  "latitude": 0,
+  "longitude": 0,
+  "last_health_check": 0,
+  "delegate_wallet": "",
+  "min_stake": 0,
+  "max_stake": 0,
+  "num_delegates": 0,
+  "service_charge": 0
+}
+```
 #### Getting node ID by URL - `getid`
 
 Print the ID of a blockchain node.
@@ -298,7 +362,6 @@ Print the ID of a blockchain node.
 
 ![Get node ID](docs/getid.png "Get node ID")
 
-The following command get the details of the sharder on a given URL
 
 ```sh
 ./zwallet getid --url http://demo1.zus.network:31101
@@ -311,9 +374,187 @@ URL: http://demo1.zus.network:31101
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
-### Getting and sending tokens
+#### Show Storage Smart Contract Configuration
 
-[Video walkthrough](https://youtu.be/Eiz9mqdFtZo)
+`./zwallet sc-config ` command displays current storage smart contract configuration  
+
+Sample Command: 
+```
+./zbox sc-config
+```
+Sample Response :
+```
+.blobber_slash    0.1
+block_reward.block_reward        1.8
+block_reward.gamma.a     10
+block_reward.gamma.alpha         0.2
+block_reward.gamma.b     9
+block_reward.qualifying_stake    1
+block_reward.zeta.i      1
+block_reward.zeta.k      0.9
+block_reward.zeta.mu     0.2
+cancellation_charge      0.2
+challenge_enabled        true
+cost.add_blobber         100
+cost.add_free_storage_assigner   100
+cost.add_validator       100
+cost.blobber_health_check        100
+cost.cancel_allocation   8400
+cost.challenge_request   100
+cost.challenge_response          1600
+cost.collect_reward      100
+cost.commit_connection   100
+cost.commit_settings_changes     0
+cost.finalize_allocation         9500
+cost.free_allocation_request     1500
+cost.free_update_allocation      2500
+cost.generate_challenge          100
+cost.kill_blobber        100
+cost.kill_validator      100
+cost.new_allocation_request      3000
+cost.new_read_pool       100
+cost.pay_blobber_block_rewards   100
+cost.read_pool_lock      100
+cost.read_pool_unlock    100
+cost.read_redeem         100
+cost.shutdown_blobber    100
+cost.shutdown_validator          100
+cost.stake_pool_lock     100
+cost.stake_pool_pay_interests    100
+cost.stake_pool_unlock   100
+cost.update_allocation_request   2500
+cost.update_blobber_settings     100
+cost.update_settings     100
+cost.update_validator_settings   100
+cost.write_pool_lock     100
+cost.write_pool_unlock   100
+free_allocation_settings.data_shards     4
+free_allocation_settings.parity_shards   2
+free_allocation_settings.read_pool_fraction      0
+free_allocation_settings.read_price_range.max    0
+free_allocation_settings.read_price_range.min    0
+free_allocation_settings.size    2000000000
+free_allocation_settings.write_price_range.max   1
+free_allocation_settings.write_price_range.min   0
+health_check_period      1h0m0s
+max_blobbers_per_allocation      40
+max_challenge_completion_time    3m0s
+max_delegates    200
+max_individual_free_allocation   1e+06
+max_mint         7.5e+07
+max_read_price   100
+max_stake        20000
+max_total_free_allocation        9.223372036854776e+08
+max_write_price          100
+min_alloc_size   1048576
+min_blobber_capacity     10737418240
+min_stake        0.01
+min_write_price          0.001
+owner_id         1746b06bb09f55ee01b33b5e2e055d6cc7a900cb57c0a3a5eaabb8a0e7745802
+readpool.min_lock        0
+stakepool.kill_slash     0.5
+stakepool.min_lock_period        0s
+time_unit        720h0m0s
+validator_reward         0.025
+validators_per_challenge         2
+writepool.min_lock       0.1
+```
+
+#### Get Version 
+The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
+
+Sample Command :
+```
+./zwallet version
+```
+Sample Response :
+```
+Version info:
+        zwallet...:  v1.2.3-21-gb10c459
+        gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
+```
+#### Show global configurations 
+`./zwallet global-config ` command displays global chain configuration 
+
+Sample Command :
+```
+./zwallet global-config
+```
+Sample Response :
+```
+server_chain.async_blocks_fetching.max_simultaneous_from_miners          100
+server_chain.async_blocks_fetching.max_simultaneous_from_sharders        30
+server_chain.block.consensus.threshold_by_count          66
+server_chain.block.consensus.threshold_by_stake          0
+server_chain.block.generation.retry_wait_time    5
+server_chain.block.generation.timeout    15
+server_chain.block.generators_percent    0.2
+server_chain.block.max_block_cost        10000
+server_chain.block.max_block_size
+server_chain.block.max_byte_size         1638400
+server_chain.block.min_block_size        1
+server_chain.block.min_generators        2
+server_chain.block.proposal.max_wait_time        180ms
+server_chain.block.proposal.wait_mode    static
+server_chain.block.replicators   0
+server_chain.block.reuse_txns    false
+server_chain.block.sharding.min_active_replicators       25
+server_chain.block.sharding.min_active_sharders          25
+server_chain.block.validation.batch_size         1000
+server_chain.block_rewards       true
+server_chain.client.discover     true
+server_chain.client.signature_scheme     bls0chain
+server_chain.dbs.settings.aggregate_period       10
+server_chain.dbs.settings.debug          false
+server_chain.dbs.settings.page_limit     50
+server_chain.dbs.settings.partition_change_period        100000
+server_chain.dbs.settings.partition_keep_count   20
+server_chain.dkg         true
+server_chain.health_check.deep_scan.batch_size   50
+server_chain.health_check.deep_scan.enabled      false
+server_chain.health_check.deep_scan.repeat_interval_mins         3m
+server_chain.health_check.deep_scan.report_status_mins   1m
+server_chain.health_check.deep_scan.settle_secs          30s
+server_chain.health_check.deep_scan.window       0
+server_chain.health_check.proximity_scan.batch_size      50
+server_chain.health_check.proximity_scan.enabled         true
+server_chain.health_check.proximity_scan.repeat_interval_mins    1m
+server_chain.health_check.proximity_scan.report_status_mins      1m
+server_chain.health_check.proximity_scan.settle_secs     30s
+server_chain.health_check.proximity_scan.window          100000
+server_chain.health_check.show_counters          true
+server_chain.lfb_ticket.ahead    5
+server_chain.lfb_ticket.rebroadcast_timeout      15s
+server_chain.messages.verification_tickets_to    all_miners
+server_chain.owner       edb90b850f2e7e7cbd0a1fa370fdcc5cd378ffbec95363a7bc0e5a98b8ba5759
+server_chain.round_range         10000000
+server_chain.round_timeouts.round_restart_mult   10
+server_chain.round_timeouts.softto_min   1500
+server_chain.round_timeouts.softto_mult          1
+server_chain.round_timeouts.timeout_cap          1
+server_chain.smart_contract.faucet       true
+server_chain.smart_contract.miner        true
+server_chain.smart_contract.multisig     false
+server_chain.smart_contract.setting_update_period        200
+server_chain.smart_contract.storage      true
+server_chain.smart_contract.timeout      8000ms
+server_chain.smart_contract.vesting      false
+server_chain.smart_contract.zcn          true
+server_chain.state.enabled       true
+server_chain.state.prune_below_count     100
+server_chain.state.sync.timeout          10
+server_chain.stuck.check_interval        10
+server_chain.stuck.time_threshold        60
+server_chain.transaction.cost_fee_coeff          1000000
+server_chain.transaction.exempt          contributeMpk,shareSignsOrShares,wait,mint,pour
+server_chain.transaction.max_fee         0.01
+server_chain.transaction.min_fee         0
+server_chain.transaction.payload.max_size        98304
+server_chain.transaction.timeout         600
+server_chain.view_change         false
+```
+
+### Getting and sending tokens
 
 #### Getting tokens with Faucet smart contract - `faucet`
 
@@ -431,7 +672,24 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
 ```
+#### Collect rewards
 
+Use `collect-reward` to transfer reward tokens from a stake pool.The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
+You earn rewards for: Sharders and Miners
+
+- `Miners` produce blocks.
+- `Sharders` stores the blockchain and other related data, such as the event database. They also support a query REST API.
+
+| Parameter     | Required | Description         | Valid values |
+| ------------- | -------- | ------------------- | ------------ |
+| provider_type | yes      | miner or sharder    | string       |
+| provider_id   | yes      | miner or sharder id | string       |
+
+Sample Command :
+
+```
+./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
+```
 ### Staking on miners and sharders
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
@@ -744,9 +1002,9 @@ Sample command
 | `min_confirmation`          | The desired minimum success ratio (in percent) to meet when verifying transactions on sharders | integer    |
 | `confirmation_chain_length` | The desired chain length to meet when verifying transactions | integer    |
 
-### (Optional) ~/.zcn/network.yaml
+### Override Network
 
-Network nodes are automatically discovered using the `block_worker` provided on `~/.zcn/config.yaml`.
+Network nodes are automatically discovered using the `block_worker` provided on [config file].(https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml)
 
 To override/limit the nodes used on `zwallet`, create `~/.zcn/network.yaml` as shown below.
 
