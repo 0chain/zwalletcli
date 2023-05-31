@@ -290,7 +290,7 @@ func createCommandWithBridge(use, short, long string, functor CommandWithBridge,
 		folder := GetConfigFolder(parameters)
 		chainConfigFile := GetChainConfigFile(parameters)
 
-		bridge := initBridge(walletFile, folder, chainConfigFile)
+		bridge := initBridge(folder, chainConfigFile)
 		functor(bridge, parameters...)
 	}
 
@@ -416,19 +416,14 @@ func GetConfigDir() string {
 	return configDir
 }
 
-func initBridge(overrideWalletFile, overrideConfigFolder, overrideConfigFile string) *zcnbridge.BridgeClient {
+func initBridge(overrideConfigFolder, overrideConfigFile string) *zcnbridge.BridgeClient {
 	var (
-		walletFileName      = DefaultWalletFileName
 		configDir           = GetConfigDir()
 		configChainFileName = DefaultConfigChainFileName
 		logPath             = "logs"
 		loglevel            = "info"
 		development         = false
 	)
-
-	if overrideWalletFile != "" {
-		walletFileName = overrideWalletFile
-	}
 
 	if overrideConfigFolder != "" {
 		configDir = overrideConfigFolder
@@ -449,7 +444,7 @@ func initBridge(overrideWalletFile, overrideConfigFolder, overrideConfigFile str
 		Development:     &development,
 	}
 
-	bridge := zcnbridge.SetupBridgeClientSDK(cfg, walletFileName)
+	bridge := zcnbridge.SetupBridgeClientSDK(cfg)
 
 	return bridge
 }
