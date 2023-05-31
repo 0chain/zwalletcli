@@ -57,7 +57,7 @@ var minerscInfo = &cobra.Command{
 
 var minerscMiners = &cobra.Command{
 	Use:   "ls-miners",
-	Short: "Get list of all active miners fro Miner SC",
+	Short: "Get list of all active miners from Miner SC",
 	Long:  "Get list of all active miners from Miner SC",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -166,7 +166,7 @@ func printMinerNodes(nodes []zcncore.Node) {
 
 var minerscSharders = &cobra.Command{
 	Use:   "ls-sharders",
-	Short: "Get list of all active sharders fro Miner SC",
+	Short: "Get list of all active sharders from Miner SC",
 	Long:  "Get list of all active sharders from Miner SC",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
