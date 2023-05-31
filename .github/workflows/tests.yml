@@ -14,16 +14,17 @@ on:
 jobs:
   unit-test:
     runs-on: [self-hosted, arc-runner]
+    # runs-on: ubuntu-20.04
     steps:
-      - name: Setup go 1.18
-        uses: actions/setup-go@v2
+      - name: Setup go
+        uses: actions/setup-go@v3
         with:
-          go-version: '1.18' # The Go version to download (if necessary) and use.
+          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
 
-      - name: Install Packages
+      - name: Install deps
         run: |
           sudo apt-get update
           sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
@@ -35,27 +36,28 @@ jobs:
     runs-on: [self-hosted, arc-runner]
     needs: unit-test
     steps:
-      - name: Setup go 1.18
-        uses: actions/setup-go@v2
+      - name: Setup go
+        uses: actions/setup-go@v3
         with:
-          go-version: '1.18' # The Go version to download (if necessary) and use.
+          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
 
-      - name: check software
+      - name: Install deps
         run: |
           sudo apt-get update
           sudo apt-get -y install build-essential nghttp2 libnghttp2-dev libssl-dev
-  
+
       - name: Build ZWallet
-        run: make install
+        run: |
+          make install
 
   system-tests:
     if: github.event_name != 'workflow_dispatch'
     needs: build-linux
     runs-on: [ tests-suite ]
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
 
       - name: "Get current PR"

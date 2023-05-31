@@ -115,6 +115,7 @@ func loadConfigs() {
 	cfgConfig = viper.New()
 	cfgNetwork = viper.New()
 	var configDir string
+
 	if cDir != "" {
 		configDir = cDir
 	} else {
@@ -123,14 +124,14 @@ func loadConfigs() {
 
 	// ~/.zcn/config.yaml
 	cfgConfig.AddConfigPath(configDir)
-	if &cfgFile != nil && len(cfgFile) > 0 {
-		cfgConfig.SetConfigFile(configDir + "/" + cfgFile)
+	if cfgFile != "" {
+		cfgConfig.SetConfigFile(filepath.Join(configDir, cfgFile))
 	} else {
-		cfgConfig.SetConfigFile(configDir + "/" + "config.yaml")
+		cfgConfig.SetConfigFile(filepath.Join(configDir, "config.yaml"))
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err)
+		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
@@ -144,9 +145,9 @@ func loadConfigs() {
 	// ~/.zcn/network.yaml
 	cfgNetwork.AddConfigPath(configDir)
 	if len(networkFile) > 0 {
-		cfgNetwork.SetConfigFile(configDir + "/" + networkFile)
+		cfgNetwork.SetConfigFile(filepath.Join(configDir, networkFile))
 	} else {
-		cfgNetwork.SetConfigFile(configDir + "/" + "network.yaml")
+		cfgNetwork.SetConfigFile(filepath.Join(configDir, "network.yaml"))
 	}
 
 	cfgNetwork.ReadInConfig() //nolint: errcheck
