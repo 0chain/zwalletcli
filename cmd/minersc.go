@@ -430,7 +430,7 @@ var spLock = &cobra.Command{
 			log.Fatal("invalid 'tokens' flag: ", err)
 		}
 
-		if tokens <= 0 {
+		if tokens < 0 {
 			log.Fatal("invalid token amount: negative")
 		}
 
@@ -490,7 +490,7 @@ var minerscLock = &cobra.Command{
 		if tokens, err = flags.GetFloat64("tokens"); err != nil {
 			log.Fatal(err)
 		}
-		if tokens <= 0 {
+		if tokens < 0 {
 			log.Fatal("invalid token amount: negative")
 		}
 
@@ -498,10 +498,11 @@ var minerscLock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		err = txn.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
 		if err != nil {
@@ -573,10 +574,11 @@ var minerscUnlock = &cobra.Command{
 			wg        sync.WaitGroup
 			statusBar = &ZCNStatus{wg: &wg}
 		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		wg.Add(1)
 		err = txn.MinerSCUnlock(providerID, providerType)
 		if err != nil {

@@ -2,19 +2,20 @@ package cmd
 
 import (
 	"context"
+	"log"
+	"strings"
+
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/pkg/errors"
-	"log"
-	"strings"
 )
 
 //goland:noinspection ALL
 func init() {
 	rootCmd.AddCommand(
-		createCommandWithBridgeOwner(
+		createCommandWithBridge(
 			"auth-register",
 			"Register an authorizer manually",
 			"Register an authorizer manually",
@@ -73,7 +74,7 @@ func init() {
 
 // registerAuthorizerInChain registers a new authorizer
 // addAuthorizerPayload *addAuthorizerPayload
-func registerAuthorizerInChain(bo *zcnbridge.BridgeOwner, args ...*Arg) {
+func registerAuthorizerInChain(bc *zcnbridge.BridgeClient, args ...*Arg) {
 	clientID := GetClientID(args)
 	clientKey := GetClientKey(args)
 	url := GetURL(args)

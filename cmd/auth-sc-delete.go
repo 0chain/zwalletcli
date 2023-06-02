@@ -3,15 +3,16 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/0chain/gosdk/zcnbridge"
 	comm "github.com/ethereum/go-ethereum/common"
-	"time"
 )
 
 //goland:noinspection ALL
 func init() {
 	rootCmd.AddCommand(
-		createCommandWithBridgeOwner(
+		createCommandWithBridge(
 			"auth-sc-delete",
 			"Deletes an authorizer to token bridge SC manually",
 			"Deletes an authorizer to token bridge SC manually",
@@ -27,10 +28,10 @@ func init() {
 }
 
 // registerAuthorizerInSC registers a new authorizer to token bridge SC
-func deleteAuthorizerInSC(bo *zcnbridge.BridgeOwner, args ...*Arg) {
+func deleteAuthorizerInSC(bc *zcnbridge.BridgeClient, args ...*Arg) {
 	ethereumAddress := GetEthereumAddress(args)
 
-	tx, err := bo.RemoveEthereumAuthorizer(context.Background(), comm.HexToAddress(ethereumAddress))
+	tx, err := bc.RemoveEthereumAuthorizer(context.Background(), comm.HexToAddress(ethereumAddress))
 	if err != nil {
 		ExitWithError(err)
 	}
