@@ -57,8 +57,8 @@ var minerscInfo = &cobra.Command{
 
 var minerscMiners = &cobra.Command{
 	Use:   "ls-miners",
-	Short: "Get list of all active miners from Miner SC",
-	Long:  "Get list of all active miners from Miner SC",
+	Short: "Get miners from Miner SC",
+	Long:  "Get miners from Miner SC",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -68,7 +68,7 @@ var minerscMiners = &cobra.Command{
 		)
 
 		limit, offset := 20, 0
-		active := false
+		active := true
 
 		var allFlag, jsonFlag bool
 
@@ -166,8 +166,8 @@ func printMinerNodes(nodes []zcncore.Node) {
 
 var minerscSharders = &cobra.Command{
 	Use:   "ls-sharders",
-	Short: "Get list of all active sharders from Miner SC",
-	Long:  "Get list of all active sharders from Miner SC",
+	Short: "Get sharders from Miner SC",
+	Long:  "Get sharders from Miner SC",
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -195,7 +195,7 @@ var minerscSharders = &cobra.Command{
 		}
 
 		limit, offset := 20, 0
-		active := false
+		active := true
 		if flags.Changed("limit") {
 			limit, err = flags.GetInt("limit")
 			if err != nil {
@@ -626,13 +626,13 @@ func init() {
 	minerscMiners.PersistentFlags().Bool("json", false, "as JSON")
 	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
 	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
-	minerscMiners.PersistentFlags().Bool("active", false, "Gets all miners, including inactive miners")
-	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners")
+	minerscMiners.PersistentFlags().Bool("active", true, "Gets active miners only, set it false to get all miners")
+	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners, default returns the first page of miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
 	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
-	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders")
-	minerscSharders.PersistentFlags().Bool("active", false, "Gets all sharders, including inactive sharders")
+	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders, default returns the first page of sharders")
+	minerscSharders.PersistentFlags().Bool("active", true, "Gets active sharders only, set it false to get all sharders")
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")
