@@ -64,20 +64,14 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			SimpleMiner: zcncore.SimpleMiner{
 				ID: id,
 			},
-			MinerSCDelegatePool: zcncore.MinerSCDelegatePool{
-				Settings: zcncore.StakePoolSettings{
-					NumDelegates: miner.Settings.NumDelegates,
-					MinStake:     miner.Settings.MinStake,
-					MaxStake:     miner.Settings.MaxStake,
-				},
-			},
 		}
 
 		if flags.Changed("num_delegates") {
-			miner.Settings.NumDelegates, err = flags.GetInt("num_delegates")
+			numDelegates, err := flags.GetInt("num_delegates")
 			if err != nil {
 				log.Fatal(err)
 			}
+			miner.Settings.NumDelegates = &numDelegates
 		}
 
 		if flags.Changed("min_stake") {
@@ -85,7 +79,8 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			if min, err = flags.GetFloat64("min_stake"); err != nil {
 				log.Fatal(err)
 			}
-			miner.Settings.MinStake = common.Balance(zcncore.ConvertToValue(min))
+			tokenBalance := common.Balance(zcncore.ConvertToValue(min))
+			miner.Settings.MinStake = &tokenBalance
 		}
 
 		if flags.Changed("max_stake") {
@@ -93,7 +88,8 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			if max, err = flags.GetFloat64("max_stake"); err != nil {
 				log.Fatal(err)
 			}
-			miner.Settings.MaxStake = common.Balance(zcncore.ConvertToValue(max))
+			tokenBalance := common.Balance(zcncore.ConvertToValue(max))
+			miner.Settings.MaxStake = &tokenBalance
 		}
 
 		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
