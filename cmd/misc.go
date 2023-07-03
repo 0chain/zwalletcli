@@ -61,7 +61,6 @@ func printBlobberList(nodes []*sdk.Blobber) {
 			fmt.Sprintf("%f / %f",
 				zcncore.ConvertToToken(int64(child.Terms.ReadPrice)),
 				zcncore.ConvertToToken(int64(child.Terms.WritePrice))),
-			fmt.Sprint(child.Terms.MinLockDemand),
 		}
 	}
 	util.WriteTable(os.Stdout, header, []string{}, data)
