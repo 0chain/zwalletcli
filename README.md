@@ -64,7 +64,7 @@ Other apps are [Bolt](https://bolt.holdings/), a wallet that is very secure with
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.
 
-![architecture](docs/architecture.png "Architecture")
+![zwallet architecture](https://github.com/0chain/zwalletcli/assets/65766301/89c4f62f-cdbc-40a2-b9c8-782897ef8653)
 
 ## Getting started
 
