@@ -60,7 +60,7 @@ Other apps are [Bolt](https://bolt.holdings/), a wallet that is very secure with
 
 ## Architecture
 
-`zwallet` can be configured to work with any 0chain network. It uses a config and a wallet file stored on the local filesystem.
+`zwallet` can be configured to work with any Züs network. It uses a config and a wallet file stored on the local filesystem.
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.
 
