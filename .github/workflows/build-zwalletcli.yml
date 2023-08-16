@@ -126,7 +126,7 @@ jobs:
   
   build-macos:
     name: Build-MacOS
-    runs-on: macos-runner-binary
+    runs-on: macos-latest
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
