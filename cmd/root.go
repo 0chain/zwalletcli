@@ -89,6 +89,7 @@ func initZCNCore() {
 
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
+	sdk.SetLogFile("cmdlog.log", !bSilent)
 
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
