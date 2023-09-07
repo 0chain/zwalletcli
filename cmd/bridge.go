@@ -20,23 +20,27 @@ const (
 )
 
 const (
-	OptionHash            = "hash"         // OptionHash hash passed to cmd
-	OptionAmount          = "amount"       // OptionAmount amount passed to cmd
-	OptionToken           = "token"        // OptionToken token in SAS passed to cmd
-	OptionRetries         = "retries"      // OptionRetries retries
-	OptionConfigFolder    = "path"         // OptionConfigFolder config folder
-	OptionChainConfigFile = "chain_config" // OptionChainConfigFile sdk config filename
-	OptionMnemonic        = "mnemonic"     // OptionMnemonic bridge config filename
-	OptionKeyPassword     = "password"     // OptionKeyPassword bridge config filename
-	OptionClientKey       = "client_key"
-	OptionClientID        = "client_id"
-	OptionEthereumAddress = "ethereum_address"
-	OptionURL             = "url"
-	OptionMinStake        = "min_stake"
-	OptionMaxStake        = "max_stake"
-	OptionNumDelegates    = "num_delegates"
-	OptionServiceCharge   = "service_charge"
-	OptionWalletFile      = "wallet"
+	OptionHash                   = "hash"         // OptionHash hash passed to cmd
+	OptionAmount                 = "amount"       // OptionAmount amount passed to cmd
+	OptionToken                  = "token"        // OptionToken token in SAS passed to cmd
+	OptionRetries                = "retries"      // OptionRetries retries
+	OptionConfigFolder           = "path"         // OptionConfigFolder config folder
+	OptionChainConfigFile        = "chain_config" // OptionChainConfigFile sdk config filename
+	OptionMnemonic               = "mnemonic"     // OptionMnemonic bridge config filename
+	OptionKeyPassword            = "password"     // OptionKeyPassword bridge config filename
+	OptionClientKey              = "client_key"
+	OptionClientID               = "client_id"
+	OptionEthereumAddress        = "ethereum_address"
+	OptionURL                    = "url"
+	OptionMinStake               = "min_stake"
+	OptionMaxStake               = "max_stake"
+	OptionNumDelegates           = "num_delegates"
+	OptionServiceCharge          = "service_charge"
+	OptionWalletFile             = "wallet"
+	OptionNFTConfigKey           = "key"
+	OptionNFTConfigValue         = "value"
+	OptionNFTConfigRoyaltyPlanID = "plan"
+	OptionNFTConfigAddress       = "address"
 )
 
 type CommandWithBridge func(*zcnbridge.BridgeClient, ...*Arg)
@@ -164,6 +168,22 @@ func GetClientKey(args []*Arg) string {
 
 func GetEthereumAddress(args []*Arg) string {
 	return getString(args, OptionEthereumAddress)
+}
+
+func GetNFTConfigKey(args []*Arg) string {
+	return getString(args, OptionNFTConfigKey)
+}
+
+func GetNFTConfigValue(args []*Arg) int64 {
+	return getInt64(args, OptionNFTConfigValue)
+}
+
+func GetNFTConfigRoyaltyPlanID(args []*Arg) int64 {
+	return getInt64(args, OptionNFTConfigRoyaltyPlanID)
+}
+
+func GetNFTConfigAddress(args []*Arg) string {
+	return getString(args, OptionNFTConfigAddress)
 }
 
 func GetURL(args []*Arg) string {
