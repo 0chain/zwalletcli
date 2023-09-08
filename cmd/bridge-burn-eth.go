@@ -24,9 +24,6 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
-	// Increase Allowance
-
-	// Example: https://ropsten.etherscan.io/tx/0xa28266fb44cfc2aa27b26bd94e268e40d065a05b1a8e6339865f826557ff9f0e
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
 	transaction, err := b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
 	if err != nil {
