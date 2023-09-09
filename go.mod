@@ -1,7 +1,7 @@
 module github.com/0chain/zwalletcli
 
 require (
-	github.com/0chain/gosdk v1.8.18-0.20230909004055-28d7bd53dccf
+	github.com/0chain/gosdk v1.10.1-0.20230909201204-c4193dd9d7ba
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
