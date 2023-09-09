@@ -26,16 +26,16 @@ func commandBurnZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	fmt.Println("Starting burn transaction")
 	transaction, err := b.BurnZCN(context.Background(), zcncore.ConvertToValue(amount), 0)
 	if err == nil {
-		fmt.Printf("Submitted burn transaction %s\n", transaction.Hash)
+		fmt.Printf("Submitted burn transaction %s\n", transaction.GetHash())
 	} else {
 		ExitWithError(err)
 	}
 
-	fmt.Printf("Starting transaction verification %s\n", transaction.Hash)
+	fmt.Printf("Starting transaction verification %s\n", transaction.GetHash())
 	err = transaction.Verify(context.Background())
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	fmt.Printf("Transaction completed successfully: %s\n", transaction.Hash)
+	fmt.Printf("Transaction completed successfully: %s\n", transaction.GetHash())
 }
