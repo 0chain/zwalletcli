@@ -99,7 +99,7 @@ jobs:
         
   build-windows:
     name: Build-Windows
-    runs-on: windows-latest
+    runs-on: windows-runner
     
     steps:
       - name: Setup go
@@ -126,7 +126,7 @@ jobs:
   
   build-macos:
     name: Build-MacOS
-    runs-on: macos-latest
+    runs-on: macos-runner
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
