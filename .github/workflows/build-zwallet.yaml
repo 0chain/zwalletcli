@@ -63,7 +63,7 @@ jobs:
 
   build-windows:
     name: Build-windows
-    runs-on: windows-latest
+    runs-on: windows-runner
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
@@ -111,7 +111,7 @@ jobs:
           retention-days: 5
   build-macos:
     name: Build-macos
-    runs-on: macos-latest
+    runs-on: macos-runner
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
