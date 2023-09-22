@@ -6,7 +6,7 @@ folder filesystem {
     file "\~/.zcn/wallet.json" as wallet
 }
 
-cloud "0chain network" {
+cloud "Züs network" {
 
   node miners [
        Miner1
