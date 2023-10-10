@@ -97,18 +97,18 @@ func registerAuthorizerInChain(bc *zcnbridge.BridgeClient, args ...*Arg) {
 
 	trx, err := transaction.AddAuthorizer(context.Background(), input)
 	if err != nil {
-		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.Hash)
+		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.GetHash())
 	}
 
-	log.Printf("Authorizer submitted OK... " + trx.Hash)
-	log.Printf("Starting verification: " + trx.Hash)
+	log.Printf("Authorizer submitted OK... " + trx.GetHash())
+	log.Printf("Starting verification: " + trx.GetHash())
 
 	err = trx.Verify(context.Background())
 	if err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			ExitWithError("Authorizer has already been added to 0Chain...  Continue")
 		} else {
-			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", trx.Hash))
+			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", trx.GetHash()))
 		}
 	}
 }
