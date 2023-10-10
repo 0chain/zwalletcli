@@ -75,5 +75,4 @@ require (
 
 go 1.20
 
-// temporary, for development
 replace github.com/0chain/gosdk => ../gosdk

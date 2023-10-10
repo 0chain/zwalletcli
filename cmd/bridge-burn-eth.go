@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/0chain/common/core/currency"
+	"github.com/ethereum/go-ethereum/core/types"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -24,8 +26,27 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
+	tokenBalance, err := b.GetTokenBalance()
+	if err != nil {
+		ExitWithError(err, "failed to retrieve current token balance")
+	}
+
+	tokenBalanceZCN, err := currency.Coin(tokenBalance.Int64()).ToZCN()
+	if err != nil {
+		ExitWithError(err, "failed to convert current token balance to ZCN")
+	}
+
+	var transaction *types.Transaction
+
+	if tokenBalanceZCN < float64(amount) {
+		transaction, err = b.Swap(context.Background(), amount, time.Now().Add(time.Minute*3))
+		if err != nil {
+			ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
+		}
+	}
+
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
-	transaction, err := b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
+	transaction, err = b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
 	if err != nil {
 		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
@@ -41,8 +62,6 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	} else {
 		ExitWithError(fmt.Sprintf("Verification: IncreaseBurnerAllowance [FAILED]: %s\n", hash))
 	}
-
-	// Burn Eth
 
 	fmt.Println("Starting WZCN burn transaction")
 	transaction, err = b.BurnWZCN(context.Background(), amount)
