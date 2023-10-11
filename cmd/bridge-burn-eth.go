@@ -36,12 +36,28 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err, "failed to convert current token balance to ZCN")
 	}
 
-	var transaction *types.Transaction
+	var (
+		transaction *types.Transaction
+		hash        string
+		status      int
+	)
 
 	if tokenBalanceZCN < float64(amount) {
 		transaction, err = b.Swap(context.Background(), amount, time.Now().Add(time.Minute*3))
 		if err != nil {
-			ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
+			ExitWithError(err, "failed to execute Swap")
+		}
+
+		hash = transaction.Hash().Hex()
+		status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Failed to confirm Swap: hash = %s, error = %v", hash, err))
+		}
+
+		if status == 1 {
+			fmt.Printf("Verification: Swap [OK]: %s\n", hash)
+		} else {
+			ExitWithError(fmt.Sprintf("Verification: Swap [FAILED]: %s\n", hash))
 		}
 	}
 
@@ -51,8 +67,8 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
 
-	hash := transaction.Hash().Hex()
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+	hash = transaction.Hash().Hex()
+	status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
 	if err != nil {
 		ExitWithError(fmt.Sprintf("Failed to confirm IncreaseBurnerAllowance: hash = %s, error = %v", hash, err))
 	}

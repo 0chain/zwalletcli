@@ -2,7 +2,7 @@ module github.com/0chain/zwalletcli
 
 require (
 	github.com/0chain/common v0.0.6-0.20230127095721-8df4d1d72565
-	github.com/0chain/gosdk v1.10.1-0.20231010110531-9c7afa90cc6b
+	github.com/0chain/gosdk v1.8.18-0.20230902144943-ec223996673c
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -44,6 +44,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/philhofer/fwd v1.1.2-0.20210722190033-5c56ac6d0bb9 // indirect
+	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/rjeczalik/notify v0.9.3 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
@@ -75,4 +76,4 @@ require (
 go 1.20
 
 // temporary, for development
-//replace github.com/0chain/gosdk => ../gosdk
+replace github.com/0chain/gosdk => ../gosdk
