@@ -62,7 +62,7 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	}
 
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
-	transaction, err = b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
+	transaction, err = b.IncreaseBurnerAllowance(context.Background(), amount)
 	if err != nil {
 		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
