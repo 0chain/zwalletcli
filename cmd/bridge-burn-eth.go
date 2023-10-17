@@ -80,6 +80,7 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	}
 
 	fmt.Println("Starting WZCN burn transaction")
+
 	transaction, err = b.BurnWZCN(context.Background(), amount)
 	if err != nil {
 		ExitWithError(err, "failed to burn WZCN tokens")
