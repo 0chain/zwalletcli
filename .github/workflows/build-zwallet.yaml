@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - staging
+      - sprint*
     tags:
       - 'v*.*.*'
 
@@ -16,7 +17,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt -y install build-essential nghttp2 libnghttp2-dev libssl-dev
-  
+
       - name: Setup go 1.18
         uses: actions/setup-go@v2
         with:
@@ -24,7 +25,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
-      
+
       - name: Set GITHUB_ENV
         run: |
           echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
@@ -64,51 +65,58 @@ jobs:
   build-windows:
     name: Build-windows
     runs-on: windows-runner
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+     matrix:
+      sys: [ MINGW64 ]
     steps:
-      - name: Setup go
-        uses: actions/setup-go@v3
+      - uses: msys2/setup-msys2@v2
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          msystem: ${{matrix.sys}}
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set GITHUB_ENV
+      - name: Install libraries
         run: |
-          IF ( "${{github.base_ref}}" -eq "master" -OR "${{github.ref}}" -eq "refs/heads/master" ){
-            echo "TAG=v0.0.0-master" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-          } ElseIf ( "${{github.base_ref}}" -eq "dev" -OR "${{github.ref}}" -eq "refs/heads/dev" ){
-            echo "TAG=v0.0.0-dev" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-          } ElseIf ( "${{github.base_ref}}" -eq "staging" -OR "${{github.ref}}" -eq "refs/heads/staging" ){
-            echo "TAG=v0.0.0-staging" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-          } ELSE {
-            echo "TAG=${{github.ref}}" | %{$_ -replace('refs/tags/', '')} | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-          }
-      
-        
+          echo 'Y'| pacman -S base-devel git gcc make
+
+      - name: Install Clang and Go for MINGW64
+        run: |
+         echo 'y'| pacman -S  mingw-w64-x86_64-clang mingw-w64-x86_64-go zip unzip
+
+      - name: Set environment variables
+        run: |
+           export GOROOT=/mingw64/lib/go
+           export GOPATH=/mingw64
+           export PATH=$PATH:$GOROOT/bin
+           export PATH=$PATH:/usr/bin/7z
+
+           # use clang as a default compiler for CGO
+           go env -w "CC=/mingw64/bin/clang.exe"
+
       - name: Install
         run: make install
-      
+
       - name: Zip release
         run: |
-          copy zwallet zwallet.exe
-          7z a zwallet-windows.zip zwallet.exe
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: zwallet-windows.zip
-          tag: ${{ env.TAG }}
-          overwrite: true
-          file_glob: true
+          # download dll files
+          wget https://github.com/0chain/zboxcli/files/11840033/windows.dll.s.zip
+          unzip -o windows.dll.s.zip
+          cp zwallet zwallet.exe
+          zip zwallet-windows.zip zwallet.exe libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
         with:
-          name: zwallet-windows
-          path: zwallet
+          name: zwallet-windows.zip
+          path: zwallet-windows.zip
           retention-days: 5
+
+      - name: cleanup workspace
+        run: |
+            rm -Recurse ${{github.workspace}}\*
+        shell: powershell
+
   build-macos:
     name: Build-macos
     runs-on: macos-runner
@@ -119,7 +127,7 @@ jobs:
           go-version: ^1.20.0 # The Go version to download (if necessary) and use.
       - name: Checkout
         uses: actions/checkout@v2
-      
+
       - name: Set GITHUB_ENV
         run: |
           echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
