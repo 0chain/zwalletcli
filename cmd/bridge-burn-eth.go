@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/0chain/common/core/currency"
+	"github.com/ethereum/go-ethereum/core/types"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -24,17 +26,49 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
-	// Increase Allowance
+	tokenBalance, err := b.GetTokenBalance()
+	if err != nil {
+		ExitWithError(err, "failed to retrieve current token balance")
+	}
 
-	// Example: https://ropsten.etherscan.io/tx/0xa28266fb44cfc2aa27b26bd94e268e40d065a05b1a8e6339865f826557ff9f0e
+	tokenBalanceZCN, err := currency.Coin(tokenBalance.Int64()).ToZCN()
+	if err != nil {
+		ExitWithError(err, "failed to convert current token balance to ZCN")
+	}
+
+	var (
+		transaction *types.Transaction
+		hash        string
+		status      int
+	)
+
+	if tokenBalanceZCN < float64(amount) {
+		transaction, err = b.Swap(context.Background(), amount, time.Now().Add(time.Minute*3))
+		if err != nil {
+			ExitWithError(err, "failed to execute Swap")
+		}
+
+		hash = transaction.Hash().Hex()
+		status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Failed to confirm Swap: hash = %s, error = %v", hash, err))
+		}
+
+		if status == 1 {
+			fmt.Printf("Verification: Swap [OK]: %s\n", hash)
+		} else {
+			ExitWithError(fmt.Sprintf("Verification: Swap [FAILED]: %s\n", hash))
+		}
+	}
+
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
-	transaction, err := b.IncreaseBurnerAllowance(context.Background(), zcnbridge.Wei(amount))
+	transaction, err = b.IncreaseBurnerAllowance(context.Background(), amount)
 	if err != nil {
 		ExitWithError(err, "failed to execute IncreaseBurnerAllowance")
 	}
 
-	hash := transaction.Hash().Hex()
-	status, err := zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+	hash = transaction.Hash().Hex()
+	status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
 	if err != nil {
 		ExitWithError(fmt.Sprintf("Failed to confirm IncreaseBurnerAllowance: hash = %s, error = %v", hash, err))
 	}
@@ -45,9 +79,8 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(fmt.Sprintf("Verification: IncreaseBurnerAllowance [FAILED]: %s\n", hash))
 	}
 
-	// Burn Eth
-
 	fmt.Println("Starting WZCN burn transaction")
+
 	transaction, err = b.BurnWZCN(context.Background(), amount)
 	if err != nil {
 		ExitWithError(err, "failed to burn WZCN tokens")
