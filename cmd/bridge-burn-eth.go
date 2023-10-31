@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/0chain/common/core/currency"
-	"github.com/ethereum/go-ethereum/core/types"
 	"time"
+
+	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/0chain/gosdk/zcnbridge"
 )
@@ -31,10 +31,7 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err, "failed to retrieve current token balance")
 	}
 
-	tokenBalanceZCN, err := currency.Coin(tokenBalance.Int64()).ToZCN()
-	if err != nil {
-		ExitWithError(err, "failed to convert current token balance to ZCN")
-	}
+	tokenBalanceZCN := tokenBalance.Int64()
 
 	var (
 		transaction *types.Transaction
@@ -42,7 +39,7 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		status      int
 	)
 
-	if tokenBalanceZCN < float64(amount) {
+	if tokenBalanceZCN < int64(amount) {
 		transaction, err = b.Swap(context.Background(), amount, time.Now().Add(time.Minute*3))
 		if err != nil {
 			ExitWithError(err, "failed to execute Swap")
