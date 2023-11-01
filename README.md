@@ -1,4 +1,4 @@
-# zwallet - a CLI for Züs wallet
+# zwallet - a CLI for Züs wallet 5
 
 `zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs.
 
