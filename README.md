@@ -1,6 +1,6 @@
 # zwallet - a CLI for Züs wallet
 
-`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs.
+`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs. A user can perform many functions like creating and restoring wallets, getting and sending ZCN tokens among other features.
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 - [Züs Overview](#züs-overview)
@@ -48,7 +48,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 
 For instance, the user can start with 10 data and 5 parity providers and select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, performance, or switch to a lower cost provider.
 
-Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows the user to improve their regulatory, content distribution, and security requirements with a true multi-cloud architecture. Users can also construct a private cloud with all of their own servers rented across the globe to have a better content distribution, highly available network, higher performance, and lower cost.
+Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows the user to improve their regulatory obligations, content distribution, and security requirements with a true multi-cloud architecture. Users can also construct a private cloud with all of their own servers rented across the globe to have a better content distribution, highly available network, higher performance, and lower cost.
 
 [The QoS protocol](https://medium.com/0chain/qos-protocol-weekly-debrief-april-12-2023-44524924381f) is time-based where the blockchain challenges a provider on a file that the provider must respond within a certain time based on its size to pass. This forces the provider to have a good server and data center performance to earn rewards and income.
 
@@ -60,7 +60,7 @@ Other apps are [Bolt](https://bolt.holdings/), a wallet that is very secure with
 
 ## Architecture
 
-`zwallet` can be configured to work with any Züs network. It uses a config and a wallet file stored on the local filesystem.
+Users can configure `zwallet` to work with any Züs network. It uses a config and a wallet file stored on the local filesystem.
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.
 
@@ -71,7 +71,7 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 ### 1. Installation
 
 **Prerequisites**
-
+Install Go , open-source programming language from the links below based on your operating system.
 - Go: Installation instructions for Mac, Linux and Windows can be found [here](https://go.dev/doc/install).
 
 **Procedures**
@@ -109,20 +109,19 @@ For detailed steps on the installation, follow the guides below:
 - [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
 
 ### 2. Run `zwallet` commands
-
-The following steps assume that your terminal's working directory is inside the `zwalletcli` repo.
-
+Ensure your terminal's working directory is inside the `zwalletcli` repo for the following steps.
+... MINGW64 ~/zwalletcli
 ## Global parameters
 
 `zwallet` accept global parameters to override default configuration and can be used in any command.
 
 | Parameter     | Description                     | Default        |
 | ------------- | ------------------------------- | -------------- |
-| `--h,--help`  | Show help/parameters for a particular command                       |                |
-| `--config`    | [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml)   | `config.yaml`  |
-| `--configDir` | Config directory                | `~/.zcn`       |
-| `--network`   | [Network file](#override-network) | `network.yaml` |
-| `--silent`    | Do not print detailed logs      | `false`        |
+| `--h,--help`  | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send' use (./zwallet send --help )                     |                |
+| `--config`    |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
+| `--configDir` | Configuration directory                | `~/.zcn`       |
+| `--network`   | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
+| `--silent`    | Do not print sdk logs in stderr (error messages where it prints logs by default)    | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
 | `--withNonce` | Nonce that will be used in transaction    | `0`  |
 | `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
@@ -133,7 +132,7 @@ The following steps assume that your terminal's working directory is inside the 
 
 #### Creating wallet - (any command)
 
-Simply run  `create-wallet` command and it will create a wallet if none exist yet.
+Run  `create-wallet` command and it will create a wallet if none exist yet.
 
 ![create wallet](docs/createwallet.png "Create wallet")
 
@@ -154,12 +153,13 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
 
 ```
-Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
+#### Creating wallet with 'faucet' command
+Here is a sample `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
-
+#### Creating a second wallet with 'faucet' command
 Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 
 ```sh
@@ -222,6 +222,7 @@ The list of miners are retrieved using the Miner smart contract.
 
 ![List miner nodes](docs/ls-miners.png "List miner nodes")
 
+View the list of miners with the following command.
 ```sh
 ./zwallet ls-miners
 ```
@@ -251,6 +252,7 @@ The list of sharders are retrieved using the latest finalized magic block. All r
 
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
+List all sharders with below command.
 ```sh
 ./zwallet ls-sharders --all
 ```
@@ -294,6 +296,7 @@ The list of blobbers are retrieved using the Storage smart contract.
 
 ![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
+List all blobbers with below command.
 ```sh
 ./zwallet getblobbers
 ```
@@ -312,7 +315,7 @@ Blobbers:
 
 `./zwallet bridge-list-auth ` command can be used to list all authorizers available to validate client transactions.
 
-**Sample Command:**
+**Sample Command to list authorizers:**
 
 ```
 ./zwallet bridge-list-auth
@@ -345,7 +348,7 @@ Blobbers:
 | --id      | Yes      | Provide Authorizer ID to view its configuration . |
 | --help    |          | Syntax Help for the command                       |
 
-Sample Command:
+Sample command to list details of an Authorizer's configuration.:
 
 ```
 ./zwallet bridge-auth-config --id $AUTHORIZER_ID
@@ -378,7 +381,7 @@ Print the ID of a blockchain node.
 
 ![Get node ID](docs/getid.png "Get node ID")
 
-
+Command to get the ID of a blockchain node.
 ```sh
 ./zwallet getid --url http://demo1.zus.network:31101
 ```
@@ -394,9 +397,9 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 `./zwallet sc-config ` command displays current storage smart contract configuration  
 
-Sample Command: 
+Sample command to display storage smart contract configuration: 
 ```
-./zbox sc-config
+./zwallet sc-config
 ```
 Sample Response :
 ```
