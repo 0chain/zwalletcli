@@ -1,6 +1,6 @@
 # zwallet - a CLI for Züs wallet
 
-`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs. A user can perform many functions like creating and restoring wallets, getting and sending ZCN tokens among other features.
+`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs. A user can perform many functions like creating and restoring wallets and getting and sending ZCN tokens, among other features.
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 - [Züs Overview](#züs-overview)
@@ -46,9 +46,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 
 [Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, and can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
 
-For instance, the user can start with 10 data and 5 parity providers and select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, performance, or switch to a lower cost provider.
+For instance, the user can start with 10 data and 5 parity providers and, select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, and performance or switch to a lower-cost provider.
 
-Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows the user to improve their regulatory obligations, content distribution, and security requirements with a true multi-cloud architecture. Users can also construct a private cloud with all of their own servers rented across the globe to have a better content distribution, highly available network, higher performance, and lower cost.
+Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows users to improve their regulatory obligations, content distribution, and security requirements with an authentic multi-cloud architecture. Users can also construct a private cloud with all their own servers rented across the globe to have better content distribution, a highly available network, higher performance, and lower cost.
 
 [The QoS protocol](https://medium.com/0chain/qos-protocol-weekly-debrief-april-12-2023-44524924381f) is time-based where the blockchain challenges a provider on a file that the provider must respond within a certain time based on its size to pass. This forces the provider to have a good server and data center performance to earn rewards and income.
 
@@ -635,7 +635,7 @@ To check the balance of another wallet, use `--wallet` global parameter.
 
 ![Send tokens to another wallet](docs/send.png "Send tokens to another wallet")
 
-Transferring tokens from a wallet to another is done through `send`
+Transferring tokens from one wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
@@ -670,7 +670,7 @@ To use a different wallet as sender, use `--wallet` global parameter.
 | --------- | -------- | ----------------------------- | ------- | ---------------------- |
 | `--hash`  | Yes      | Hash of transaction to verify |         | valid transaction hash |
 
-Note: Not all `zwallet` commands (eg. `send`) prints the transaction hash created. To see more details printed including the hashes, use `--verbose` global parameter.
+Note: Not all `zwallet` commands (e.g. `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
 
 ![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
 
@@ -693,8 +693,8 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```
 #### Collect rewards
 
-Use `collect-reward` to transfer reward tokens from a stake pool.The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
-You earn rewards for: Sharders and Miners
+Use `collect-reward` to transfer reward tokens from a stake pool. The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
+You earn rewards for: Sharders and Miners.
 
 - `Miners` produce blocks.
 - `Sharders` stores the blockchain and other related data, such as the event database. They also support a query REST API.
@@ -710,14 +710,14 @@ Sample Command :
 ./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
 ### Staking on miners and sharders
-
+(The below link is not working, - need the correct link )
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
 
 The maximum number of stake pools per node is limited to the number of delegates allowed. To find out the number of delegates and the minimum and maximum tokens allowed, query the staking config.
 
 #### Getting the staking config - `mn-config`
 
-`mn-config` display the global info of Miner SC for staking.
+`mn-config` displays the global info of Miner SC for staking.
 
 ![Miner SC global info](docs/mn-config.png "Miner SC global info")
 
@@ -827,9 +827,9 @@ Reformatted output
 
 #### Locking a stake on a node - `mn-lock`
 
-Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime although have to wait for the next view change cycle.
+Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime, although you have to wait for the next view change cycle.
 
-Note however that if a node becomes offline, all stake pools are automatically unlocked and tokens are returned to wallets.
+Note, however, that if a node becomes offline, all stake pools are automatically unlocked, and tokens are returned to wallets.
 
 | Parameter  | Required | Description                                                  | Default | Valid Values |
 | ---------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
