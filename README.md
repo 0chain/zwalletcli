@@ -154,7 +154,7 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 
 ```
 #### Creating wallet with 'faucet' command
-Here is a sample `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
+Here is a sample `faucet` command, and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
@@ -593,13 +593,13 @@ The following command will give 1 token to the default wallet.
 ./zwallet faucet --methodName pour --input "need token"
 ```
 
-The following command will return 0.5 token to faucet.
+You can specify the number of tokens required using the following command for adding 5 tokens with --tokens 5
 
 ```sh
-./zwallet faucet --methodName refill --input "not using" --tokens 0.5
+./zwallet faucet --methodName pour --input "need token" --tokens 5
 ```
 
-Sample output from `faucet` prints the transaction
+Sample output from `faucet` prints the transaction.
 
 ```
 Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
@@ -710,10 +710,10 @@ Sample Command :
 ./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
 ### Staking on miners and sharders
-(The below link is not working, - need the correct link )
-[Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
 
-The maximum number of stake pools per node is limited to the number of delegates allowed. To find out the number of delegates and the minimum and maximum tokens allowed, query the staking config.
+[Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/README.md) allows staking on the miner and sharder nodes.
+
+The maximum number of stake pools per node is limited to the number of delegates allowed. To determine the number of delegates and the minimum and maximum tokens allowed, query the staking config.
 
 #### Getting the staking config - `mn-config`
 
@@ -751,7 +751,7 @@ minted:                928552.464
 max_delegates:         200
 ```
 
-#### Getting a miner or sharder info for staking - `mn-info`
+#### Getting a miner or sharder information for staking - `mn-info`
 
 Node stats for staking are retrieved from Miner SC.
 
@@ -770,7 +770,7 @@ Sample command
 Sample output
 
 ```json
-{"simple_miner":{"id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","n2n_host":"five.devnet-0chain.net","host":"five.devnet-0chain.net","port":31102,"path":"sharder02","public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22","short_name":"localhost.s02","build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813","total_stake":0,"delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"sharder_rewards":1160553450000000},"node_type":"sharder","last_health_check":1619554377},"pending":{"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{"stats":{"delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"}}}}}
+{"simple_miner":{"id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","n2n_host":"demo.zus.network","host":"demo.zus.network","port":31102,"path":"sharder02","public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22","short_name":"localhost.s02","build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813","total_stake":0,"delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"sharder_rewards":1160553450000000},"node_type":"sharder","last_health_check":1619554377},"pending":{"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{"stats":{"delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"}}}}}
 ```
 
 Reformatted output
@@ -841,7 +841,7 @@ Note, however, that if a node becomes offline, all stake pools are automatically
 Sample command
 
 ```sh
-./zwallet mn-lock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --tokens 1
+./zwallet mn-lock --miner_id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --tokens 1
 ```
 
 The output would print the stake pool id.
@@ -854,7 +854,7 @@ If the locking of stakes is failing, verify the following.
 
 1. Wallet has enough tokens
 2. Node ID is valid
-3. Node has available delegate
+3. Node has an available delegate
 
 ### Getting the stake pools of a wallet - `mn-user-info`
 
