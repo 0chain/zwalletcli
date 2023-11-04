@@ -1,6 +1,6 @@
 # zwallet - a CLI for Züs wallet
 
-`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs. A user can perform many functions like creating and restoring wallets and getting and sending ZCN tokens, among other features.
+ZWallet CLI is a Go-based command-line tool for managing ZCN tokens on the Züs blockchain. It provides an interactive way to receive, send, store, stake, and exchange ZCN tokens, as well as fetch information about Züs components such as miners, sharders, and blobbers.
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 - [Züs Overview](#züs-overview)
@@ -44,9 +44,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 
 ## Züs Overview 
 
-[Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, and can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
+[Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
 
-For instance, the user can start with 10 data and 5 parity providers and, select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, and performance or switch to a lower-cost provider.
+For instance, the user can start with 10 data and 5 parity providers and select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, and performance or switch to a lower-cost provider.
 
 Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows users to improve their regulatory obligations, content distribution, and security requirements with an authentic multi-cloud architecture. Users can also construct a private cloud with all their own servers rented across the globe to have better content distribution, a highly available network, higher performance, and lower cost.
 
@@ -54,7 +54,7 @@ Users can also add their own servers to the network to operate in a hybrid cloud
 
 The [privacy protocol](https://zus.network/build) from Züs is unique where a user can easily share their encrypted data with their business partners, friends, and family through a proxy key sharing protocol, where the key is given to the providers, and they re-encrypt the data using the proxy key so that only the recipient can decrypt it with their private key.
 
-Züs has ecosystem apps to encourage traditional storage consumption such as [Blimp](https://blimp.software/), a S3 server and cloud migration platform, and [Vult](https://vult.network/), a personal cloud app to store encrypted data and share privately with friends and family, and [Chalk](https://chalk.software/), a high-performance story-telling storage solution for NFT artists.
+Züs has ecosystem apps to encourage traditional storage consumption, such as [Blimp](https://blimp.software/), a S3 server and cloud migration platform, and [Vult](https://vult.network/), a personal cloud app to store encrypted data and share privately with friends and family, and [Chalk](https://chalk.software/), a high-performance story-telling storage solution for NFT artists.
 
 Other apps are [Bolt](https://bolt.holdings/), a wallet that is very secure with air-gapped 2FA split-key protocol to prevent hacks from compromising your digital assets, and it enables you to stake and earn from the storage providers; [Atlus](https://atlus.cloud/), a blockchain explorer and [Chimney](https://demo.chimney.software/), which allows anyone to join the network and earn using their server or by just renting one, with no prior knowledge required.
 
@@ -71,8 +71,8 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 ### 1. Installation
 
 **Prerequisites**
-Install Go , open-source programming language from the links below based on your operating system.
-- Go: Installation instructions for Mac, Linux and Windows can be found [here](https://go.dev/doc/install).
+Install Go , an open-source programming language, from the links below based on your operating system.
+- Go: Installation instructions for Mac, Linux, and Windows can be found [here](https://go.dev/doc/install).
 
 **Procedures**
 
@@ -174,7 +174,7 @@ Creating related read pool for storage smart-contract...
 Read pool created successfully
 ```
 
-Verify second wallet
+Verify the second wallet
 
 ```sh
 cat ~/.zcn/new_wallet.json
@@ -252,7 +252,7 @@ The list of sharders are retrieved using the latest finalized magic block. All r
 
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
-List all sharders with below command.
+List all sharders with the below command.
 ```sh
 ./zwallet ls-sharders --all
 ```
@@ -296,7 +296,7 @@ The list of blobbers are retrieved using the Storage smart contract.
 
 ![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
-List all blobbers with below command.
+List all blobbers with the below command.
 ```sh
 ./zwallet getblobbers
 ```
@@ -341,11 +341,11 @@ Blobbers:
 ```
 
 #### Get Authorizer Configuration
-`./zwallet bridge-auth-config `command can be used to view authorizer configuration. Here are the parameters for the command.
+`./zwallet bridge-auth-config `command can be used to view the authorizer configuration. Here are the parameters for the command.
 
 | Parameter | Required | Description                                       |
 | --------- | -------- | ------------------------------------------------- |
-| --id      | Yes      | Provide Authorizer ID to view its configuration . |
+| --id      | Yes      | Provide Authorizer ID to view its configuration. |
 | --help    |          | Syntax Help for the command                       |
 
 Sample command to list details of an Authorizer's configuration.:
@@ -395,7 +395,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 #### Show Storage Smart Contract Configuration
 
-`./zwallet sc-config ` command displays current storage smart contract configuration  
+`./zwallet sc-config ` command displays the current storage smart contract configuration.  
 
 Sample command to display storage smart contract configuration: 
 ```
@@ -493,7 +493,7 @@ Version info:
         gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
 ```
 #### Show global configurations 
-`./zwallet global-config ` command displays global chain configuration 
+`./zwallet global-config ` command displays the global chain configuration 
 
 Sample Command :
 ```
@@ -650,10 +650,11 @@ The following sends 0.2 token from the default wallet to the specified client ID
 ./zwallet send --to_client_id e7ebb698213b6bda097c0a14ccbe574356e99e9b666e4baeae540da1d9b51e7e --tokens .2 --desc "gift"
 ```
 
-Output
+Output sample
 
 ```
-Send tokens success
+Send tokens success:  820af3d7b66bceae1a7a6d2eaed58a279a65feebf0afbec59bb89f61e81e2c11
+
 ```
 
 To use a different wallet as sender, use `--wallet` global parameter.
@@ -670,7 +671,7 @@ To use a different wallet as sender, use `--wallet` global parameter.
 | --------- | -------- | ----------------------------- | ------- | ---------------------- |
 | `--hash`  | Yes      | Hash of transaction to verify |         | valid transaction hash |
 
-Note: Not all `zwallet` commands (e.g. `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
+Note: Not all `zwallet` commands (e.g., `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
 
 ![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
 
@@ -693,8 +694,8 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```
 #### Collect rewards
 
-Use `collect-reward` to transfer reward tokens from a stake pool. The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
-You earn rewards for: Sharders and Miners.
+Use `collect-reward` to transfer reward tokens from a stake pool. The stake pool keeps an account of all stakeholders to maintain accrued rewards. 
+You earn rewards for Sharders and Miners.
 
 - `Miners` produce blocks.
 - `Sharders` stores the blockchain and other related data, such as the event database. They also support a query REST API.
@@ -707,7 +708,7 @@ You earn rewards for: Sharders and Miners.
 Sample Command :
 
 ```
-./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
+./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
 ### Staking on miners and sharders
 
@@ -977,13 +978,14 @@ Reformatted output
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
 ```sh
-./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
+./zwallet mn-unlock --miner_id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
 ```
 
 Output
 
 ```
-tokens will be unlocked next VC
+... transaction_base.go:673: https://dev3.zus.network/sharder01/v1/block/get?round=19683&content=header200 OK
+tokens unlocked.
 ```
 
 Tokens are released on the next view change cycle or at the next reward round.
