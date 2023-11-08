@@ -1,6 +1,6 @@
-# zwallet - a CLI for Züs wallet
+# zwallet - a CLI for Züs wallet 
 
-ZWallet CLI is a Go-based command-line tool for managing ZCN tokens on the Züs blockchain. It provides an interactive way to receive, send, store, stake, and exchange ZCN tokens, as well as fetch information about Züs components such as miners, sharders, and blobbers.
+ZWallet CLI is a command-line command line interface (CLI) to demonstrate the wallet functionalities of Züs. It provides an interactive way to receive, send, store, stake, and exchange ZCN tokens, as well as fetch information about Züs components such as miners, sharders, and blobbers.
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 - [Züs Overview](#züs-overview)
@@ -117,11 +117,11 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 
 | Parameter     | Description                     | Default        |
 | ------------- | ------------------------------- | -------------- |
-| `--h,--help`  | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send' use (./zwallet send --help )                     |                |
+| `--h, --help` | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send' use (./zwallet send --help )                     |                |
 | `--config`    |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
 | `--configDir` | Configuration directory                | `~/.zcn`       |
 | `--network`   | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
-| `--silent`    | Do not print sdk logs in stderr (error messages where it prints logs by default)    | `false`        |
+| `--silent`    | Do not print detailed logs    | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
 | `--withNonce` | Nonce that will be used in transaction    | `0`  |
 | `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
@@ -159,8 +159,8 @@ Here is a sample `faucet` command, and this creates a wallet at default location
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
-#### Creating a second wallet with 'faucet' command
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
+#### Creating additional wallet with 'faucet' command
+You can create more wallets with the faucet command with a wallet name of your choice. Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
@@ -168,7 +168,7 @@ Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
 
 Sample Output
 ```
-No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
+Creating wallet...
 ZCN wallet created!!
 Creating related read pool for storage smart-contract...
 Read pool created successfully
@@ -671,7 +671,7 @@ To use a different wallet as sender, use `--wallet` global parameter.
 | --------- | -------- | ----------------------------- | ------- | ---------------------- |
 | `--hash`  | Yes      | Hash of transaction to verify |         | valid transaction hash |
 
-Note: Not all `zwallet` commands (e.g., `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
+Note: Not all `zwallet` commands (e.g, `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
 
 ![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
 
