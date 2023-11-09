@@ -71,8 +71,8 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 ### 1. Installation
 
 **Prerequisites**
-Install Go , an open-source programming language, from the links below based on your operating system.
-- Go: Installation instructions for Mac, Linux, and Windows can be found [here](https://go.dev/doc/install).
+Install Go, an open-source programming language based on your operating system from the links below.
+- Go: Mac, Linux, and Windows installation instructions can be found [here](https://go.dev/doc/install).
 
 **Procedures**
 
@@ -113,11 +113,11 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 ... MINGW64 ~/zwalletcli
 ## Global parameters
 
-`zwallet` accept global parameters to override default configuration and can be used in any command.
+`zwallet` accepts global parameters to override default configuration and can be used in any command.
 
 | Parameter     | Description                     | Default        |
 | ------------- | ------------------------------- | -------------- |
-| `--h, --help` | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send' use (./zwallet send --help )                     |                |
+| `--h, --help` | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send', use (./zwallet send --help )                     |                |
 | `--config`    |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
 | `--configDir` | Configuration directory                | `~/.zcn`       |
 | `--network`   | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
@@ -131,12 +131,16 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 ### Creating and restoring wallets
 
 #### Creating wallet - (any command)
+You can create a wallet in two ways.
+1) Use the `create-wallet` or
+2) Use the 'faucet' command
+##### Creating a wallet if none exists
 
-Run  `create-wallet` command and it will create a wallet if none exist yet.
+Run the `create-wallet` command to create a wallet if none exists.
 
 ![create wallet](docs/createwallet.png "Create wallet")
 
-Here is a sample with `create-wallet` command and this creates a wallet at default location`~/.zcn/wallet.json`
+Here is a sample with `create-wallet` command and this creates a wallet at the default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet create-wallet
@@ -144,7 +148,7 @@ Here is a sample with `create-wallet` command and this creates a wallet at defau
 Sample Output 
 
 ```
-wallet saved in /home/ubuntu/.zcn/wallet.json
+wallet saved in /home/.../.zcn/wallet.json
 {"client_id":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 "client_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 "keys":[{"public_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -153,32 +157,34 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
 
 ```
+If there is an existing wallet in the .zcn directory, and you run `./zwallet create-wallet`, you will get a message - 
+```
+..wallet already exists at \..\.zcn\wallet.json
+```
 #### Creating wallet with 'faucet' command
 Here is a sample `faucet` command, and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
+Verify wallet creation
+You can verify the wallet creation by checking your .zcn folder for the corresponding wallet name.
+
 #### Creating additional wallet with 'faucet' command
-You can create more wallets with the faucet command with a wallet name of your choice. Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
+You can create more wallets with the faucet command with a wallet name of your choice. The `faucet` command to create a second wallet at the location `~/.zcn/` is as follows.
 
 ```sh
-./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
+./zwallet faucet --methodName pour --input "new wallet" --wallet my_fifth_wallet.json
 ```
 
-Sample Output
+Sample Output (Windows)
 ```
-Creating wallet...
-ZCN wallet created!!
-Creating related read pool for storage smart-contract...
-Read pool created successfully
+******* Wallet SDK Version:v1.8.17-78-g80b63345 ******* (InitZCNSDK)
+No wallet in path  C:\Users\..\.zcn\my_fifth_wallet.json found. Creating wallet...
+ZCN wallet created!!.. Execute faucet smart contract success with txn:  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
-
-Verify the second wallet
-
-```sh
-cat ~/.zcn/new_wallet.json
-```
+Verify wallet creation
+You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
 #### Recovering wallet - `recoverwallet`
 
@@ -204,12 +210,9 @@ Sample output
 ```
 Wallet recovered!!
 ```
-
 Verify recovered wallet
+You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
-```sh
-cat ~/.zcn/recovered_wallet.json
-```
 ### Exploring network nodes
 
 #### Listing all miners - `ls-miners`
@@ -240,6 +243,18 @@ Sample output
 - Host:       demo3.zus.network
 - Port:       31202
 ```
+
+You can use various flags to customize your usage.
+
+| Command     | flag        |Description                      | Usage                         | Output  | 
+| ---------   | --------    |------------------------------- |---------
+| `ls-miners` | --active    |Gets list of active miners only              |`./zwallet ls-miners --active` |         | 
+| `ls-miners` |  --all      |Includes all registered miners               |`./zwallet ls-miners --all`    |         | 
+| `ls-miners` | --json      |as JSON                                      |`./zwallet ls-miners --active` |         | 
+| `ls-miners` | --limit     |Limits the amount of miners returned (default 20)            |`./zwallet ls-miners --active` |         | 
+| `ls-miners` | --offset    |Skips the number of miners mentioned            |`./zwallet ls-miners --active` |         |
+ flag usage output
+
 
 #### Listing all sharders -`ls-sharders`
 
