@@ -10,7 +10,7 @@ on:
 jobs:
   build-linux:
     name: Build-linux
-    runs-on: [self-hosted, arc-runner]
+    runs-on: [self-hosted, ubuntu20-build]
     steps:
       - name: Install deps
         run: |
