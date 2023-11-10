@@ -44,6 +44,8 @@ github.com/0chain/gosdk v1.10.1-0.20231016103614-0f61a49368d5 h1:NfSSkZBcjI/QOi9
 github.com/0chain/gosdk v1.10.1-0.20231016103614-0f61a49368d5/go.mod h1:6Co9xV9/jeS9Bdi0L3fISOnKbrm0qPTzRtBhIdB/yqY=
 github.com/0chain/gosdk v1.10.1-0.20231026205111-b15f9736c813 h1:9++AowN5ps066UpVT4CCZgDLweaNi8Q/Yqs4Jxt2XS0=
 github.com/0chain/gosdk v1.10.1-0.20231026205111-b15f9736c813/go.mod h1:d3YLgnSKvEtZ6I9taIQotb6xcMvUKvd01JnkXS+O1jk=
+github.com/0chain/gosdk v1.10.1-0.20231110212012-f3a75f7991a2 h1:xeWeKRbKl+cX+Z2Xq43Dc7OwBDyT5l61FkogRsbe9tw=
+github.com/0chain/gosdk v1.10.1-0.20231110212012-f3a75f7991a2/go.mod h1:d3YLgnSKvEtZ6I9taIQotb6xcMvUKvd01JnkXS+O1jk=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DataDog/zstd v1.4.5 h1:EndNeuB0l9syBZhut0wns3gV1hL8zX8LIu6ZiVHWLIQ=
