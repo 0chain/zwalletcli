@@ -115,16 +115,16 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 
 `zwallet` accepts global parameters to override default configuration and can be used in any command.
 
-| Parameter     | Description                     | Default        |
-| ------------- | ------------------------------- | -------------- |
-| `--h, --help` | Shows help/parameters for a particular command (./zwallet -h) will list all help commands. To know detail about a particular command like example 'send', use (./zwallet send --help )                     |                |
-| `--config`    |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
-| `--configDir` | Configuration directory                | `~/.zcn`       |
-| `--network`   | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
-| `--silent`    | Do not print detailed logs    | `false`        |
-| `--wallet`    | Wallet file                     | `wallet.json`  |
-| `--withNonce` | Nonce that will be used in transaction    | `0`  |
-| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
+| Parameter                  | Description                     | Default        |
+| -------------------------- | ------------------------------- | -------------- |
+| `--h, --help`              | Shows help/parameters for a particular command                      |                |
+| `--config`                 |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
+| `--configDir`              | Configuration directory                | `~/.zcn`       |
+| `--network`                | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
+| `--silent`                 | Do not print detailed logs    | `false`        |
+| `--wallet`                 | Wallet file                     | `wallet.json`  |
+| `--withNonce`              | Nonce that will be used in transaction    | `0`  |
+| `--fee`                    | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
 
 ## Commands
 
@@ -157,17 +157,27 @@ wallet saved in /home/.../.zcn/wallet.json
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
 
 ```
+
 If there is an existing wallet in the .zcn directory, and you run `./zwallet create-wallet`, you will get a message - 
 ```
 ..wallet already exists at \..\.zcn\wallet.json
 ```
+Below is a list of flags that can be specified with the `create-wallet` command.
+| Flags        | Description                                        | Usage                              | 
+| ------------ | ---------------------------------------------------| -----------------------------------|
+|  --help      | help for create-wallet                             | `./zwallet create-wallet --help`   | 
+| `--silent`   | do not print wallet details in the standard output | `./zwallet create-wallet --silent` |  
+| `--wallet`   | give custom name to the wallet                     | `./zwallet create-wallet --wallet` |
+
+
 #### Creating wallet with 'faucet' command
 Here is a sample `faucet` command, and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
-Verify wallet creation
+**Verify wallet creation**
+
 You can verify the wallet creation by checking your .zcn folder for the corresponding wallet name.
 
 #### Creating additional wallet with 'faucet' command
@@ -183,14 +193,15 @@ Sample Output (Windows)
 No wallet in path  C:\Users\..\.zcn\my_fifth_wallet.json found. Creating wallet...
 ZCN wallet created!!.. Execute faucet smart contract success with txn:  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
-Verify wallet creation
+**Verify wallet creation**
+
 You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
 #### Recovering wallet - `recoverwallet`
 
 `recoverwallet` is used when restoring a lost wallet or when loading the wallet from a different computer.
 
-Given a wallet's mnemonics, you can recover and recreate your wallet.
+Given a wallet's mnemonics, you can recover and recreate your wallet. The following flags work with `recoverwallet`  
 
 | Parameter    | Required | Description                            | Default | Valid Values |
 | ------------ | -------- | -------------------------------------- | ------- | ------------ |
@@ -199,18 +210,20 @@ Given a wallet's mnemonics, you can recover and recreate your wallet.
 
 ![recover wallet](docs/recoverwallet.png "Recover wallet")
 
-Sample command
+Sample command using `--mnemonic`
 
 ```sh
 ./zwallet recoverwallet --wallet recovered_wallet.json --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell"
 ```
+Sample command using `--mnemonic` and `--offline`
 
 Sample output
 
 ```
 Wallet recovered!!
 ```
-Verify recovered wallet
+**Verify recovered wallet**
+
 You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
 ### Exploring network nodes
@@ -244,17 +257,15 @@ Sample output
 - Port:       31202
 ```
 
-You can use various flags to customize your usage.
+You can use various flags below to customize your usage with `ls-miners` for example - `./zwallet ls-miners --active`.
 
-| Command     | flag        |Description                      | Usage                         | Output  | 
-| ---------   | --------    |------------------------------- |---------
-| `ls-miners` | --active    |Gets list of active miners only              |`./zwallet ls-miners --active` |         | 
-| `ls-miners` |  --all      |Includes all registered miners               |`./zwallet ls-miners --all`    |         | 
-| `ls-miners` | --json      |as JSON                                      |`./zwallet ls-miners --active` |         | 
-| `ls-miners` | --limit     |Limits the amount of miners returned (default 20)            |`./zwallet ls-miners --active` |         | 
-| `ls-miners` | --offset    |Skips the number of miners mentioned            |`./zwallet ls-miners --active` |         |
- flag usage output
-
+| Parameter                  | Description                     | Default        |
+| -------------------------- | ------------------------------- | -------------- |
+| `--active`                 | Gets list of active miners only |                |
+| `--all`              | Includes all registered miners    |   |
+| `--json`                    | Print response as JSON data      |   |
+| `--limit`                    | Limits the number of miners returned      | (default 20)  |
+| `--offset`                    | Skips the number of miners mentioned      |   |
 
 #### Listing all sharders -`ls-sharders`
 
@@ -304,7 +315,15 @@ ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
   - Port: 31102
 
 ```
+You can use various flags below to customize your usage with `ls-sharders` for example - `./zwallet ls-sharders --active`.
 
+| Parameter                  | Description                     | Default        |
+| -------------------------- | ------------------------------- | -------------- |
+| `--active`                 | Gets list of active sharders only |                |
+| `--all`              | Includes all registered sharders    |   |
+| `--json`                    | Print response as JSON data     |   |
+| `--limit`                    | Limits the number of sharders returned      | (default 20)  |
+| `--offset`                    | Skips the number of sharders mentioned      |   |
 #### Listing all blobbers - `getblobbers`
 
 The list of blobbers are retrieved using the Storage smart contract.
@@ -356,7 +375,7 @@ Blobbers:
 ```
 
 #### Get Authorizer Configuration
-`./zwallet bridge-auth-config `command can be used to view the authorizer configuration. Here are the parameters for the command.
+`./zwallet bridge-auth-config` command can be used to view the authorizer configuration. Here are the parameters for the command.
 
 | Parameter | Required | Description                                       |
 | --------- | -------- | ------------------------------------------------- |
@@ -493,6 +512,13 @@ validator_reward         0.025
 validators_per_challenge         2
 writepool.min_lock       0.1
 ```
+You can also use the `--json` flag with the `sc-config ` command
+
+| Parameter | Description                             |  
+| --------- | --------------------------------------- |  
+| `--json`  | Print output as JSON                    |      
+
+
 
 #### Get Version 
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
