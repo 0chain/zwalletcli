@@ -13,16 +13,16 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		createCommandWithBridge(
-			"bridge-burn-eth",
-			"burn eth tokens",
-			"burn eth tokens that will be minted on ZCN chain",
-			commandBurnEth,
+			"bridge-burn-bnt",
+			"burn bnt tokens",
+			"burn bnt tokens that will be minted on ZCN chain",
+			commandBurnBnt,
 			WithAmount("WZCN token amount to be burned"),
 			WithRetries("Num of seconds a transaction status check should run"),
 		))
 }
 
-func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
+func commandBurnBnt(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
@@ -40,7 +40,7 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	)
 
 	if tokenBalanceZCN < int64(amount) {
-		transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenETHAddress, amount, time.Now().Add(time.Minute*3))
+		transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenBNTAddress, amount, time.Now().Add(time.Minute*3))
 		if err != nil {
 			ExitWithError(err, "failed to execute Swap")
 		}
