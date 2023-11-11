@@ -18,10 +18,18 @@ func init() {
 			"mint zcn tokens using the hash of Ethereum burn transaction",
 			"mint zcn tokens after burning WZCN tokens in Ethereum chain",
 			commandMintZCN,
+			&Option{
+				name:     "burn-txn-hash",
+				typename: "string",
+				value:    "",
+				usage:    "mint the ZCN tokens for the given Ethereum burn transaction hash",
+			},
 		))
 }
 
 func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
+	burnHash := getString(args, "burn-txn-hash")
+
 	var mintNonce int64
 	cb := wallet.NewZCNStatus(&mintNonce)
 
@@ -48,6 +56,13 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	fmt.Printf("Found %d not processed WZCN burn transactions\n", len(burnTickets))
 
 	for _, burnTicket := range burnTickets {
+
+		if len(burnHash) > 0 {
+			if burnHash != burnTicket.TransactionHash {
+				continue
+			}
+		}
+
 		fmt.Printf("Query ticket for Ethereum transaction hash: %s\n", burnTicket.TransactionHash)
 
 		payload, err := b.QueryZChainMintPayload(burnTicket.TransactionHash)
@@ -76,5 +91,9 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 	}
 
-	fmt.Println("Done.")
+	if len(burnTickets) > 0 {
+		fmt.Println("Done.")
+	} else {
+		fmt.Println("Failed.")
+	}
 }
