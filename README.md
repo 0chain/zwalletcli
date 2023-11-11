@@ -135,7 +135,7 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 #### Creating wallet - (any command)
 You can create a wallet in two ways.
 1) Use the `create-wallet` or
-2) Use the 'faucet' command
+2) Use the `faucet` command
 
 ##### Creating a wallet if none exists
 
@@ -168,7 +168,7 @@ If there is an existing wallet in the .zcn directory, and you run `./zwallet cre
 Below is a list of flags that can be specified with the `create-wallet` command.
 | Flags        | Description                                        | Usage                              | 
 | ------------ | ---------------------------------------------------| -----------------------------------|
-|  --help      | help for create-wallet                             | `./zwallet create-wallet --help`   | 
+|  `--help`      | help for create-wallet                             | `./zwallet create-wallet --help`   | 
 | `--silent`   | do not print wallet details in the standard output | `./zwallet create-wallet --silent` |  
 | `--wallet`   | give custom name to the wallet                     | `./zwallet create-wallet --wallet` |
 
@@ -218,9 +218,7 @@ Sample command using `--mnemonic`
 ```sh
 ./zwallet recoverwallet --wallet recovered_wallet.json --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell"
 ```
-Sample command using `--mnemonic` and `--offline`
-
-Sample output
+Sample output using `--mnemonic` or combined with  `--offline`
 
 ```
 Wallet recovered!!
