@@ -13,6 +13,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
   - [Commands](#commands)
     - [Creating and restoring wallets](#creating-and-restoring-wallets)
       - [Creating wallet - (any command)](#creating-wallet---any-command)
+      - [Creating a wallet if none exists](#creating-a-wallet-if-none-exists)
+      - [Creating wallet with faucet command](#creating-wallet-with-faucet-command)
+      - [Creating additional wallet with faucet command](#creating-additional-wallet-with-faucet-command)
       - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
     - [Exploring network nodes](#exploring-network-nodes)
       - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
@@ -32,7 +35,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Collect rewards - `collect-reward`](#collect-rewards)  
     - [Staking on miners and sharders](#staking-on-miners-and-sharders)
       - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
-      - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
+      - [Getting a miner or sharder info for staking-`mn-info`](#getting-a-miner-or-sharder-information-for-staking---mn-info)
       - [Locking a stake on a node - `mn-lock`](#locking-a-stake-on-a-node---mn-lock)
     - [Getting the stake pools of a wallet - `mn-user-info`](#getting-the-stake-pools-of-a-wallet---mn-user-info)
       - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
@@ -41,7 +44,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
-
+    
 ## Züs Overview 
 
 [Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
@@ -129,11 +132,11 @@ Ensure your terminal's working directory is inside the `zwalletcli` repo for the
 ## Commands
 
 ### Creating and restoring wallets
-
 #### Creating wallet - (any command)
 You can create a wallet in two ways.
 1) Use the `create-wallet` or
 2) Use the 'faucet' command
+
 ##### Creating a wallet if none exists
 
 Run the `create-wallet` command to create a wallet if none exists.
@@ -232,9 +235,9 @@ You can verify the recovered wallet by checking your .zcn folder for the corresp
 
 The list of miners are retrieved using the Miner smart contract.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter | Required | Description          | Default |   
+| --------- | -------- | -------------------- | ------- |
+| `--json`  | No       | Print output as JSON |         |
 
 ![List miner nodes](docs/ls-miners.png "List miner nodes")
 
@@ -271,10 +274,10 @@ You can use various flags below to customize your usage with `ls-miners` for exa
 
 The list of sharders are retrieved using the latest finalized magic block. All registered sharders can be retrieved with the `--all` parameter.
 
-| Parameter | Required | Description                             | Default | Valid Values      |
-| --------- | -------- | --------------------------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
-| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
+| Parameter | Required | Description                             | Default | 
+| --------- | -------- | --------------------------------------- | ------- | 
+| `--json`  | No       | Print output as JSON                    |         |
+| `--all`   | No       | Print also registered nodes on Miner SC |         |
 
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
@@ -324,6 +327,7 @@ You can use various flags below to customize your usage with `ls-sharders` for e
 | `--json`                    | Print response as JSON data     |   |
 | `--limit`                    | Limits the number of sharders returned      | (default 20)  |
 | `--offset`                    | Skips the number of sharders mentioned      |   |
+
 #### Listing all blobbers - `getblobbers`
 
 The list of blobbers are retrieved using the Storage smart contract.
@@ -533,6 +537,19 @@ Version info:
         zwallet...:  v1.2.3-21-gb10c459
         gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
 ```
+
+You can also use the `--json` flag with the `./zwallet version ` command
+
+| Parameter | Description                             |  
+| --------- | --------------------------------------- |  
+| `--json`  | Print output as JSON                    |  
+
+Sample Response :
+```
+{"gosdk":"v1.8.18-0.20230901213317-53d640a9b7f9","zwallet":"v1.10.0-6-gd0f62a4"}
+```
+
+
 #### Show global configurations 
 `./zwallet global-config ` command displays the global chain configuration 
 
@@ -621,7 +638,7 @@ server_chain.view_change         false
 Tokens can be retrieved and added to your wallet through the Faucet smart contract.
 
 | Parameter      | Required | Description                                                  | Default | Valid Values     |
-| -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
 | `--methodName` | Yes      | Smart Contract method to call (`pour` - get tokens, `refill` - return tokens) |         | `pour`, `refill` |
 | `--input`      | Yes      | Request description                                          |         | any string       |
 | `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
@@ -643,7 +660,7 @@ You can specify the number of tokens required using the following command for ad
 Sample output from `faucet` prints the transaction.
 
 ```
-Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
+Execute faucet smart contract success with txn:  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
 ```
 
 #### Checking balance - `getbalance`
