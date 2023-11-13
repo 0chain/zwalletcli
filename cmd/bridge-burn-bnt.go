@@ -40,6 +40,40 @@ func commandBurnBnt(b *zcnbridge.BridgeClient, args ...*Arg) {
 	)
 
 	if tokenBalanceZCN < int64(amount) {
+		transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenBNTAddress, 0)
+		if err != nil {
+			ExitWithError(err, "failed to execute ApproveSwap")
+		}
+
+		hash = transaction.Hash().Hex()
+		status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Failed to confirm ApproveSwap: hash = %s, error = %v", hash, err))
+		}
+
+		if status == 1 {
+			fmt.Printf("Verification: ApproveSwap [OK]: %s\n", hash)
+		} else {
+			ExitWithError(fmt.Sprintf("Verification: ApproveSwap [FAILED]: %s\n", hash))
+		}
+
+		transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenBNTAddress, amount)
+		if err != nil {
+			ExitWithError(err, "failed to execute ApproveSwap")
+		}
+
+		hash = transaction.Hash().Hex()
+		status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Failed to confirm ApproveSwap: hash = %s, error = %v", hash, err))
+		}
+
+		if status == 1 {
+			fmt.Printf("Verification: ApproveSwap [OK]: %s\n", hash)
+		} else {
+			ExitWithError(fmt.Sprintf("Verification: ApproveSwap [FAILED]: %s\n", hash))
+		}
+
 		transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenBNTAddress, amount, time.Now().Add(time.Minute*3))
 		if err != nil {
 			ExitWithError(err, "failed to execute Swap")
