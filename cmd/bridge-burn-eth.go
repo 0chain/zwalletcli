@@ -33,7 +33,12 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		status      int
 	)
 
-	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenETHAddress, amount, time.Now().Add(time.Minute*3))
+	maxAmount, err := b.GetMaxBancorTargetAmount(zcnbridge.SourceTokenETHAddress, amount)
+	if err != nil {
+		ExitWithError(err, "failed to execute GetMaxBancorTargetAmount")
+	}
+
+	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenETHAddress, amount, maxAmount, time.Now().Add(time.Minute*3))
 	if err != nil {
 		ExitWithError(err, "failed to execute Swap")
 	}

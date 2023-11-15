@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -33,7 +34,7 @@ func commandBurnUsdc(b *zcnbridge.BridgeClient, args ...*Arg) {
 		status      int
 	)
 
-	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenUSDCAddress, 0)
+	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenUSDCAddress, big.NewInt(0))
 	if err != nil {
 		ExitWithError(err, "failed to execute ApproveSwap")
 	}
@@ -50,7 +51,12 @@ func commandBurnUsdc(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(fmt.Sprintf("Verification: ApproveSwap [FAILED]: %s\n", hash))
 	}
 
-	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenUSDCAddress, amount)
+	maxAmount, err := b.GetMaxBancorTargetAmount(zcnbridge.SourceTokenUSDCAddress, amount)
+	if err != nil {
+		ExitWithError(err, "failed to execute GetMaxBancorTargetAmount")
+	}
+
+	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenUSDCAddress, maxAmount)
 	if err != nil {
 		ExitWithError(err, "failed to execute ApproveSwap")
 	}
@@ -67,7 +73,7 @@ func commandBurnUsdc(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(fmt.Sprintf("Verification: ApproveSwap [FAILED]: %s\n", hash))
 	}
 
-	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenUSDCAddress, amount, time.Now().Add(time.Minute*3))
+	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenUSDCAddress, amount, maxAmount, time.Now().Add(time.Minute*3))
 	if err != nil {
 		ExitWithError(err, "failed to execute Swap")
 	}
