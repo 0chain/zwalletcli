@@ -13,16 +13,16 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		createCommandWithBridge(
-			"bridge-burn-usdc",
-			"burn usdc tokens",
-			"burn usdc tokens that will be minted on ZCN chain",
-			commandBurnUsdc,
+			"bridge-burn-eurc",
+			"burn eurc tokens",
+			"burn eurc tokens that will be minted on ZCN chain",
+			commandBurnEurc,
 			WithAmount("WZCN token amount to be burned"),
 			WithRetries("Num of seconds a transaction status check should run"),
 		))
 }
 
-func commandBurnUsdc(b *zcnbridge.BridgeClient, args ...*Arg) {
+func commandBurnEurc(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
@@ -33,7 +33,7 @@ func commandBurnUsdc(b *zcnbridge.BridgeClient, args ...*Arg) {
 		status      int
 	)
 
-	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenUSDCAddress, 0)
+	transaction, err = b.ApproveSwap(context.Background(), zcnbridge.SourceTokenEURCAddress, 0)
 	if err != nil {
 		ExitWithError(err, "failed to execute ApproveSwap")
 	}

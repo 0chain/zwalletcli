@@ -13,42 +13,25 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		createCommandWithBridge(
-			"bridge-burn-eth",
-			"burn eth tokens",
-			"burn eth tokens that will be minted on ZCN chain",
-			commandBurnEth,
+			"bridge-burn-wzcn",
+			"burn wzcn tokens",
+			"burn wzcn tokens that will be minted on ZCN chain",
+			commandBurnWzcn,
 			WithAmount("WZCN token amount to be burned"),
 			WithRetries("Num of seconds a transaction status check should run"),
 		))
 }
 
-func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
+func commandBurnWzcn(b *zcnbridge.BridgeClient, args ...*Arg) {
 	retries := GetRetries(args)
 	amount := GetAmount(args)
 
 	var (
 		transaction *types.Transaction
-		err         error
 		hash        string
 		status      int
+		err         error
 	)
-
-	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenETHAddress, amount, time.Now().Add(time.Minute*3))
-	if err != nil {
-		ExitWithError(err, "failed to execute Swap")
-	}
-
-	hash = transaction.Hash().Hex()
-	status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
-	if err != nil {
-		ExitWithError(fmt.Sprintf("Failed to confirm Swap: hash = %s, error = %v", hash, err))
-	}
-
-	if status == 1 {
-		fmt.Printf("Verification: Swap [OK]: %s\n", hash)
-	} else {
-		ExitWithError(fmt.Sprintf("Verification: Swap [FAILED]: %s\n", hash))
-	}
 
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
 	transaction, err = b.IncreaseBurnerAllowance(context.Background(), amount)
