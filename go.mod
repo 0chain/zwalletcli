@@ -1,5 +1,7 @@
 module github.com/0chain/zwalletcli
 
+go 1.20
+
 require (
 	github.com/0chain/gosdk v1.10.1-0.20231115223911-c4a8669cad44
 	github.com/ethereum/go-ethereum v1.10.26
@@ -74,8 +76,6 @@ require (
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-go 1.20
 
 // temporary, for development
 // replace github.com/0chain/gosdk => ../gosdk
