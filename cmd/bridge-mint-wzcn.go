@@ -26,9 +26,6 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		ExitWithError(err)
 	}
 
-	fmt.Println(userNonce)
-
-	return
 	var burnTickets []zcncore.BurnTicket
 	cb := wallet.NewZCNStatus(&burnTickets)
 
