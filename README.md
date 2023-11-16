@@ -25,7 +25,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Getting Auhorizer Configuration - `bridge-auth-config`](#get-authorizer-configuration)
       - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
       - [Getting Storage Smart Contract Configuration - `sc-config`](#show-storage-smart-contract-configuration)
+      - [Updating Storage Smart Contract Configuration - `sc-update-config`](#updating-storage-smart-contract-configuration)
       - [Getting Global Configuration - `global-config`](#show-global-configurations)
+      - [Updating Global Configuration - `global-update-config`](#updating-global-configuration)
       - [Get Version - `get-version`](#get-version)
     - [Getting and sending tokens](#getting-and-sending-tokens)
       - [Getting tokens with Faucet smart contract - `faucet`](#getting-tokens-with-faucet-smart-contract---faucet)
@@ -41,6 +43,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
       - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
       - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+      - [Updating the miner smart contract configuration - `mn-update-config`](#updating-miner-smart-contract-configuration)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
@@ -521,6 +524,25 @@ You can also use the `--json` flag with the `sc-config ` command
 | `--json`  | Print output as JSON                    |      
 
 
+#### Updating Storage Smart Contract Configuration
+
+Update storage smart contract settings. 
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in storage smart contract configuration.The variables are mentioned in [Show Storage Smart Contract Configuration](#show-storage-smart-contract-configuration) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command for updating max read price:
+```shell
+./zwallet sc-update-config --keys "max_read_price"  --values "80" --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+storagesc smart contract settings updated Hash: <TRANSACTION_HASH>
+```
 
 #### Get Version 
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
@@ -627,6 +649,26 @@ server_chain.transaction.min_fee         0
 server_chain.transaction.payload.max_size        98304
 server_chain.transaction.timeout         600
 server_chain.view_change         false
+```
+
+#### Updating global configuration 
+
+Update global settings. 
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in global configuration.The variables are mentioned in [Show Global Configuration](#show-global-configurations) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command:
+```shell
+./zwallet global-update-config --keys server_chain.block.generators_percent --values 0.15 --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+global settings updated Hash: <TRANSACTION_HASH>
 ```
 
 ### Getting and sending tokens
@@ -766,6 +808,7 @@ Sample Command :
 ```
 ./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
+
 ### Staking on miners and sharders
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/README.md) allows staking on the miner and sharder nodes.
@@ -1040,7 +1083,6 @@ Reformatted output
 Output
 
 ```
-... transaction_base.go:673: https://dev3.zus.network/sharder01/v1/block/get?round=19683&content=header200 OK
 tokens unlocked.
 ```
 
@@ -1060,11 +1102,37 @@ Staking config can only be updated by the node's delegate wallet.
 
 ![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
 
-Sample command
+Sample command:
 
 ```sh
 ./zwallet mn-update-settings --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --max_stake 1000000000000 --min_stake 10000000 --num_delegates 25
 ```
+
+Sample Response:
+```
+settings updated Hash: <TRANSACTION_HASH>
+```
+
+#### Updating miner smart contract configuration 
+
+Update the miner smart contract config.
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in miner smart contract configuration. The variables are mentioned in [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command for changing max stake:
+```shell
+./zwallet mn-update-config --keys max_stake --values 90 --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+storagesc smart contract settings updated Hash: <TRANSACTION_HASH>
+```
+
 ## Config
 
 ### ~/.zcn/config.yaml
