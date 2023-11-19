@@ -56,7 +56,6 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	fmt.Printf("Found %d not processed WZCN burn transactions\n", len(burnTickets))
 
 	for _, burnTicket := range burnTickets {
-
 		if len(burnHash) > 0 {
 			if burnHash != burnTicket.TransactionHash {
 				continue
