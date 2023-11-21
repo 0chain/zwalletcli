@@ -8,7 +8,8 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
   - [Architecture](#architecture)
   - [Getting started](#getting-started)
     - [1. Installation](#1-installation)
-    - [2. Run `zwallet` commands](#2-run-zwallet-commands)
+    - [2. Configure network](#2-configure-network)
+    - [3. Run `zwallet` commands](#3-run-zwallet-commands)
   - [Global parameters](#global-parameters)
   - [Commands](#commands)
     - [Creating and restoring wallets](#creating-and-restoring-wallets)
@@ -76,61 +77,192 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 
 ### 1. Installation
 
-**Prerequisites**
-Install Go, an open-source programming language based on your operating system from the links below.
-- Go: Mac, Linux, and Windows installation instructions can be found [here](https://go.dev/doc/install).
+* [Linux Installation](#linux-installation)
+* [Mac Installation](#mac-installation)
+* [Windows Installation](#windows-installation)
 
-**Procedures**
+#### Linux Installation
 
-1. Clone the `zwalletcli` repo and install
+**Note:** zwallet binaries are designed to function optimally with gcc 11 as the default compiler. Notably, Ubuntu 22 is equipped with gcc 11 by default. However, Ubuntu 20 initially comes with gcc 9. To upgrade the gcc version, execute the following commands:
 
-```sh
-git clone https://github.com/0chain/zwalletcli.git
-cd zwalletcli
-make install
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install build-essential
+sudo apt install gcc-11 g++-11
 ```
 
-2. Add config yaml at `~/.zcn/config.yaml`
+1. Download the latest linux zwalletcli release file `zwallet-linux.tar.gz` from [here](https://github.com/0chain/zwalletcli/releases/latest).
 
-The following script sets `https://demo.zus.network` as your network.
+2. The zip file will be downloaded in `Downloads` directory of your system. Open terminal,navigate to `Downloads` directory and extract the downloaded archive to `/usr/local/bin` path using the commands below.
 
-```sh
-cat > ~/.zcn/config.yaml << EOF
-block_worker: https://demo.zus.network/dns
-signature_scheme: bls0chain
-min_submit: 50 # in percentage
-min_confirmation: 50 # in percentage
-confirmation_chain_length: 3
-EOF
 ```
-3. Run `zwallet` to display the list of supported commands.
+cd Downloads
+sudo tar -xzf zwallet-linux.tar.gz --directory /usr/local/bin
+```
 
-```sh
+3. Navigate to the extracted directory path.
+
+```
+cd /usr/local/bin
+``` 
+
+4. Run the zwallet executable by using the command below.
+
+```
 ./zwallet
 ```
-----
-For detailed steps on the installation, follow the guides below:
 
-- [How to build on Linux/Mac](https://github.com/0chain/zwalletcli/wiki/Build-on-Linux-and-Mac)
-- [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
+On successful installation you will see a help section:
 
-### 2. Run `zwallet` commands
-Ensure your terminal's working directory is inside the `zwalletcli` repo for the following steps.
-... MINGW64 ~/zwalletcli
+```
+Use Zwallet to store, send and execute smart contract on 0Chain platform.
+                      
+
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+  
+Use "zwallet [command] --help" for more information about a command.
+```
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on the terminal.
+
+#### Windows Installation
+
+1. Download the latest windows zwalletcli zip file `zwallet-windows.zip` from [here](https://github.com/0chain/zwalletcli/releases/latest).
+2. By default, the zip file will be downloaded in `Downloads` directory of your system(C:\Users\<your_windows_username>\Downloads). Extract the executable and dll files from archive `zwallet-windows.zip` file into a directory of your choice.
+
+   **Note:** In case the zip file lack the necessary DLL files, kindly download them from [here](https://github.com/0chain/zboxcli/files/11840033/windows.dll.s.zip) and proceed to manually copy and paste these 
+   files into the extracted executable directory path.
+
+3. Open Windows Command prompt and navigate to directory where you have extracted the  `zwallet-windows.zip`  files and run the executable using `zwallet` command. See screenshot for reference.
+
+![windows command prompt](https://github.com/0chain/zwalletcli/assets/65766301/96891298-00ef-44d1-a4f9-a31752c0ab69)
+
+4. On successful installation you will see a help section similar to response below  :&#x20;
+
+```
+Use Zwallet to store, send and execute smart contract on 0chain platform.
+                        
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+
+```
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on windows command prompt.
+
+#### Mac Installation
+
+1. Download the latest mac zwalletcli release file `zwallet-macos.tar.gz` release from [here](https://github.com/0chain/zwalletcli/releases/latest).
+
+2. The zip file will be downloaded in `Downloads` directory of your system. Open terminal, navigate to `Downloads` directory and extract the downloaded archive to `/usr/local/bin` path using the commands below.
+
+```
+cd Downloads/
+sudo tar -xzf zwallet-macos.tar.gz --directory /usr/local/bin
+```
+
+3. Navigate to extracted directory path.
+
+```
+cd /usr/local/bin
+```
+
+4. Run the zwallet executable using the command below.
+
+```
+./zwallet
+```
+
+On successful installation you will see a help section similar to response below:
+
+Use Zwallet to store, send and execute smart contract on 0Chain platform.
+       
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+</code></pre>
+
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on the terminal.
+
+### 2. Configure network
+
+1. Copy the contents from [config.yaml](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) file and save it as `config.yaml` file on desktop of your mac and linux system .
+
+2. Open terminal and make a new .zcn folder in the home linux and mac directory using the command below:
+
+```
+mkdir $HOME/.zcn
+```
+Note: For windows manually create a folder named `.zcn` at `C:\Users\<windows_username>`path.
+
+3. Copy `config.yaml` from desktop into `$HOME/.zcn` directory in mac and linux using the command below:
+
+```
+cp /Users/<MAC/LINUX username>/Desktop/config.yaml $HOME/.zcn
+```
+Note: For windows manually copy paste the `config.yaml` file into `C:\Users\<windows_username>\.zcn` path.
+
+4. Verify the contents of config file in Linux and Mac using the command below:
+
+Note: In Windows check the contents manually by opening the file at `C:\Users\<windows_username>\.zcn` path.
+
+```
+cat config.yaml
+```
+
+Response:
+```
+---
+block_worker: https://demo.zus.network/dns
+signature_scheme: bls0chain
+min_submit: 50
+min_confirmation: 50
+confirmation_chain_length: 3
+max_txn_query: 5
+query_sleep_time: 5
+# # OPTIONAL - Uncomment to use/ Add more if you want
+# preferred_blobbers:
+#   - http://demo.zus.network:31051
+#   - http://demo.zus.network:31052
+#   - http://demo.zus.network:31053
+
+```
+
+Zbox connects to the Züs network using the `block_worker` field. These network details are automatically fetched from the blockWorker's network API. Preferred Blobbers are also present which you can uncomment for using specified storage providers for handling your files.
+
+**Note:** A block worker URL is a field that require the URL of blockchain network you want to connect to. Change the default value of block_worker field with the following: `http://198.18.0.98:9091/` for the local testnet.
+
+### 3. Run `zwallet` commands
+
 ## Global parameters
 
 `zwallet` accepts global parameters to override default configuration and can be used in any command.
 
-| Parameter                  | Description                     | Default        |
-| -------------------------- | ------------------------------- | -------------- |
-| `--h, --help`              | Shows help/parameters for a particular command                      |                |
-| `--config`                 |  [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml). Configuration file    | `config.yaml`  |
-| `--configDir`              | Configuration directory                | `~/.zcn`       |
-| `--network`                | Network file to overwrite the network details [Network file](#override-network) | `network.yaml` |
-| `--silent`                 | Do not print detailed logs    | `false`        |
-| `--wallet`                 | Wallet file                     | `wallet.json`  |
-| `--withNonce`              | Nonce that will be used in transaction    | `0`  |
-| `--fee`                    | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
+| Flags                      | Description                                                                                                    | Usage                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| --config string            | Specify a zbox configuration file (default is [$HOME/.zcn/config.yaml](#zcnconfigyaml))                        | `./zwallet [command] --config config1.yaml`             |
+| --configDir string         | Specify a zbox configuration directory (default is $HOME/.zcn)                                                 | `./zwallet [command] --configDir /$HOME/.zcn2`          |
+| -h, --help                 | Gives more information about a particular command.                                                             | `./zwallet [command] --help`                            |
+| --network string           | Specify a network file to overwrite the network details(default is [$HOME/.zcn/network.yaml](#zcnnetworkyaml)) | `./zwallet [command] --network network1.yaml`           |
+| --silent                  | (default false) Do not show interactive sdk logs (shown by default)                                             | `./zwallet [command] --silent`                         |
+| --wallet string            | Specify a wallet file or 2nd wallet (default is $HOME/.zcn/wallet.json)                                        | `./zwallet [command] --wallet wallet2.json`             |
+| --wallet_client_id string  | Specify a wallet client id (By default client_id specified in $HOME/.zcn/wallet.json is used)                  | `./zwallet [command] --wallet_client_id <client_id>`    |
+| --wallet_client_key string | Specify a wallet client_key (By default client_key specified in $HOME/.zcn/wallet.json is used)                | `./zwallet [command] --wallet_client_key < client_key>` |
+| --fee float                |  transaction fee for the given transaction (if unset, it will be set to blockchain min fee)                    | `./zwallet [command] --fee 0.5` 
+
 
 ## Commands
 
