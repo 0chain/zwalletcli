@@ -169,6 +169,10 @@ Available Commands:
 cd Downloads/
 sudo tar -xzf zwallet-macos.tar.gz --directory /usr/local/bin
 ```
+Note: There can be a chance running above command on terminal will trigger a prompt to install Xcode Command Line Tools if you donot have them installed already. You'll see a panel similar to screenshot below that asks you to install Xcode Command Line Tools. Click 'Install' to begin the download and installation process. 
+
+![install-Xcode-CLT](https://github.com/0chain/zwalletcli/assets/65766301/fb8d761b-c8ce-468b-855f-a06d819850e7)
+
 
 3. Navigate to extracted directory path.
 
