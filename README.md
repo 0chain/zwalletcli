@@ -188,8 +188,10 @@ cd /usr/local/bin
 
 On successful installation you will see a help section similar to response below:
 
+```
 Use Zwallet to store, send and execute smart contract on 0Chain platform.
-       
+                      
+
 Usage:
   zwallet [command]
 
@@ -197,7 +199,9 @@ Available Commands:
   auth-register             Register an authorizer manually
   auth-sc-delete            Deletes an authorizer to token bridge SC manually
   auth-sc-register          Register an authorizer to token bridge SC manually
-</code></pre>
+  
+Use "zwallet [command] --help" for more information about a command.
+```
 
 5. To rerun zwalletcli at later time repeat steps 3 and 4 on the terminal.
 
