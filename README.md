@@ -48,7 +48,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
-    
+
+
+
 ## Züs Overview 
 
 [Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
@@ -141,7 +143,7 @@ Use "zwallet [command] --help" for more information about a command.
 
 3. Open Windows Command prompt and navigate to directory where you have extracted the  `zwallet-windows.zip`  files and run the executable using `zwallet` command. See screenshot for reference.
 
-![windows command prompt](https://github.com/0chain/zwalletcli/assets/65766301/96891298-00ef-44d1-a4f9-a31752c0ab69)
+![windows command prompt](https://github.com/0chain/gitbookdocs/assets/65766301/27dfea98-db56-4462-87f1-12a6015d9c58)
 
 4. On successful installation you will see a help section similar to response below  :&#x20;
 
@@ -171,8 +173,7 @@ sudo tar -xzf zwallet-macos.tar.gz --directory /usr/local/bin
 ```
 Note: There can be a chance running above command on terminal will trigger a prompt to install Xcode Command Line Tools if you donot have them installed already. You'll see a panel similar to screenshot below that asks you to install Xcode Command Line Tools. Click 'Install' to begin the download and installation process. 
 
-![install-Xcode-CLT](https://github.com/0chain/zwalletcli/assets/65766301/fb8d761b-c8ce-468b-855f-a06d819850e7)
-
+![install-Xcode-CLT](https://github.com/0chain/gitbookdocs/assets/65766301/403a8315-7593-4ace-ab89-6b8d1fe6554b)
 
 3. Navigate to extracted directory path.
 
@@ -207,7 +208,7 @@ Use "zwallet [command] --help" for more information about a command.
 
 ### 2. Configure network
 
-1. Copy the contents from [config.yaml](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) file and save it as `config.yaml` file on desktop of your mac and linux system .
+1. Copy the contents from [config.yaml](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) file and save it as `config.yaml` file on `Desktop` of your system .
 
 2. Open terminal and make a new .zcn folder in the home linux and mac directory using the command below:
 
@@ -219,13 +220,13 @@ Note: For windows manually create a folder named `.zcn` at `C:\Users\<windows_us
 3. Copy `config.yaml` from desktop into `$HOME/.zcn` directory in mac and linux using the command below:
 
 ```
-cp /Users/<MAC/LINUX username>/Desktop/config.yaml $HOME/.zcn
+cp /Users/<your_mac_or_linux_username>/Desktop/config.yaml $HOME/.zcn
 ```
 Note: For windows manually copy paste the `config.yaml` file into `C:\Users\<windows_username>\.zcn` path.
 
 4. Verify the contents of config file in Linux and Mac using the command below:
 
-Note: In Windows check the contents manually by opening the file at `C:\Users\<windows_username>\.zcn` path.
+Note: In windows check the contents manually by opening the file at `C:\Users\<windows_username>\.zcn` path.
 
 ```
 cat config.yaml
@@ -249,9 +250,28 @@ query_sleep_time: 5
 
 ```
 
-Zbox connects to the Züs network using the `block_worker` field. These network details are automatically fetched from the blockWorker's network API. Preferred Blobbers are also present which you can uncomment for using specified storage providers for handling your files.
+Zwallet connects to the Züs network using the `block_worker` field. These network details are automatically fetched from the blockWorker's network API. Preferred Blobbers are also present which you can uncomment for using specified storage providers for handling your files.
 
 **Note:** A block worker URL is a field that require the URL of blockchain network you want to connect to. Change the default value of block_worker field with the following: `http://198.18.0.98:9091/` for the local testnet.
+
+### 3. Run `zwallet` commands
+
+## Global parameters
+
+`zwallet` accepts global parameters to override default configuration and can be used in any command.
+
+| Flags                      | Description                                                                                                    | Usage                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| --config string            | Specify a zbox configuration file (default is [$HOME/.zcn/config.yaml](#zcnconfigyaml))                        | `./zwallet [command] --config config1.yaml`             |
+| --configDir string         | Specify a zbox configuration directory (default is $HOME/.zcn)                                                 | `./zwallet [command] --configDir /$HOME/.zcn2`          |
+| -h, --help                 | Gives more information about a particular command.                                                             | `./zwallet [command] --help`                            |
+| --network string           | Specify a network file to overwrite the network details(default is [$HOME/.zcn/network.yaml](#zcnnetworkyaml)) | `./zwallet [command] --network network1.yaml`           |
+| --silent                  | (default false) Do not show interactive sdk logs (shown by default)                                             | `./zwallet [command] --silent`                         |
+| --wallet string            | Specify a wallet file or 2nd wallet (default is $HOME/.zcn/wallet.json)                                        | `./zwallet [command] --wallet wallet2.json`             |
+| --wallet_client_id string  | Specify a wallet client id (By default client_id specified in $HOME/.zcn/wallet.json is used)                  | `./zwallet [command] --wallet_client_id <client_id>`    |
+| --wallet_client_key string | Specify a wallet client_key (By default client_key specified in $HOME/.zcn/wallet.json is used)                | `./zwallet [command] --wallet_client_key < client_key>` |
+| --fee float                |  transaction fee for the given transaction (if unset, it will be set to blockchain min fee)                    | `./zwallet [command] --fee 0.5` 
+
 
 ### 3. Run `zwallet` commands
 
@@ -427,7 +447,7 @@ List all sharders with the below command.
 ./zwallet ls-sharders --all
 ```
 
-Sample output
+Sample output:
 
 ```
 MagicBlock Sharders
@@ -1305,3 +1325,4 @@ EOF
 ```
 
 Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
+
