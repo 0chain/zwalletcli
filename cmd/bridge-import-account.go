@@ -38,6 +38,15 @@ func init() {
 				}
 			}
 
+			if c.Flags().Changed(OptionBip32) {
+				var err error
+				accountAddrIndex.Bip32, err = c.Flags().GetBool(OptionBip32)
+				if err != nil {
+					ExitWithError(err)
+					return
+				}
+			}
+
 			_, err := zcnbridge.ImportAccount(path, mnemonic, password, accountAddrIndex)
 			if err != nil {
 				ExitWithError(err)
@@ -52,6 +61,7 @@ func init() {
 	cmd.PersistentFlags().String(OptionKeyPassword, "", "Password to lock and unlock account to sign transaction")
 	cmd.PersistentFlags().Int(OptionAccountIndex, 0, "Index of the account to use, default 0")
 	cmd.PersistentFlags().Int(OptionAddressIndex, 0, "Index of the address to use, default 0")
+	cmd.PersistentFlags().Bool(OptionBip32, false, "Use BIP32 derivation path")
 	cmd.PersistentFlags().String(OptionConfigFolder, GetConfigDir(), "Home config directory")
 
 	cmd.MarkFlagRequired(OptionMnemonic)
