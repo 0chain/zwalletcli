@@ -18,17 +18,27 @@ func init() {
 			path := c.Flag(OptionConfigFolder).Value.String()
 			mnemonic := c.Flag(OptionMnemonic).Value.String()
 			password := c.Flag(OptionKeyPassword).Value.String()
-			var addrIdx int
-			if c.Flags().Changed(OptionAddressIndex) {
+			var accountAddrIndex zcnbridge.AccountAddressIndex
+
+			if c.Flags().Changed(OptionAccountIndex) {
 				var err error
-				addrIdx, err = c.Flags().GetInt(OptionAddressIndex)
+				accountAddrIndex.AccountIndex, err = c.Flags().GetInt(OptionAccountIndex)
 				if err != nil {
 					ExitWithError(err)
 					return
 				}
 			}
 
-			_, err := zcnbridge.ImportAccount(path, mnemonic, password, addrIdx)
+			if c.Flags().Changed(OptionAddressIndex) {
+				var err error
+				accountAddrIndex.AddressIndex, err = c.Flags().GetInt(OptionAddressIndex)
+				if err != nil {
+					ExitWithError(err)
+					return
+				}
+			}
+
+			_, err := zcnbridge.ImportAccount(path, mnemonic, password, accountAddrIndex)
 			if err != nil {
 				ExitWithError(err)
 				return
@@ -40,6 +50,7 @@ func init() {
 
 	cmd.PersistentFlags().String(OptionMnemonic, "", "Ethereum mnemonic")
 	cmd.PersistentFlags().String(OptionKeyPassword, "", "Password to lock and unlock account to sign transaction")
+	cmd.PersistentFlags().Int(OptionAccountIndex, 0, "Index of the account to use, default 0")
 	cmd.PersistentFlags().Int(OptionAddressIndex, 0, "Index of the address to use, default 0")
 	cmd.PersistentFlags().String(OptionConfigFolder, GetConfigDir(), "Home config directory")
 
