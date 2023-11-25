@@ -28,7 +28,9 @@ const (
 	OptionChainConfigFile = "chain_config"  // OptionChainConfigFile sdk config filename
 	OptionMnemonic        = "mnemonic"      // OptionMnemonic bridge config filename
 	OptionKeyPassword     = "password"      // OptionKeyPassword bridge config filename
+	OptionAccountIndex    = "account_index" // OptionAccountIndex ethereum account index
 	OptionAddressIndex    = "address_index" // OptionAddressIndex ethereum address index
+	OptionBip32           = "bip32"         // OptionBip32 use bip32 derivation path
 	OptionClientKey       = "client_key"
 	OptionClientID        = "client_id"
 	OptionEthereumAddress = "ethereum_address"
