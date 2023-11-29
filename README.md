@@ -254,23 +254,26 @@ Zwallet connects to the Züs network using the `block_worker` field. These netwo
 
 **Note:** A block worker URL is a field that require the URL of blockchain network you want to connect to. Change the default value of block_worker field with the following: `http://198.18.0.98:9091/` for the local testnet.
 
-### 3. Run `zwallet` commands
+5. Override the nodes by creating a network.yaml file in your `.zcn` directory and add the following lines of code:
 
-## Global parameters
+```
+miners:
+  - http://localhost:7071
+  - http://localhost:7072
+  - http://localhost:7073
+sharders:
+  - http://localhost:7171
+``` 
+Note: The step above is only required when you are deploying testnet from [here](https://github.com/0chain/0chain). 
 
-`zwallet` accepts global parameters to override default configuration and can be used in any command.
 
-| Flags                      | Description                                                                                                    | Usage                                            |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| --config string            | Specify a zbox configuration file (default is [$HOME/.zcn/config.yaml](#zcnconfigyaml))                        | `./zwallet [command] --config config1.yaml`             |
-| --configDir string         | Specify a zbox configuration directory (default is $HOME/.zcn)                                                 | `./zwallet [command] --configDir /$HOME/.zcn2`          |
-| -h, --help                 | Gives more information about a particular command.                                                             | `./zwallet [command] --help`                            |
-| --network string           | Specify a network file to overwrite the network details(default is [$HOME/.zcn/network.yaml](#zcnnetworkyaml)) | `./zwallet [command] --network network1.yaml`           |
-| --silent                  | (default false) Do not show interactive sdk logs (shown by default)                                             | `./zwallet [command] --silent`                         |
-| --wallet string            | Specify a wallet file or 2nd wallet (default is $HOME/.zcn/wallet.json)                                        | `./zwallet [command] --wallet wallet2.json`             |
-| --wallet_client_id string  | Specify a wallet client id (By default client_id specified in $HOME/.zcn/wallet.json is used)                  | `./zwallet [command] --wallet_client_id <client_id>`    |
-| --wallet_client_key string | Specify a wallet client_key (By default client_key specified in $HOME/.zcn/wallet.json is used)                | `./zwallet [command] --wallet_client_key < client_key>` |
-| --fee float                |  transaction fee for the given transaction (if unset, it will be set to blockchain min fee)                    | `./zwallet [command] --fee 0.5` 
+
+
+
+
+
+
+
 
 
 ### 3. Run `zwallet` commands
