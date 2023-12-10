@@ -1,6 +1,6 @@
-# zwallet - a CLI for Züs wallet
+# zwallet - a CLI for Züs wallet 
 
-`zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs.
+ZWallet CLI is a command-line command line interface (CLI) to demonstrate the wallet functionalities of Züs. It provides an interactive way to receive, send, store, stake, and exchange ZCN tokens, as well as fetch information about Züs components such as miners, sharders, and blobbers.
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
 - [Züs Overview](#züs-overview)
@@ -8,11 +8,15 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
   - [Architecture](#architecture)
   - [Getting started](#getting-started)
     - [1. Installation](#1-installation)
-    - [2. Run `zwallet` commands](#2-run-zwallet-commands)
+    - [2. Configure network](#2-configure-network)
+    - [3. Run `zwallet` commands](#3-run-zwallet-commands)
   - [Global parameters](#global-parameters)
   - [Commands](#commands)
     - [Creating and restoring wallets](#creating-and-restoring-wallets)
       - [Creating wallet - (any command)](#creating-wallet---any-command)
+      - [Creating a wallet if none exists](#creating-a-wallet-if-none-exists)
+      - [Creating wallet with faucet command](#creating-wallet-with-faucet-command)
+      - [Creating additional wallet with faucet command](#creating-additional-wallet-with-faucet-command)
       - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
     - [Exploring network nodes](#exploring-network-nodes)
       - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
@@ -22,7 +26,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Getting Auhorizer Configuration - `bridge-auth-config`](#get-authorizer-configuration)
       - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
       - [Getting Storage Smart Contract Configuration - `sc-config`](#show-storage-smart-contract-configuration)
+      - [Updating Storage Smart Contract Configuration - `sc-update-config`](#updating-storage-smart-contract-configuration)
       - [Getting Global Configuration - `global-config`](#show-global-configurations)
+      - [Updating Global Configuration - `global-update-config`](#updating-global-configuration)
       - [Get Version - `get-version`](#get-version)
     - [Getting and sending tokens](#getting-and-sending-tokens)
       - [Getting tokens with Faucet smart contract - `faucet`](#getting-tokens-with-faucet-smart-contract---faucet)
@@ -32,35 +38,38 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Collect rewards - `collect-reward`](#collect-rewards)  
     - [Staking on miners and sharders](#staking-on-miners-and-sharders)
       - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
-      - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
+      - [Getting a miner or sharder info for staking-`mn-info`](#getting-a-miner-or-sharder-information-for-staking---mn-info)
       - [Locking a stake on a node - `mn-lock`](#locking-a-stake-on-a-node---mn-lock)
     - [Getting the stake pools of a wallet - `mn-user-info`](#getting-the-stake-pools-of-a-wallet---mn-user-info)
       - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
       - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
       - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+      - [Updating the miner smart contract configuration - `mn-update-config`](#updating-miner-smart-contract-configuration)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
 
+
+
 ## Züs Overview 
 
-[Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, and can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
+[Züs](https://zus.network/) is a high-performance cloud on a fast blockchain offering privacy and configurable uptime. It is an alternative to traditional cloud S3 and has shown better performance on a test network due to its parallel data architecture. The technology uses erasure code to distribute the data between data and parity servers. Züs storage is configurable to provide flexibility for IT managers to design for desired security and uptime, can design a hybrid or a multi-cloud architecture with a few clicks using [Blimp's](https://blimp.software/) workflow, and can change redundancy and providers on the fly.
 
-For instance, the user can start with 10 data and 5 parity providers and select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, performance, or switch to a lower cost provider.
+For instance, the user can start with 10 data and 5 parity providers and select where they are located globally, and later decide to add a provider on-the-fly to increase resilience, and performance or switch to a lower-cost provider.
 
-Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows the user to improve their regulatory, content distribution, and security requirements with a true multi-cloud architecture. Users can also construct a private cloud with all of their own servers rented across the globe to have a better content distribution, highly available network, higher performance, and lower cost.
+Users can also add their own servers to the network to operate in a hybrid cloud architecture. Such flexibility allows users to improve their regulatory obligations, content distribution, and security requirements with an authentic multi-cloud architecture. Users can also construct a private cloud with all their own servers rented across the globe to have better content distribution, a highly available network, higher performance, and lower cost.
 
 [The QoS protocol](https://medium.com/0chain/qos-protocol-weekly-debrief-april-12-2023-44524924381f) is time-based where the blockchain challenges a provider on a file that the provider must respond within a certain time based on its size to pass. This forces the provider to have a good server and data center performance to earn rewards and income.
 
 The [privacy protocol](https://zus.network/build) from Züs is unique where a user can easily share their encrypted data with their business partners, friends, and family through a proxy key sharing protocol, where the key is given to the providers, and they re-encrypt the data using the proxy key so that only the recipient can decrypt it with their private key.
 
-Züs has ecosystem apps to encourage traditional storage consumption such as [Blimp](https://blimp.software/), a S3 server and cloud migration platform, and [Vult](https://vult.network/), a personal cloud app to store encrypted data and share privately with friends and family, and [Chalk](https://chalk.software/), a high-performance story-telling storage solution for NFT artists.
+Züs has ecosystem apps to encourage traditional storage consumption, such as [Blimp](https://blimp.software/), a S3 server and cloud migration platform, and [Vult](https://vult.network/), a personal cloud app to store encrypted data and share privately with friends and family, and [Chalk](https://chalk.software/), a high-performance story-telling storage solution for NFT artists.
 
 Other apps are [Bolt](https://bolt.holdings/), a wallet that is very secure with air-gapped 2FA split-key protocol to prevent hacks from compromising your digital assets, and it enables you to stake and earn from the storage providers; [Atlus](https://atlus.cloud/), a blockchain explorer and [Chimney](https://demo.chimney.software/), which allows anyone to join the network and earn using their server or by just renting one, with no prior knowledge required.
 
 ## Architecture
 
-`zwallet` can be configured to work with any Züs network. It uses a config and a wallet file stored on the local filesystem.
+Users can configure `zwallet` to work with any Züs network. It uses a config and a wallet file stored on the local filesystem.
 
 For most transactions, `zwallet` uses the `0dns` to discover the network nodes, then creates and submits transaction(s) to the miners, and finally waits for transaction confirmation on the sharders.
 
@@ -70,74 +79,237 @@ For most transactions, `zwallet` uses the `0dns` to discover the network nodes, 
 
 ### 1. Installation
 
-**Prerequisites**
+* [Linux Installation](#linux-installation)
+* [Mac Installation](#mac-installation)
+* [Windows Installation](#windows-installation)
 
-- Go: Installation instructions for Mac, Linux and Windows can be found [here](https://go.dev/doc/install).
+#### Linux Installation
 
-**Procedures**
+**Note:** zwallet binaries are designed to function optimally with gcc 11 as the default compiler. Notably, Ubuntu 22 is equipped with gcc 11 by default. However, Ubuntu 20 initially comes with gcc 9. To upgrade the gcc version, execute the following commands:
 
-1. Clone the `zwalletcli` repo and install
-
-```sh
-git clone https://github.com/0chain/zwalletcli.git
-cd zwalletcli
-make install
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install build-essential
+sudo apt install gcc-11 g++-11
 ```
 
-2. Add config yaml at `~/.zcn/config.yaml`
+1. Download the latest linux zwalletcli release file `zwallet-linux.tar.gz` from [here](https://github.com/0chain/zwalletcli/releases/latest).
 
-The following script sets `https://demo.zus.network` as your network.
+2. The zip file will be downloaded in `Downloads` directory of your system. Open terminal,navigate to `Downloads` directory and extract the downloaded archive to `/usr/local/bin` path using the commands below.
 
-```sh
-cat > ~/.zcn/config.yaml << EOF
-block_worker: https://demo.zus.network/dns
-signature_scheme: bls0chain
-min_submit: 50 # in percentage
-min_confirmation: 50 # in percentage
-confirmation_chain_length: 3
-EOF
 ```
-3. Run `zwallet` to display the list of supported commands.
+cd Downloads
+sudo tar -xzf zwallet-linux.tar.gz --directory /usr/local/bin
+```
 
-```sh
+3. Navigate to the extracted directory path.
+
+```
+cd /usr/local/bin
+``` 
+
+4. Run the zwallet executable by using the command below.
+
+```
 ./zwallet
 ```
-----
-For detailed steps on the installation, follow the guides below:
 
-- [How to build on Linux/Mac](https://github.com/0chain/zwalletcli/wiki/Build-on-Linux-and-Mac)
-- [How to build on Windows](https://github.com/0chain/zwalletcli/wiki/Build-Windows)
+On successful installation you will see a help section:
 
-### 2. Run `zwallet` commands
+```
+Use Zwallet to store, send and execute smart contract on 0Chain platform.
+                      
 
-The following steps assume that your terminal's working directory is inside the `zwalletcli` repo.
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+  
+Use "zwallet [command] --help" for more information about a command.
+```
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on the terminal.
+
+#### Windows Installation
+
+1. Download the latest windows zwalletcli zip file `zwallet-windows.zip` from [here](https://github.com/0chain/zwalletcli/releases/latest).
+2. By default, the zip file will be downloaded in `Downloads` directory of your system(C:\Users\<your_windows_username>\Downloads). Extract the executable and dll files from archive `zwallet-windows.zip` file into a directory of your choice.
+
+   **Note:** In case the zip file lack the necessary DLL files, kindly download them from [here](https://github.com/0chain/zboxcli/files/11840033/windows.dll.s.zip) and proceed to manually copy and paste these 
+   files into the extracted executable directory path.
+
+3. Open Windows Command prompt and navigate to directory where you have extracted the  `zwallet-windows.zip`  files and run the executable using `zwallet` command. See screenshot for reference.
+
+![windows command prompt](https://github.com/0chain/gitbookdocs/assets/65766301/27dfea98-db56-4462-87f1-12a6015d9c58)
+
+4. On successful installation you will see a help section similar to response below  :&#x20;
+
+```
+Use Zwallet to store, send and execute smart contract on 0chain platform.
+                        
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+
+```
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on windows command prompt.
+
+#### Mac Installation
+
+1. Download the latest mac zwalletcli release file `zwallet-macos.tar.gz` release from [here](https://github.com/0chain/zwalletcli/releases/latest).
+
+2. The zip file will be downloaded in `Downloads` directory of your system. Open terminal, navigate to `Downloads` directory and extract the downloaded archive to `/usr/local/bin` path using the commands below.
+
+```
+cd Downloads/
+sudo tar -xzf zwallet-macos.tar.gz --directory /usr/local/bin
+```
+Note: There can be a chance running above command on terminal will trigger a prompt to install Xcode Command Line Tools if you donot have them installed already. You'll see a panel similar to screenshot below that asks you to install Xcode Command Line Tools. Click 'Install' to begin the download and installation process. 
+
+![install-Xcode-CLT](https://github.com/0chain/gitbookdocs/assets/65766301/403a8315-7593-4ace-ab89-6b8d1fe6554b)
+
+3. Navigate to extracted directory path.
+
+```
+cd /usr/local/bin
+```
+
+4. Run the zwallet executable using the command below.
+
+```
+./zwallet
+```
+
+On successful installation you will see a help section similar to response below:
+
+```
+Use Zwallet to store, send and execute smart contract on 0Chain platform.
+                      
+
+Usage:
+  zwallet [command]
+
+Available Commands:
+  auth-register             Register an authorizer manually
+  auth-sc-delete            Deletes an authorizer to token bridge SC manually
+  auth-sc-register          Register an authorizer to token bridge SC manually
+  
+Use "zwallet [command] --help" for more information about a command.
+```
+
+5. To rerun zwalletcli at later time repeat steps 3 and 4 on the terminal.
+
+### 2. Configure network
+
+1. Copy the contents from [config.yaml](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) file and save it as `config.yaml` file on `Desktop` of your system .
+
+2. Open terminal and make a new .zcn folder in the home linux and mac directory using the command below:
+
+```
+mkdir $HOME/.zcn
+```
+Note: For windows manually create a folder named `.zcn` at `C:\Users\<windows_username>`path.
+
+3. Copy `config.yaml` from desktop into `$HOME/.zcn` directory in mac and linux using the command below:
+
+```
+cp /Users/<your_mac_or_linux_username>/Desktop/config.yaml $HOME/.zcn
+```
+Note: For windows manually copy paste the `config.yaml` file into `C:\Users\<windows_username>\.zcn` path.
+
+4. Verify the contents of config file in Linux and Mac using the command below:
+
+Note: In windows check the contents manually by opening the file at `C:\Users\<windows_username>\.zcn` path.
+
+```
+cat config.yaml
+```
+
+Response:
+```
+---
+block_worker: https://demo.zus.network/dns
+signature_scheme: bls0chain
+min_submit: 50
+min_confirmation: 50
+confirmation_chain_length: 3
+max_txn_query: 5
+query_sleep_time: 5
+# # OPTIONAL - Uncomment to use/ Add more if you want
+# preferred_blobbers:
+#   - http://demo.zus.network:31051
+#   - http://demo.zus.network:31052
+#   - http://demo.zus.network:31053
+
+```
+
+Zwallet connects to the Züs network using the `block_worker` field. These network details are automatically fetched from the blockWorker's network API. Preferred Blobbers are also present which you can uncomment for using specified storage providers for handling your files.
+
+**Note:** A block worker URL is a field that require the URL of blockchain network you want to connect to. Change the default value of block_worker field with the following: `http://198.18.0.98:9091/` for the local testnet.
+
+5. Override the nodes by creating a network.yaml file in your `.zcn` directory and add the following lines of code:
+
+```
+miners:
+  - http://localhost:7071
+  - http://localhost:7072
+  - http://localhost:7073
+sharders:
+  - http://localhost:7171
+``` 
+Note: The step above is only required when you are deploying testnet from [here](https://github.com/0chain/0chain). 
+
+
+
+
+
+
+
+
+
+
+
+### 3. Run `zwallet` commands
 
 ## Global parameters
 
-`zwallet` accept global parameters to override default configuration and can be used in any command.
+`zwallet` accepts global parameters to override default configuration and can be used in any command.
 
-| Parameter     | Description                     | Default        |
-| ------------- | ------------------------------- | -------------- |
-| `--h,--help`  | Show help/parameters for a particular command                       |                |
-| `--config`    | [Config file](https://github.com/0chain/zwalletcli/blob/staging/network/config.yaml) and [description](https://github.com/0chain/zwalletcli#zcnconfigyaml)   | `config.yaml`  |
-| `--configDir` | Config directory                | `~/.zcn`       |
-| `--network`   | [Network file](#override-network) | `network.yaml` |
-| `--silent`    | Do not print detailed logs      | `false`        |
-| `--wallet`    | Wallet file                     | `wallet.json`  |
-| `--withNonce` | Nonce that will be used in transaction    | `0`  |
-| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
+| Flags                      | Description                                                                                                    | Usage                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| --config string            | Specify a zbox configuration file (default is [$HOME/.zcn/config.yaml](#zcnconfigyaml))                        | `./zwallet [command] --config config1.yaml`             |
+| --configDir string         | Specify a zbox configuration directory (default is $HOME/.zcn)                                                 | `./zwallet [command] --configDir /$HOME/.zcn2`          |
+| -h, --help                 | Gives more information about a particular command.                                                             | `./zwallet [command] --help`                            |
+| --network string           | Specify a network file to overwrite the network details(default is [$HOME/.zcn/network.yaml](#zcnnetworkyaml)) | `./zwallet [command] --network network1.yaml`           |
+| --silent                  | (default false) Do not show interactive sdk logs (shown by default)                                             | `./zwallet [command] --silent`                         |
+| --wallet string            | Specify a wallet file or 2nd wallet (default is $HOME/.zcn/wallet.json)                                        | `./zwallet [command] --wallet wallet2.json`             |
+| --wallet_client_id string  | Specify a wallet client id (By default client_id specified in $HOME/.zcn/wallet.json is used)                  | `./zwallet [command] --wallet_client_id <client_id>`    |
+| --wallet_client_key string | Specify a wallet client_key (By default client_key specified in $HOME/.zcn/wallet.json is used)                | `./zwallet [command] --wallet_client_key < client_key>` |
+| --fee float                |  transaction fee for the given transaction (if unset, it will be set to blockchain min fee)                    | `./zwallet [command] --fee 0.5` 
+
 
 ## Commands
 
 ### Creating and restoring wallets
-
 #### Creating wallet - (any command)
+You can create a wallet in two ways.
+1) Use the `create-wallet` or
+2) Use the `faucet` command
 
-Simply run  `create-wallet` command and it will create a wallet if none exist yet.
+##### Creating a wallet if none exists
+
+Run the `create-wallet` command to create a wallet if none exists.
 
 ![create wallet](docs/createwallet.png "Create wallet")
 
-Here is a sample with `create-wallet` command and this creates a wallet at default location`~/.zcn/wallet.json`
+Here is a sample with `create-wallet` command and this creates a wallet at the default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet create-wallet
@@ -145,7 +317,7 @@ Here is a sample with `create-wallet` command and this creates a wallet at defau
 Sample Output 
 
 ```
-wallet saved in /home/ubuntu/.zcn/wallet.json
+wallet saved in /home/.../.zcn/wallet.json
 {"client_id":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 "client_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 "keys":[{"public_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -154,37 +326,51 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
 
 ```
-Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
+
+If there is an existing wallet in the .zcn directory, and you run `./zwallet create-wallet`, you will get a message - 
+```
+..wallet already exists at \..\.zcn\wallet.json
+```
+Below is a list of flags that can be specified with the `create-wallet` command.
+| Flags        | Description                                        | Usage                              | 
+| ------------ | ---------------------------------------------------| -----------------------------------|
+|  `--help`      | help for create-wallet                             | `./zwallet create-wallet --help`   | 
+| `--silent`   | do not print wallet details in the standard output | `./zwallet create-wallet --silent` |  
+| `--wallet`   | give custom name to the wallet                     | `./zwallet create-wallet --wallet` |
+
+
+#### Creating wallet with 'faucet' command
+Here is a sample `faucet` command, and this creates a wallet at default location`~/.zcn/wallet.json`
 
 ```sh
 ./zwallet faucet --methodName pour --input "new wallet"
 ```
+**Verify wallet creation**
 
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
+You can verify the wallet creation by checking your .zcn folder for the corresponding wallet name.
 
-```sh
-./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
-```
-
-Sample Output
-```
-No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
-ZCN wallet created!!
-Creating related read pool for storage smart-contract...
-Read pool created successfully
-```
-
-Verify second wallet
+#### Creating additional wallet with 'faucet' command
+You can create more wallets with the faucet command with a wallet name of your choice. The `faucet` command to create a second wallet at the location `~/.zcn/` is as follows.
 
 ```sh
-cat ~/.zcn/new_wallet.json
+./zwallet faucet --methodName pour --input "new wallet" --wallet my_fifth_wallet.json
 ```
+
+Sample Output (Windows)
+```
+******* Wallet SDK Version:v1.8.17-78-g80b63345 ******* (InitZCNSDK)
+No wallet in path  C:\Users\..\.zcn\my_fifth_wallet.json found. Creating wallet...
+ZCN wallet created!!.. Execute faucet smart contract success with txn:  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+**Verify wallet creation**
+
+You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
 #### Recovering wallet - `recoverwallet`
 
 `recoverwallet` is used when restoring a lost wallet or when loading the wallet from a different computer.
 
-Given a wallet's mnemonics, you can recover and recreate your wallet.
+Given a wallet's mnemonics, you can recover and recreate your wallet. The following flags work with `recoverwallet`  
 
 | Parameter    | Required | Description                            | Default | Valid Values |
 | ------------ | -------- | -------------------------------------- | ------- | ------------ |
@@ -193,35 +379,33 @@ Given a wallet's mnemonics, you can recover and recreate your wallet.
 
 ![recover wallet](docs/recoverwallet.png "Recover wallet")
 
-Sample command
+Sample command using `--mnemonic`
 
 ```sh
 ./zwallet recoverwallet --wallet recovered_wallet.json --mnemonic "pull floor crop best weasel suit solid gown filter kitten loan absent noodle nation potato planet demise online ten affair rich panel rent sell"
 ```
-
-Sample output
+Sample output using `--mnemonic` or combined with  `--offline`
 
 ```
 Wallet recovered!!
 ```
+**Verify recovered wallet**
 
-Verify recovered wallet
+You can verify the recovered wallet by checking your .zcn folder for the corresponding wallet name.
 
-```sh
-cat ~/.zcn/recovered_wallet.json
-```
 ### Exploring network nodes
 
 #### Listing all miners - `ls-miners`
 
 The list of miners are retrieved using the Miner smart contract.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter | Required | Description          | Default |   
+| --------- | -------- | -------------------- | ------- |
+| `--json`  | No       | Print output as JSON |         |
 
 ![List miner nodes](docs/ls-miners.png "List miner nodes")
 
+View the list of miners with the following command.
 ```sh
 ./zwallet ls-miners
 ```
@@ -240,22 +424,33 @@ Sample output
 - Port:       31202
 ```
 
+You can use various flags below to customize your usage with `ls-miners` for example - `./zwallet ls-miners --active`.
+
+| Parameter                  | Description                     | Default        |
+| -------------------------- | ------------------------------- | -------------- |
+| `--active`                 | Gets list of active miners only |                |
+| `--all`              | Includes all registered miners    |   |
+| `--json`                    | Print response as JSON data      |   |
+| `--limit`                    | Limits the number of miners returned      | (default 20)  |
+| `--offset`                    | Skips the number of miners mentioned      |   |
+
 #### Listing all sharders -`ls-sharders`
 
 The list of sharders are retrieved using the latest finalized magic block. All registered sharders can be retrieved with the `--all` parameter.
 
-| Parameter | Required | Description                             | Default | Valid Values      |
-| --------- | -------- | --------------------------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
-| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
+| Parameter | Required | Description                             | Default | 
+| --------- | -------- | --------------------------------------- | ------- | 
+| `--json`  | No       | Print output as JSON                    |         |
+| `--all`   | No       | Print also registered nodes on Miner SC |         |
 
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
+List all sharders with the below command.
 ```sh
 ./zwallet ls-sharders --all
 ```
 
-Sample output
+Sample output:
 
 ```
 MagicBlock Sharders
@@ -287,6 +482,15 @@ ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
   - Port: 31102
 
 ```
+You can use various flags below to customize your usage with `ls-sharders` for example - `./zwallet ls-sharders --active`.
+
+| Parameter                  | Description                     | Default        |
+| -------------------------- | ------------------------------- | -------------- |
+| `--active`                 | Gets list of active sharders only |                |
+| `--all`              | Includes all registered sharders    |   |
+| `--json`                    | Print response as JSON data     |   |
+| `--limit`                    | Limits the number of sharders returned      | (default 20)  |
+| `--offset`                    | Skips the number of sharders mentioned      |   |
 
 #### Listing all blobbers - `getblobbers`
 
@@ -294,6 +498,7 @@ The list of blobbers are retrieved using the Storage smart contract.
 
 ![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
+List all blobbers with the below command.
 ```sh
 ./zwallet getblobbers
 ```
@@ -312,7 +517,7 @@ Blobbers:
 
 `./zwallet bridge-list-auth ` command can be used to list all authorizers available to validate client transactions.
 
-**Sample Command:**
+**Sample Command to list authorizers:**
 
 ```
 ./zwallet bridge-list-auth
@@ -338,14 +543,14 @@ Blobbers:
 ```
 
 #### Get Authorizer Configuration
-`./zwallet bridge-auth-config `command can be used to view authorizer configuration. Here are the parameters for the command.
+`./zwallet bridge-auth-config` command can be used to view the authorizer configuration. Here are the parameters for the command.
 
 | Parameter | Required | Description                                       |
 | --------- | -------- | ------------------------------------------------- |
-| --id      | Yes      | Provide Authorizer ID to view its configuration . |
+| --id      | Yes      | Provide Authorizer ID to view its configuration. |
 | --help    |          | Syntax Help for the command                       |
 
-Sample Command:
+Sample command to list details of an Authorizer's configuration.:
 
 ```
 ./zwallet bridge-auth-config --id $AUTHORIZER_ID
@@ -378,7 +583,7 @@ Print the ID of a blockchain node.
 
 ![Get node ID](docs/getid.png "Get node ID")
 
-
+Command to get the ID of a blockchain node.
 ```sh
 ./zwallet getid --url http://demo1.zus.network:31101
 ```
@@ -392,11 +597,11 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 #### Show Storage Smart Contract Configuration
 
-`./zwallet sc-config ` command displays current storage smart contract configuration  
+`./zwallet sc-config ` command displays the current storage smart contract configuration.  
 
-Sample Command: 
+Sample command to display storage smart contract configuration: 
 ```
-./zbox sc-config
+./zwallet sc-config
 ```
 Sample Response :
 ```
@@ -475,6 +680,32 @@ validator_reward         0.025
 validators_per_challenge         2
 writepool.min_lock       0.1
 ```
+You can also use the `--json` flag with the `sc-config ` command
+
+| Parameter | Description                             |  
+| --------- | --------------------------------------- |  
+| `--json`  | Print output as JSON                    |      
+
+
+#### Updating Storage Smart Contract Configuration
+
+Update storage smart contract settings. 
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in storage smart contract configuration.The variables are mentioned in [Show Storage Smart Contract Configuration](#show-storage-smart-contract-configuration) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command for updating max read price:
+```shell
+./zwallet sc-update-config --keys "max_read_price"  --values "80" --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+storagesc smart contract settings updated Hash: <TRANSACTION_HASH>
+```
 
 #### Get Version 
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
@@ -489,8 +720,21 @@ Version info:
         zwallet...:  v1.2.3-21-gb10c459
         gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
 ```
+
+You can also use the `--json` flag with the `./zwallet version ` command
+
+| Parameter | Description                             |  
+| --------- | --------------------------------------- |  
+| `--json`  | Print output as JSON                    |  
+
+Sample Response :
+```
+{"gosdk":"v1.8.18-0.20230901213317-53d640a9b7f9","zwallet":"v1.10.0-6-gd0f62a4"}
+```
+
+
 #### Show global configurations 
-`./zwallet global-config ` command displays global chain configuration 
+`./zwallet global-config ` command displays the global chain configuration 
 
 Sample Command :
 ```
@@ -570,6 +814,26 @@ server_chain.transaction.timeout         600
 server_chain.view_change         false
 ```
 
+#### Updating global configuration 
+
+Update global settings. 
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in global configuration.The variables are mentioned in [Show Global Configuration](#show-global-configurations) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command:
+```shell
+./zwallet global-update-config --keys server_chain.block.generators_percent --values 0.15 --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+global settings updated Hash: <TRANSACTION_HASH>
+```
+
 ### Getting and sending tokens
 
 #### Getting tokens with Faucet smart contract - `faucet`
@@ -577,7 +841,7 @@ server_chain.view_change         false
 Tokens can be retrieved and added to your wallet through the Faucet smart contract.
 
 | Parameter      | Required | Description                                                  | Default | Valid Values     |
-| -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
 | `--methodName` | Yes      | Smart Contract method to call (`pour` - get tokens, `refill` - return tokens) |         | `pour`, `refill` |
 | `--input`      | Yes      | Request description                                          |         | any string       |
 | `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
@@ -590,16 +854,16 @@ The following command will give 1 token to the default wallet.
 ./zwallet faucet --methodName pour --input "need token"
 ```
 
-The following command will return 0.5 token to faucet.
+You can specify the number of tokens required using the following command for adding 5 tokens with --tokens 5
 
 ```sh
-./zwallet faucet --methodName refill --input "not using" --tokens 0.5
+./zwallet faucet --methodName pour --input "need token" --tokens 5
 ```
 
-Sample output from `faucet` prints the transaction
+Sample output from `faucet` prints the transaction.
 
 ```
-Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
+Execute faucet smart contract success with txn:  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
 ```
 
 #### Checking balance - `getbalance`
@@ -632,7 +896,7 @@ To check the balance of another wallet, use `--wallet` global parameter.
 
 ![Send tokens to another wallet](docs/send.png "Send tokens to another wallet")
 
-Transferring tokens from a wallet to another is done through `send`
+Transferring tokens from one wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
@@ -647,10 +911,11 @@ The following sends 0.2 token from the default wallet to the specified client ID
 ./zwallet send --to_client_id e7ebb698213b6bda097c0a14ccbe574356e99e9b666e4baeae540da1d9b51e7e --tokens .2 --desc "gift"
 ```
 
-Output
+Output sample
 
 ```
-Send tokens success
+Send tokens success:  820af3d7b66bceae1a7a6d2eaed58a279a65feebf0afbec59bb89f61e81e2c11
+
 ```
 
 To use a different wallet as sender, use `--wallet` global parameter.
@@ -667,7 +932,7 @@ To use a different wallet as sender, use `--wallet` global parameter.
 | --------- | -------- | ----------------------------- | ------- | ---------------------- |
 | `--hash`  | Yes      | Hash of transaction to verify |         | valid transaction hash |
 
-Note: Not all `zwallet` commands (eg. `send`) prints the transaction hash created. To see more details printed including the hashes, use `--verbose` global parameter.
+Note: Not all `zwallet` commands (e.g, `send`) prints the transaction hash created. To see more details printed, including the hashes, use `--verbose` global parameter.
 
 ![Verify transaction confirmation](docs/verify.png "Verify transaction confirmation")
 
@@ -690,8 +955,8 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```
 #### Collect rewards
 
-Use `collect-reward` to transfer reward tokens from a stake pool.The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
-You earn rewards for: Sharders and Miners
+Use `collect-reward` to transfer reward tokens from a stake pool. The stake pool keeps an account of all stakeholders to maintain accrued rewards. 
+You earn rewards for Sharders and Miners.
 
 - `Miners` produce blocks.
 - `Sharders` stores the blockchain and other related data, such as the event database. They also support a query REST API.
@@ -704,17 +969,18 @@ You earn rewards for: Sharders and Miners
 Sample Command :
 
 ```
-./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
+./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
+
 ### Staking on miners and sharders
 
-[Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
+[Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/README.md) allows staking on the miner and sharder nodes.
 
-The maximum number of stake pools per node is limited to the number of delegates allowed. To find out the number of delegates and the minimum and maximum tokens allowed, query the staking config.
+The maximum number of stake pools per node is limited to the number of delegates allowed. To determine the number of delegates and the minimum and maximum tokens allowed, query the staking config.
 
 #### Getting the staking config - `mn-config`
 
-`mn-config` display the global info of Miner SC for staking.
+`mn-config` displays the global info of Miner SC for staking.
 
 ![Miner SC global info](docs/mn-config.png "Miner SC global info")
 
@@ -748,7 +1014,7 @@ minted:                928552.464
 max_delegates:         200
 ```
 
-#### Getting a miner or sharder info for staking - `mn-info`
+#### Getting a miner or sharder information for staking - `mn-info`
 
 Node stats for staking are retrieved from Miner SC.
 
@@ -767,7 +1033,7 @@ Sample command
 Sample output
 
 ```json
-{"simple_miner":{"id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","n2n_host":"five.devnet-0chain.net","host":"five.devnet-0chain.net","port":31102,"path":"sharder02","public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22","short_name":"localhost.s02","build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813","total_stake":0,"delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"sharder_rewards":1160553450000000},"node_type":"sharder","last_health_check":1619554377},"pending":{"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{"stats":{"delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"}}}}}
+{"simple_miner":{"id":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","n2n_host":"demo.zus.network","host":"demo.zus.network","port":31102,"path":"sharder02","public_key":"458170c28496333426f9866989f7b335564d13d00f50db503275e7ec50a008031764ba5df42c20c85d76e7fe7eda43f39afdb650b8ffa9ed340e6fc50c35ae22","short_name":"localhost.s02","build_tag":"50fb047353c4c3d268c0e0ebfd8e63f1d10c6813","total_stake":0,"delegate_wallet":"68ed8f16e1d50e3217425b3e98fb7a39e5d7201fe4b1dccfe8477b5c54761b24","service_charge":0.1,"number_of_delegates":10,"min_stake":0,"max_stake":1000000000000,"stat":{"sharder_rewards":1160553450000000},"node_type":"sharder","last_health_check":1619554377},"pending":{"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f":{"stats":{"delegate_id":"133807913c66ec0b4342612f23fecd1852b456152433b8380cd2abcd411d4c07","high":0,"low":-1,"interest_paid":0,"reward_paid":0,"number_rounds":0,"status":"PENDING"},"pool":{"pool":{"id":"01978379a586de2882638345e215baaf8382093609d910da5ac1a833e2814f6f","balance":10000000000},"lock":{"delete_view_change_set":false,"delete_after_view_change":0,"owner":"ff12c78ee4a985b4fc2ac52ec8a24e9df2bd912636da15437b0eb7707b99abf4"}}}}}
 ```
 
 Reformatted output
@@ -824,9 +1090,9 @@ Reformatted output
 
 #### Locking a stake on a node - `mn-lock`
 
-Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime although have to wait for the next view change cycle.
+Staking tokens on a node gains additional tokens over time. Tokens locked for staking can be unlocked anytime, although you have to wait for the next view change cycle.
 
-Note however that if a node becomes offline, all stake pools are automatically unlocked and tokens are returned to wallets.
+Note, however, that if a node becomes offline, all stake pools are automatically unlocked, and tokens are returned to wallets.
 
 | Parameter  | Required | Description                                                  | Default | Valid Values |
 | ---------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
@@ -838,7 +1104,7 @@ Note however that if a node becomes offline, all stake pools are automatically u
 Sample command
 
 ```sh
-./zwallet mn-lock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --tokens 1
+./zwallet mn-lock --miner_id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --tokens 1
 ```
 
 The output would print the stake pool id.
@@ -851,7 +1117,7 @@ If the locking of stakes is failing, verify the following.
 
 1. Wallet has enough tokens
 2. Node ID is valid
-3. Node has available delegate
+3. Node has an available delegate
 
 ### Getting the stake pools of a wallet - `mn-user-info`
 
@@ -974,13 +1240,13 @@ Reformatted output
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
 ```sh
-./zwallet mn-unlock --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
+./zwallet mn-unlock --miner_id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a
 ```
 
 Output
 
 ```
-tokens will be unlocked next VC
+tokens unlocked.
 ```
 
 Tokens are released on the next view change cycle or at the next reward round.
@@ -999,11 +1265,37 @@ Staking config can only be updated by the node's delegate wallet.
 
 ![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
 
-Sample command
+Sample command:
 
 ```sh
 ./zwallet mn-update-settings --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --max_stake 1000000000000 --min_stake 10000000 --num_delegates 25
 ```
+
+Sample Response:
+```
+settings updated Hash: <TRANSACTION_HASH>
+```
+
+#### Updating miner smart contract configuration 
+
+Update the miner smart contract config.
+
+| Parameter      | Required | Description                                                  | Default | Valid Values     |
+| -------------- | ----- | ------------------------------------------------------------ | ------- | ---------------- |
+| `--keys` | Yes      | Name of variable to change in miner smart contract configuration. The variables are mentioned in [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config) sample response. |        | any strings
+| `--values`      | Yes      | Specify new values                    |         | any strings       |
+
+Note: The config can only be updated using chain owner wallet. See command below for reference:
+
+Sample Command for changing max stake:
+```shell
+./zwallet mn-update-config --keys max_stake --values 90 --wallet chain_owner_wallet.json
+```
+Sample Response:
+```shell
+storagesc smart contract settings updated Hash: <TRANSACTION_HASH>
+```
+
 ## Config
 
 ### ~/.zcn/config.yaml
@@ -1036,3 +1328,4 @@ EOF
 ```
 
 Overriding the nodes can be useful in local chain setup. In some cases, the block worker might return URLs with IP/alias only accessible within the docker network.
+
