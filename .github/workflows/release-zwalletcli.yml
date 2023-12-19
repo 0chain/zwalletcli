@@ -14,7 +14,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GOSDK }}
-  
+
 jobs:
   build-linux:
     name: Build-Linux
@@ -23,7 +23,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -31,11 +31,11 @@ jobs:
 
     - name: Install
       run: make install
-      
+
     - name: Get Branch
       id: get_version
       run: |
-        VERSION=$(echo ${GITHUB_REF#refs/heads/}) 
+        VERSION=$(echo ${GITHUB_REF#refs/heads/})
         echo ::set-output name=TAG::${VERSION}
 
     - name: Zip release
@@ -69,7 +69,7 @@ jobs:
         delete_release: true # default: false
         tag_name: v0.0.0 # tag name to delete
         repo: 0chain/zwalletcli # target repo (optional). defaults to repo running this action
-        
+
     - name: Create Release for Fixed v0.0.0
       if: github.event.inputs.fixed_tag == 'yes' && steps.get_version.outputs.TAG == 'master'
       uses: zendesk/action-create-release@v1
@@ -78,52 +78,83 @@ jobs:
         release_name: v0.0.0
         draft: false
         prerelease: false
-        
+
 ############################### v*.*.* #############################
 
     - name: Create Release for Next Version
       id: create_release_next_version
-      uses: zendesk/action-create-release@v1 
+      uses: zendesk/action-create-release@v1
       with:
         draft: false
         prerelease: false
         auto_increment_type: ${{ github.event.inputs.version_tag }}
         tag_schema: semantic
-        
+
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
         name: zwallet-linux
         path: zwallet
         retention-days: 5
-        
+
   build-windows:
-    name: Build-Windows
+    name: Build-windows
     runs-on: windows-runner
-    
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+     matrix:
+      sys: [ MINGW64 ]
     steps:
-      - name: Setup go
-        uses: actions/setup-go@v3
+      - uses: msys2/setup-msys2@v2
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          msystem: ${{matrix.sys}}
+
+      - name: Install libraries
+        run: |
+          echo 'Y'| pacman -S base-devel git gcc make
+
+      - name: Install Clang and Go for MINGW64
+        run: |
+         echo 'y'| pacman -S  mingw-w64-x86_64-clang mingw-w64-x86_64-go zip unzip
+
+      - name: Set environment variables
+        run: |
+           export GOROOT=/mingw64/lib/go
+           export GOPATH=/mingw64
+           export PATH=$PATH:$GOROOT/bin
+           export PATH=$PATH:/usr/bin/7z
+
+           # use clang as a default compiler for CGO
+           go env -w "CC=/mingw64/bin/clang.exe"
+
       - name: Checkout
         uses: actions/checkout@v2
-    
+
       - name: Install
         run: make install
-          
+
       - name: Zip release
         run: |
-          copy zwallet zwallet.exe
-          7z a zwallet-windows.zip zwallet.exe
+          # download dll files
+          wget https://github.com/0chain/zboxcli/files/11840033/windows.dll.s.zip
+          unzip -o windows.dll.s.zip
+          cp zwallet zwallet.exe
+          zip zwallet-windows.zip zwallet.exe libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
         with:
-          name: zwallet-windows
-          path: zwallet
+          name: zwallet-windows.zip
+          path: zwallet-windows.zip
           retention-days: 5
-  
+
+      - name: cleanup workspace
+        run: |
+            rm -Recurse ${{github.workspace}}\*
+        shell: powershell
+
   build-macos:
     name: Build-MacOS
     runs-on: macos-runner
@@ -134,16 +165,16 @@ jobs:
           go-version: ^1.20.0 # The Go version to download (if necessary) and use.
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Install
         run: make install
 
       - name: Get Branch
         id: get_version
         run: |
-          VERSION=$(echo ${GITHUB_REF#refs/heads/}) 
+          VERSION=$(echo ${GITHUB_REF#refs/heads/})
           echo ::set-output name=TAG::${VERSION}
-          
+
       - name: Zip release
         run: tar -czvf zwallet-macos.tar.gz ./zwallet
 
@@ -153,4 +184,4 @@ jobs:
           name: zwallet-macos
           path: zwallet
           retention-days: 5
-      
+

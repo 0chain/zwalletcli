@@ -84,5 +84,9 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		}
 	}
 
-	fmt.Println("Done.")
+	if len(burnTickets) > 0 {
+		fmt.Println("Done.")
+	} else {
+		fmt.Println("Failed.")
+	}
 }
