@@ -3,7 +3,7 @@ module github.com/0chain/zwalletcli
 go 1.20
 
 require (
-	github.com/0chain/gosdk v1.11.0
+	github.com/0chain/gosdk v1.10.1-0.20230913145101-464260aa3c2b
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -59,7 +59,6 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
@@ -68,7 +67,6 @@ require (
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/common v0.39.0 // indirect
 	github.com/prometheus/procfs v0.11.0 // indirect
-	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
