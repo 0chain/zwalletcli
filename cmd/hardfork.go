@@ -66,7 +66,9 @@ var addHardForkCmd = &cobra.Command{
 }
 
 func init() {
+	addHardForkCmd.PersistentFlags().StringSliceP("names", "n", nil, "list of names")
+	addHardForkCmd.PersistentFlags().StringSliceP("rounds", "r", nil, "list of rounds")
+
 	rootCmd.AddCommand(addHardForkCmd)
-	updateStoragScConfigCmd.PersistentFlags().StringSlice("names", nil, "list of names")
-	updateStoragScConfigCmd.PersistentFlags().StringSlice("rounds", nil, "list of rounds")
+
 }
