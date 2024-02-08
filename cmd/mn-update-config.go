@@ -55,9 +55,9 @@ var updateMinerScConfigCmd = &cobra.Command{
 			case zcncore.ChargeableError:
 				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))
 			case zcncore.Success:
-				fmt.Printf("storagesc smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
+				fmt.Printf("minersc smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
 			default:
-				ExitWithError("Execute storagesc update smart contract failed. Unknown status code: " +
+				ExitWithError("Execute minersc update smart contract failed. Unknown status code: " +
 					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
 			}
 			return

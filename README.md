@@ -698,7 +698,7 @@ You earn rewards for: Sharders and Miners
 
 | Parameter     | Required | Description         | Valid values |
 | ------------- | -------- | ------------------- | ------------ |
-| provider_type | yes      | miner or sharder    | string       |
+| provider_type | yes      | miner or sharder or authorizer   | string       |
 | provider_id   | yes      | miner or sharder id | string       |
 
 Sample Command :
