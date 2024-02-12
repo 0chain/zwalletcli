@@ -142,9 +142,6 @@ func loadConfigs() {
 	CfmChainLength = cfgConfig.GetInt("confirmation_chain_length")
 	signatureScheme = cfgConfig.GetString("signature_scheme")
 
-	//initialize signature scheme for createmswallet and recoverwallet
-	zcncore.InitSignatureScheme(signatureScheme)
-
 	// ~/.zcn/network.yaml
 	cfgNetwork.AddConfigPath(configDir)
 	if len(networkFile) > 0 {
