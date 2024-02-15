@@ -50,7 +50,7 @@ var minerScPayReward = &cobra.Command{
 		case "sharder":
 			err = txn.MinerSCCollectReward(providerId, zcncore.ProviderSharder)
 		case "authorizer":
-			log.Fatal("not implemented yet")
+			err = txn.ZCNSCCollectReward(providerId, zcncore.ProviderAuthorizer)
 		default:
 			log.Fatal("unknown provider type")
 		}
@@ -92,6 +92,6 @@ func init() {
 
 	minerScPayReward.PersistentFlags().String("provider_id", "", "miner or sharder id")
 	minerScPayReward.MarkFlagRequired("provider_id")
-	minerScPayReward.PersistentFlags().String("provider_type", "miner", "provider type, miner or sharder")
+	minerScPayReward.PersistentFlags().String("provider_type", "miner", "provider type, miner or sharder or authorizer")
 	minerScPayReward.MarkFlagRequired("provider_type")
 }
