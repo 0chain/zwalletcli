@@ -162,7 +162,7 @@ func loadConfigs() {
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config fff b:", err, cDir, configDir, cfgFile)
+		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
