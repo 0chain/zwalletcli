@@ -23,6 +23,8 @@ var walletFile string
 var cDir string
 var bSilent bool
 var nonce int64
+var configNotSet bool
+var sourceFilePath string
 
 // gTxnFee is the user specified fee passed from client/user.
 // If the fee is absent/low it is adjusted to the min fee required
@@ -73,6 +75,7 @@ func Execute() {
 
 func getConfigDir() string {
 	if cDir != "" {
+		configNotSet = false
 		return cDir
 	}
 	var configDir string
@@ -82,6 +85,7 @@ func getConfigDir() string {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	configNotSet = true
 	configDir = filepath.Join(home, "/.zcn")
 	return configDir
 }
@@ -120,6 +124,7 @@ func loadConfigs() {
 	var configDir string
 
 	if cDir != "" {
+		configNotSet = false
 		configDir = cDir
 	} else {
 		configDir = getConfigDir()
@@ -130,11 +135,34 @@ func loadConfigs() {
 	if cfgFile != "" {
 		cfgConfig.SetConfigFile(filepath.Join(configDir, cfgFile))
 	} else {
+		if configNotSet {
+			// create a in .zcn directory and copy the default config file from the newtork directory
+			if _, err := os.Stat(configDir); os.IsNotExist(err) {
+				if err := os.Mkdir(configDir, 0777); err != nil {
+					ExitWithError("Can't create config directory:", err)
+				}
+			}
+			sourceFilePath = "./network/config.yaml"
+			sourceData, err := os.ReadFile(sourceFilePath)
+			if err != nil {
+				fmt.Println("Error reading source file:", err)
+				os.Exit(1)
+			}
+
+			err = os.WriteFile(filepath.Join(configDir, "config.yaml"), sourceData, 0777)
+			if err != nil {
+				fmt.Println("Error writing to destination file:", err)
+				os.Exit(1)
+			}
+
+			configNotSet = false
+
+		}
 		cfgConfig.SetConfigFile(filepath.Join(configDir, "config.yaml"))
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
+		ExitWithError("Can't read config fff b:", err, cDir, configDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
