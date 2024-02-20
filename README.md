@@ -396,7 +396,7 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 Sample Command: 
 ```
-./zbox sc-config
+./zwallet sc-config
 ```
 Sample Response :
 ```
@@ -704,7 +704,7 @@ You earn rewards for: Sharders and Miners
 Sample Command :
 
 ```
-./zbox collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
+./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
 ### Staking on miners and sharders
 
