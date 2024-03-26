@@ -1,9 +1,11 @@
 module github.com/0chain/zwalletcli
 
-go 1.20
+go 1.21
+
+toolchain go1.21.6
 
 require (
-	github.com/0chain/gosdk v1.12.1
+	github.com/0chain/gosdk v1.13.1-0.20240326053318-865ba716d29c
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -51,7 +53,7 @@ require (
 	github.com/herumi/bls-go-binary v1.31.0 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/klauspost/compress v1.16.7 // indirect
+	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/klauspost/reedsolomon v1.11.8 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
@@ -90,7 +92,7 @@ require (
 	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/exp v0.0.0-20230810033253-352e893a4cad // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
