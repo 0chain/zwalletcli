@@ -1,4 +1,9 @@
 name: build-zwallet
+
+concurrency:
+  group: "build-zwallet-${{ github.ref }}"
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -12,7 +17,7 @@ on:
 jobs:
   build-linux:
     name: Build-linux
-    runs-on: [self-hosted, ubuntu-build]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Install deps
         run: |

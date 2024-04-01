@@ -1,7 +1,7 @@
 name: Tests
 
 concurrency:
-  group: "${{ github.ref }}"
+  group: "tests-${{ github.ref }}"
   cancel-in-progress: true
 
 on:
@@ -14,10 +14,10 @@ jobs:
     runs-on: [self-hosted, arc-runner]
     # runs-on: ubuntu-20.04
     steps:
-      - name: Setup go
-        uses: actions/setup-go@v3
+      - name: Setup go 1.21
+        uses: actions/setup-go@v5
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          go-version: '1.21' # The Go version to download (if necessary) and use.
 
       - name: Clone ZWallet
         uses: actions/checkout@v2
