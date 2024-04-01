@@ -1,6 +1,6 @@
 module github.com/0chain/zwalletcli
 
-go 1.20
+go 1.21
 
 require (
 	github.com/0chain/gosdk v1.12.1
