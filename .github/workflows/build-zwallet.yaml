@@ -1,4 +1,9 @@
 name: build-zwallet
+
+concurrency:
+  group: "build-zwallet-${{ github.ref }}"
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -12,7 +17,7 @@ on:
 jobs:
   build-linux:
     name: Build-linux
-    runs-on: [self-hosted, ubuntu-build]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Install deps
         run: |
@@ -24,10 +29,10 @@ jobs:
               echo "GOPATH=$HOME/go" >> $GITHUB_ENV
               echo "GOCACHE=$GITHUB_WORKSPACE/.gocache" >> $GITHUB_ENV
 
-      - name: Setup go 1.18
-        uses: actions/setup-go@v3
+      - name: Setup go 1.21
+        uses: actions/setup-go@v5
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          go-version: '1.21' # The Go version to download (if necessary) and use.
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -104,10 +109,11 @@ jobs:
     name: Build-macos
     runs-on: macos-runner
     steps:
-      - name: Setup go
-        uses: actions/setup-go@v3
+      - name: Setup go 1.21
+        uses: actions/setup-go@v5
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          go-version: '1.21' # The Go version to download (if necessary) and use.
+
       - name: Checkout
         uses: actions/checkout@v2
 

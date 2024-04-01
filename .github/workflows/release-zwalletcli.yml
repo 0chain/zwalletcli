@@ -1,5 +1,9 @@
 name: RELEASE_ZWALLETCLI
 
+concurrency:
+  group: "release-${{ github.ref }}"
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,16 +22,16 @@ env:
 jobs:
   build-linux:
     name: Build-Linux
-    runs-on: [self-hosted, build]
+    runs-on: [self-hosted, arc-runner]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
+    - name: Setup go 1.21
+      uses: actions/setup-go@v5
       with:
-        go-version: ^1.20.0
+        go-version: '1.21'
 
     - name: Install
       run: make install
@@ -159,10 +163,11 @@ jobs:
     name: Build-MacOS
     runs-on: macos-runner
     steps:
-      - name: Setup go
-        uses: actions/setup-go@v3
+      - name: Setup go 1.21
+        uses: actions/setup-go@v5
         with:
-          go-version: ^1.20.0 # The Go version to download (if necessary) and use.
+          go-version: '1.21' # The Go version to download (if necessary) and use.
+
       - name: Checkout
         uses: actions/checkout@v2
 
