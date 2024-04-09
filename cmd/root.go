@@ -9,7 +9,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/0chain/gosdk/core/sys"
 	"github.com/0chain/gosdk/core/zcncrypto"
+	"github.com/0chain/gosdk/zboxcore/client"
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	bridge "github.com/0chain/gosdk/zcnbridge/http"
 	"github.com/0chain/gosdk/zcncore"
@@ -96,6 +98,7 @@ func initZCNCore() {
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
+	zauthServer := cfgConfig.GetString("zauth.server")
 
 	err := zcncore.InitZCNSDK(blockWorker, signatureScheme,
 		zcncore.WithChainID(chainID),
@@ -107,6 +110,11 @@ func initZCNCore() {
 	)
 	if err != nil {
 		ExitWithError(err.Error())
+	}
+
+	if zauthServer != "" {
+		sys.SetAuthorize(zauthSignTxn(zauthServer))
+		client.SetClient(clientWallet, signatureScheme, getTxnFee())
 	}
 
 	miners := cfgNetwork.GetStringSlice("miners")

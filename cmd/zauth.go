@@ -3,9 +3,12 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 
+	"github.com/0chain/gosdk/core/sys"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -48,6 +51,40 @@ func callZauthSetup(serverAddr string, splitWallet splitWallet) error {
 	return nil
 }
 
+func zauthSignTxn(serverAddr string) sys.AuthorizeFunc {
+	return func(msg string) (string, error) {
+		fmt.Println("send message to:", serverAddr+"/sign/txn")
+		fmt.Println("data:", string(msg))
+		req, err := http.NewRequest("POST", serverAddr+"/sign/txn", bytes.NewBuffer([]byte(msg)))
+		if err != nil {
+			return "", errors.Wrap(err, "failed to create HTTP request")
+		}
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to send HTTP request")
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			rsp, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return "", errors.Wrap(err, "failed to read response body")
+			}
+
+			return "", errors.Errorf("unexpected status code: %d, res: %s", resp.StatusCode, string(rsp))
+		}
+
+		d, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to read response body")
+		}
+
+		fmt.Println("response:", string(d))
+		return string(d), nil
+	}
+}
+
 var zauthCmd = &cobra.Command{
 	Use:   "zauth",
 	Short: "Enable zauth",
@@ -85,6 +122,7 @@ var zauthCmd = &cobra.Command{
 		}
 
 		// remove the keys[1]
+		sw.PeerPublicKey = sw.Keys[1].PublicKey
 		sw.Keys = sw.Keys[:1]
 		clientWallet.SetSplitKeys(sw)
 		if err := clientWallet.SaveTo(cfgWallet); err != nil {
