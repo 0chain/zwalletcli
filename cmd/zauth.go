@@ -88,7 +88,12 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Failed to setup zauth server: %v", err)
 		}
 
-		// TODO: remove the private key from the local wallet
+		// remove the keys[1]
+		sw.Keys = sw.Keys[:1]
+		clientWallet.SetSplitKeys(sw)
+		if err := clientWallet.SaveTo(cfgWallet); err != nil {
+			log.Fatalf("Failed to save wallet: %v", err)
+		}
 
 		log.Printf("Setup zauth server successfully")
 	},
@@ -97,5 +102,7 @@ var zauthCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(zauthCmd)
 	zauthCmd.PersistentFlags().String("server", "s", "The zauth server address")
-	zauthCmd.MarkFlagRequired("server")
+	if err := zauthCmd.MarkFlagRequired("server"); err != nil {
+		log.Fatalf("Could not mark 'server' flag required: %v", err)
+	}
 }
