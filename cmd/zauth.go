@@ -65,8 +65,6 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Could not save config: %v", err)
 		}
 
-		// figure out what is the private key to use
-		// from the web-apps, we can see the private key is the first key's private key
 		if clientWallet == nil {
 			log.Fatalf("Wallet is initialized yet")
 		}
@@ -76,8 +74,6 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Failed to split keys: %v", err)
 		}
 
-		// call gosdk to connect and setup the split keys
-		// zcncore.SplitKeys()
 		if err := callZauthSetup(serverAddr, splitWallet{
 			ClientID:      sw.ClientID,
 			ClientKey:     sw.ClientKey,
@@ -102,7 +98,5 @@ var zauthCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(zauthCmd)
 	zauthCmd.PersistentFlags().String("server", "s", "The zauth server address")
-	if err := zauthCmd.MarkFlagRequired("server"); err != nil {
-		log.Fatalf("Could not mark 'server' flag required: %v", err)
-	}
+	zauthCmd.MarkFlagRequired("server")
 }

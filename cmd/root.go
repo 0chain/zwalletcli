@@ -102,7 +102,9 @@ func initZCNCore() {
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
 		zcncore.WithConfirmationChainLength(CfmChainLength),
-		zcncore.WithEthereumNode(ethereumNodeURL))
+		zcncore.WithEthereumNode(ethereumNodeURL),
+		zcncore.WithIsSplitWallet(clientWallet.IsSplit),
+	)
 	if err != nil {
 		ExitWithError(err.Error())
 	}
@@ -112,6 +114,7 @@ func initZCNCore() {
 	if len(miners) > 0 && len(sharders) > 0 {
 		zcncore.SetNetwork(miners, sharders)
 	}
+
 }
 
 func loadConfigs() {
@@ -169,14 +172,14 @@ var walletIsLoaded bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
 
-	_, ok := withoutZCNCoreCmds[cmd]
-	if !ok {
-		initZCNCoreContext()
-	}
-
-	_, ok = withoutWalletCmds[cmd]
+	_, ok := withoutWalletCmds[cmd]
 	if !ok {
 		initZwalletContext()
+	}
+
+	_, ok = withoutZCNCoreCmds[cmd]
+	if !ok {
+		initZCNCoreContext()
 	}
 
 }
