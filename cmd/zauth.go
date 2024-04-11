@@ -1,89 +1,82 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
 	"log"
-	"net/http"
 
-	"github.com/0chain/gosdk/core/sys"
 	"github.com/0chain/gosdk/zcncore"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-type splitWallet struct {
-	ClientID      string `json:"client_id"`
-	ClientKey     string `json:"client_key"`
-	PublicKey     string `json:"public_key"`
-	PrivateKey    string `json:"private_key"`
-	PeerPublicKey string `json:"peer_public_key"`
-}
+// type splitWallet struct {
+// 	ClientID      string `json:"client_id"`
+// 	ClientKey     string `json:"client_key"`
+// 	PublicKey     string `json:"public_key"`
+// 	PrivateKey    string `json:"private_key"`
+// 	PeerPublicKey string `json:"peer_public_key"`
+// }
 
-func callZauthSetup(serverAddr string, splitWallet splitWallet) error {
-	// Add your code here
-	endpoint := serverAddr + "/setup"
-	wData, err := json.Marshal(splitWallet)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal split wallet")
-	}
+// func callZauthSetup(serverAddr string, splitWallet splitWallet) error {
+// 	// Add your code here
+// 	endpoint := serverAddr + "/setup"
+// 	wData, err := json.Marshal(splitWallet)
+// 	if err != nil {
+// 		return errors.Wrap(err, "failed to marshal split wallet")
+// 	}
 
-	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(wData))
-	if err != nil {
-		return errors.Wrap(err, "failed to create HTTP request")
-	}
+// 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(wData))
+// 	if err != nil {
+// 		return errors.Wrap(err, "failed to create HTTP request")
+// 	}
 
-	req.Header.Set("Content-Type", "application/json")
+// 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return errors.Wrap(err, "failed to send HTTP request")
-	}
-	defer resp.Body.Close()
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		return errors.Wrap(err, "failed to send HTTP request")
+// 	}
+// 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return errors.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+// 	if resp.StatusCode != http.StatusOK {
+// 		return errors.Errorf("unexpected status code: %d", resp.StatusCode)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func zauthSignTxn(serverAddr string) sys.AuthorizeFunc {
-	return func(msg string) (string, error) {
-		fmt.Println("send message to:", serverAddr+"/sign/txn")
-		fmt.Println("data:", string(msg))
-		req, err := http.NewRequest("POST", serverAddr+"/sign/txn", bytes.NewBuffer([]byte(msg)))
-		if err != nil {
-			return "", errors.Wrap(err, "failed to create HTTP request")
-		}
-		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			return "", errors.Wrap(err, "failed to send HTTP request")
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			rsp, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return "", errors.Wrap(err, "failed to read response body")
-			}
+// func zauthSignTxn(serverAddr string) sys.AuthorizeFunc {
+// 	return func(msg string) (string, error) {
+// 		fmt.Println("send message to:", serverAddr+"/sign/txn")
+// 		fmt.Println("data:", string(msg))
+// 		req, err := http.NewRequest("POST", serverAddr+"/sign/txn", bytes.NewBuffer([]byte(msg)))
+// 		if err != nil {
+// 			return "", errors.Wrap(err, "failed to create HTTP request")
+// 		}
+// 		req.Header.Set("Content-Type", "application/json")
+// 		client := &http.Client{}
+// 		resp, err := client.Do(req)
+// 		if err != nil {
+// 			return "", errors.Wrap(err, "failed to send HTTP request")
+// 		}
+// 		defer resp.Body.Close()
+// 		if resp.StatusCode != http.StatusOK {
+// 			rsp, err := io.ReadAll(resp.Body)
+// 			if err != nil {
+// 				return "", errors.Wrap(err, "failed to read response body")
+// 			}
 
-			return "", errors.Errorf("unexpected status code: %d, res: %s", resp.StatusCode, string(rsp))
-		}
+// 			return "", errors.Errorf("unexpected status code: %d, res: %s", resp.StatusCode, string(rsp))
+// 		}
 
-		d, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return "", errors.Wrap(err, "failed to read response body")
-		}
+// 		d, err := io.ReadAll(resp.Body)
+// 		if err != nil {
+// 			return "", errors.Wrap(err, "failed to read response body")
+// 		}
 
-		fmt.Println("response:", string(d))
-		return string(d), nil
-	}
-}
+// 		fmt.Println("response:", string(d))
+// 		return string(d), nil
+// 	}
+// }
 
 var zauthCmd = &cobra.Command{
 	Use:   "zauth",
@@ -111,7 +104,7 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Failed to split keys: %v", err)
 		}
 
-		if err := callZauthSetup(serverAddr, splitWallet{
+		if err := zcncore.CallZauthSetup(serverAddr, zcncore.SplitWallet{
 			ClientID:      sw.ClientID,
 			ClientKey:     sw.ClientKey,
 			PublicKey:     sw.Keys[1].PublicKey,

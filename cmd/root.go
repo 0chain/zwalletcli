@@ -113,7 +113,7 @@ func initZCNCore() {
 	}
 
 	if zauthServer != "" {
-		sys.SetAuthorize(zauthSignTxn(zauthServer))
+		sys.SetAuthorize(zcncore.ZauthSignTxn(zauthServer))
 		client.SetClient(clientWallet, signatureScheme, getTxnFee())
 	}
 
