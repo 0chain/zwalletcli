@@ -9,7 +9,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/0chain/gosdk/core/sys"
 	"github.com/0chain/gosdk/core/zcncrypto"
+	"github.com/0chain/gosdk/zboxcore/client"
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	bridge "github.com/0chain/gosdk/zcnbridge/http"
 	"github.com/0chain/gosdk/zcncore"
@@ -96,15 +98,23 @@ func initZCNCore() {
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
+	zauthServer := cfgConfig.GetString("zauth.server")
 
 	err := zcncore.InitZCNSDK(blockWorker, signatureScheme,
 		zcncore.WithChainID(chainID),
 		zcncore.WithMinSubmit(minSubmit),
 		zcncore.WithMinConfirmation(minCfm),
 		zcncore.WithConfirmationChainLength(CfmChainLength),
-		zcncore.WithEthereumNode(ethereumNodeURL))
+		zcncore.WithEthereumNode(ethereumNodeURL),
+		zcncore.WithIsSplitWallet(clientWallet.IsSplit),
+	)
 	if err != nil {
 		ExitWithError(err.Error())
+	}
+
+	if zauthServer != "" {
+		sys.SetAuthorize(zcncore.ZauthSignTxn(zauthServer))
+		client.SetClient(clientWallet, signatureScheme, getTxnFee())
 	}
 
 	miners := cfgNetwork.GetStringSlice("miners")
@@ -112,6 +122,7 @@ func initZCNCore() {
 	if len(miners) > 0 && len(sharders) > 0 {
 		zcncore.SetNetwork(miners, sharders)
 	}
+
 }
 
 func loadConfigs() {
@@ -169,14 +180,14 @@ var walletIsLoaded bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
 
-	_, ok := withoutZCNCoreCmds[cmd]
-	if !ok {
-		initZCNCoreContext()
-	}
-
-	_, ok = withoutWalletCmds[cmd]
+	_, ok := withoutWalletCmds[cmd]
 	if !ok {
 		initZwalletContext()
+	}
+
+	_, ok = withoutZCNCoreCmds[cmd]
+	if !ok {
+		initZCNCoreContext()
 	}
 
 }
