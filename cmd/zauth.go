@@ -18,6 +18,11 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Could not find zauth server address")
 		}
 
+		token, err := cmd.Flags().GetString("token")
+		if err != nil {
+			log.Fatalf("Could not find zauth server setup access token")
+		}
+
 		// update or setup the zauth server address
 		cfgConfig.Set("zauth.server", serverAddr)
 		if err := cfgConfig.WriteConfig(); err != nil {
@@ -37,7 +42,7 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Failed to split keys: %v", err)
 		}
 
-		if err := zcncore.CallZauthSetup(serverAddr, zcncore.SplitWallet{
+		if err := zcncore.CallZauthSetup(serverAddr, token, zcncore.SplitWallet{
 			ClientID:      sw.ClientID,
 			ClientKey:     sw.ClientKey,
 			PublicKey:     sw.Keys[1].PublicKey,
@@ -62,5 +67,6 @@ var zauthCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(zauthCmd)
 	zauthCmd.PersistentFlags().String("server", "s", "The zauth server address")
+	zauthCmd.PersistentFlags().String("token", "t", "The zauth server setup access token")
 	zauthCmd.MarkFlagRequired("server")
 }
