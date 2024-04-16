@@ -28,6 +28,10 @@ var zauthCmd = &cobra.Command{
 			log.Fatalf("Wallet is initialized yet")
 		}
 
+		if clientWallet.IsSplit {
+			log.Fatalln("Wallet is already split")
+		}
+
 		sw, err := zcncore.SplitKeysWallet(clientWallet.Keys[0].PrivateKey, 2)
 		if err != nil {
 			log.Fatalf("Failed to split keys: %v", err)
