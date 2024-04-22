@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 )
@@ -82,24 +81,6 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			miner.Settings.ServiceCharge = &serviceCharge
 		}
 
-		if flags.Changed("min_stake") {
-			var min float64
-			if min, err = flags.GetFloat64("min_stake"); err != nil {
-				log.Fatal(err)
-			}
-			tokenBalance := common.Balance(zcncore.ConvertToValue(min))
-			miner.Settings.MinStake = &tokenBalance
-		}
-
-		if flags.Changed("max_stake") {
-			var max float64
-			if max, err = flags.GetFloat64("max_stake"); err != nil {
-				log.Fatal(err)
-			}
-			tokenBalance := common.Balance(zcncore.ConvertToValue(max))
-			miner.Settings.MaxStake = &tokenBalance
-		}
-
 		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
 		if err != nil {
 			log.Fatal(err)
@@ -148,7 +129,5 @@ func init() {
 	minerscUpdateNodeSettings.PersistentFlags().Bool("sharder", false, "set true for sharder node")
 	minerscUpdateNodeSettings.PersistentFlags().Int("num_delegates", 0, "max number of delegate pools")
 	minerscUpdateNodeSettings.PersistentFlags().Float64("service_charge", 0, "service charge")
-	minerscUpdateNodeSettings.PersistentFlags().Float64("min_stake", 0.0, "min stake allowed")
-	minerscUpdateNodeSettings.PersistentFlags().Float64("max_stake", 0.0, "max stake allowed")
 	minerscUpdateNodeSettings.MarkFlagRequired("id")
 }
