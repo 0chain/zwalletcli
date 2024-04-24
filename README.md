@@ -125,7 +125,7 @@ The following steps assume that your terminal's working directory is inside the 
 | `--silent`    | Do not print detailed logs      | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
 | `--withNonce` | Nonce that will be used in transaction    | `0`  |
-| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
+| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee  |
 
 ## Commands
 
@@ -216,9 +216,15 @@ cat ~/.zcn/recovered_wallet.json
 
 The list of miners are retrieved using the Miner smart contract.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter   | Required | Description          | Default | Valid Values      |
+| ----------- | -------- | -------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
+| `--active`  | No       | Gets active miners only, set it false to get all miners |   true    | boolean |
+| `--all`     | No       | Include all registered miners, default returns the first page of miners |         | <empty to enable> |
+| `--limit`   | No       | Limits the number of miners returned | 20      | integer |
+| `--offset`  | No       | Skips the number of miners mentioned |         | integer |
+| `--stakable`| No       | Gets stakable miners only if set to true | false        |  boolean  |
+
 
 ![List miner nodes](docs/ls-miners.png "List miner nodes")
 
@@ -246,9 +252,12 @@ The list of sharders are retrieved using the latest finalized magic block. All r
 
 | Parameter | Required | Description                             | Default | Valid Values      |
 | --------- | -------- | --------------------------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
-| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
-
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
+| `--active`  | No       | Gets active miners only, set it false to get all miners |   true    | boolean |
+| `--all`     | No       | Include all registered miners, default returns the first page of miners |         | <empty to enable> |
+| `--limit`   | No       | Limits the number of miners returned | 20      | integer |
+| `--offset`  | No       | Skips the number of miners mentioned |         | integer |
+| `--stakable`| No       | Gets stakable miners only if set to true | false        |  boolean  |
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
 ```sh
@@ -291,6 +300,10 @@ ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
 #### Listing all blobbers - `getblobbers`
 
 The list of blobbers are retrieved using the Storage smart contract.
+
+| Parameter   | Required | Description          | Default | Valid Values      |
+| ----------- | -------- | -------------------- | ------- | ----------------- |
+| `--all`     | No       | Gets all blobbers, including inactive blobbers |         | <empty to enable> |
 
 ![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
@@ -394,6 +407,10 @@ ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 
 `./zwallet sc-config ` command displays current storage smart contract configuration  
 
+| Parameter | Required | Description          | Default | Valid Values      |
+| --------- | -------- | -------------------- | ------- | ----------------- |
+| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+
 Sample Command: 
 ```
 ./zwallet sc-config
@@ -478,6 +495,10 @@ writepool.min_lock       0.1
 
 #### Get Version 
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
+
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
 
 Sample Command :
 ```
@@ -608,6 +629,10 @@ Wallet balances are retrieved from sharders.
 
 > Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
 
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
+
 ![Get wallet balance](docs/getbalance.png "Get wallet balance")
 
 ```sh
@@ -636,6 +661,7 @@ Transferring tokens from a wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
 | `--to_client_id` | Yes      | Client ID of the recipient     |         |              |
 | `--tokens`       | Yes      | Amount of tokens to send       |         | valid number |
 | `--desc`         | Yes      | Transfer description           |         | any string   |
@@ -698,7 +724,7 @@ You earn rewards for: Sharders and Miners
 
 | Parameter     | Required | Description         | Valid values |
 | ------------- | -------- | ------------------- | ------------ |
-| provider_type | yes      | miner or sharder or authorizer   | string       |
+| provider_type | yes      | miner or sharder or authorizer   | miner/sharder/authorizer       |
 | provider_id   | yes      | miner or sharder id | string       |
 
 Sample Command :
@@ -830,9 +856,10 @@ Note however that if a node becomes offline, all stake pools are automatically u
 
 | Parameter  | Required | Description                                                  | Default | Valid Values |
 | ---------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
-| `--id`     | Yes      | Node ID of a miner or sharder to stake for (get at `ls-miners` or `ls-sharders`) |         |              |
-| `--tokens` | Yes      | Amounts of token to stake                                    |         | valid number |
-
+| `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
+| `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
+| `--tokens` | Yes      | Amounts of token to stake                                    |         | 1000 - 1997000|
+* - Either one of miner_id / sharder_id needs to be passed
 ![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
 
 Sample command
@@ -969,8 +996,9 @@ Reformatted output
 
 | Parameter   | Required | Description                                                  | Default | Valid Values |
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
-| `--id`      | Yes      | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) |         |              |
-
+| `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
+| `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
+* - Either one of miner_id / sharder_id needs to be passed
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
 ```sh
@@ -996,6 +1024,9 @@ Staking config can only be updated by the node's delegate wallet.
 | `--max_stake`     | No       | Minimum amount of tokens allowed when staking |         | valid number |
 | `--min_stake`     | No       | Maximum amount of tokens allowed when staking |         | valid number |
 | `--num_delegates` | No       | Maximum number of staking pools               |         | valid number |
+| `--service_charge`     | No       | Service Charge |         | valid number |
+| `--sharder` | No       | Whether node is sharder or not               |   False      | set true for sharder node else <empty> or false |
+
 
 ![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
 
