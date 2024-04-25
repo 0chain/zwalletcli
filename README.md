@@ -11,6 +11,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
     - [2. Run `zwallet` commands](#2-run-zwallet-commands)
   - [Global parameters](#global-parameters)
   - [Commands](#commands)
+    - [Set up bash autocompletion - `zwallet completion`](#set-up-bash-autocompletion---zwallet-completion)
     - [Creating and restoring wallets](#creating-and-restoring-wallets)
       - [Creating wallet - (any command)](#creating-wallet---any-command)
       - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
@@ -133,6 +134,20 @@ The following steps assume that your terminal's working directory is inside the 
 | `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee  |
 
 ## Commands
+
+### Set up bash autocompletion - `zwallet completion`
+
+Generate the autocompletion script for zwallet for the specified shell and instructions to enable them.
+
+Sample Usage:
+
+```sh
+  zwallet completion [command]
+```
+
+commands : bash/fish/powershell/zsh based on the specified shell
+
+See each sub-command's help for details on how to use the generated script.
 
 ### Creating and restoring wallets
 
