@@ -13,6 +13,7 @@ var getAuthorizerConfigCmd = &cobra.Command{
 	Short: "Show authorizer configurations.",
 	Long:  `Show authorizer configurations.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			flags = cmd.Flags()

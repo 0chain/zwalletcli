@@ -14,6 +14,7 @@ func init() {
 		`verify transaction.
 					<hash>`,
 		VerifyEthereumTransaction,
+		false,
 		WithHash("Ethereum transaction hash"),
 	)
 

@@ -17,6 +17,7 @@ func init() {
 			"burn wzcn tokens",
 			"burn wzcn tokens that will be minted on ZCN chain",
 			commandBurnWzcn,
+			false,
 			WithAmount("WZCN token amount to be burned"),
 			WithRetries("Num of seconds a transaction status check should run"),
 		))

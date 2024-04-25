@@ -16,6 +16,7 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 	Short: "Delete ZCNSC authorizer by ID",
 	Long:  `Delete ZCNSC authorizer by ID`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		const (
 			IDFlag = "id"

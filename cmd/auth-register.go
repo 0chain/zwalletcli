@@ -19,6 +19,7 @@ func init() {
 			"Register an authorizer manually",
 			"Register an authorizer manually",
 			registerAuthorizerInChain,
+			true,
 			&Option{
 				name:     "url",
 				typename: "string",

@@ -16,6 +16,7 @@ var updateGlobalConfigCmd = &cobra.Command{
 	Short: "Update global settings",
 	Long:  `Update global settings.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 

@@ -17,6 +17,7 @@ func init() {
 			"Register an authorizer to token bridge SC manually",
 			"Register an authorizer to token bridge SC manually",
 			registerAuthorizerInSC,
+			true,
 			&Option{
 				name:     "ethereum_address",
 				typename: "string",

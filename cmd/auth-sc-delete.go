@@ -17,6 +17,7 @@ func init() {
 			"Deletes an authorizer to token bridge SC manually",
 			"Deletes an authorizer to token bridge SC manually",
 			deleteAuthorizerInSC,
+			true,
 			&Option{
 				name:     "ethereum_address",
 				typename: "string",

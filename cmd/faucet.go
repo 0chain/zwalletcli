@@ -16,6 +16,7 @@ var faucetcmd = &cobra.Command{
 	Long: `Faucet smart contract.
 	        <methodName> <input>`,
 	Args: cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		fflags := cmd.Flags()
 		if fflags.Changed("methodName") == false {

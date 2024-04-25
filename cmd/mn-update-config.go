@@ -16,6 +16,7 @@ var updateMinerScConfigCmd = &cobra.Command{
 	Short: "Update the miner smart contract",
 	Long:  `Update the miner smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
