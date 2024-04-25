@@ -12,7 +12,6 @@ var mnConfigCmd = &cobra.Command{
 	Short: "Show miner SC configuration.",
 	Long:  `Show miner SC configuration.`,
 	Args:  cobra.MinimumNArgs(0),
-	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			fields = new(zcncore.InputMap)

@@ -152,32 +152,6 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 "private_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}],
 "mnemonics":"xxxx xxxx xxxx xxxxx",
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
-
-```
-Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
-
-```sh
-./zwallet faucet --methodName pour --input "new wallet"
-```
-
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
-
-```sh
-./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
-```
-
-Sample Output
-```
-No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
-ZCN wallet created!!
-Creating related read pool for storage smart-contract...
-Read pool created successfully
-```
-
-Verify second wallet
-
-```sh
-cat ~/.zcn/new_wallet.json
 ```
 
 #### Recovering wallet - `recoverwallet`
@@ -321,7 +295,7 @@ Blobbers:
   http://demo1.zus.network:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
   http://demo1.zus.network:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
 ```
-#### List Authorizers
+#### List Authorizers - `bridge-list-auth`
 
 `./zwallet bridge-list-auth ` command can be used to list all authorizers available to validate client transactions.
 
@@ -350,37 +324,6 @@ Blobbers:
 ]
 ```
 
-#### Get Authorizer Configuration
-`./zwallet bridge-auth-config `command can be used to view authorizer configuration. Here are the parameters for the command.
-
-| Parameter | Required | Description                                       |
-| --------- | -------- | ------------------------------------------------- |
-| --id      | Yes      | Provide Authorizer ID to view its configuration . |
-| --help    |          | Syntax Help for the command                       |
-
-Sample Command:
-
-```
-./zwallet bridge-auth-config --id $AUTHORIZER_ID
-```
-
-Sample Response:
-
-```
-{
-  "id": "2f945f7310689f17afd8c8cb291e1e3ba21677243aa1d404a2293064e7983d60",
-  "url": "https://demo.zus.network/authorizer01/",
-  "fee": 0,
-  "latitude": 0,
-  "longitude": 0,
-  "last_health_check": 0,
-  "delegate_wallet": "",
-  "min_stake": 0,
-  "max_stake": 0,
-  "num_delegates": 0,
-  "service_charge": 0
-}
-```
 #### Getting node ID by URL - `getid`
 
 Print the ID of a blockchain node.
@@ -403,7 +346,7 @@ URL: http://demo1.zus.network:31101
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
-#### Show Storage Smart Contract Configuration
+#### Show Storage Smart Contract Configuration - `sc-config`
 
 `./zwallet sc-config ` command displays current storage smart contract configuration  
 
@@ -493,7 +436,7 @@ validators_per_challenge         2
 writepool.min_lock       0.1
 ```
 
-#### Get Version 
+#### Get Version - `version`
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
 
 | Parameter | Required | Description                             | Default | Valid Values      |
@@ -510,7 +453,7 @@ Version info:
         zwallet...:  v1.2.3-21-gb10c459
         gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
 ```
-#### Show global configurations 
+#### Show global configurations  - `global-config`
 `./zwallet global-config ` command displays global chain configuration 
 
 Sample Command :
@@ -592,36 +535,6 @@ server_chain.view_change         false
 ```
 
 ### Getting and sending tokens
-
-#### Getting tokens with Faucet smart contract - `faucet`
-
-Tokens can be retrieved and added to your wallet through the Faucet smart contract.
-
-| Parameter      | Required | Description                                                  | Default | Valid Values     |
-| -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
-| `--methodName` | Yes      | Smart Contract method to call (`pour` - get tokens, `refill` - return tokens) |         | `pour`, `refill` |
-| `--input`      | Yes      | Request description                                          |         | any string       |
-| `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
-
-![Faucet](docs/faucet.png "Faucet")
-
-The following command will give 1 token to the default wallet.
-
-```sh
-./zwallet faucet --methodName pour --input "need token"
-```
-
-The following command will return 0.5 token to faucet.
-
-```sh
-./zwallet faucet --methodName refill --input "not using" --tokens 0.5
-```
-
-Sample output from `faucet` prints the transaction
-
-```
-Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
-```
 
 #### Checking balance - `getbalance`
 
@@ -714,7 +627,7 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
 ```
-#### Collect rewards
+#### Collect rewards - `collect-reward`
 
 Use `collect-reward` to transfer reward tokens from a stake pool.The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
 You earn rewards for: Sharders and Miners
@@ -880,7 +793,7 @@ If the locking of stakes is failing, verify the following.
 2. Node ID is valid
 3. Node has available delegate
 
-### Getting the stake pools of a wallet - `mn-user-info`
+#### Getting the stake pools of a wallet - `mn-user-info`
 
 | Parameter     | Required | Description             | Default                        | Valid Values      |
 | ------------- | -------- | ----------------------- | ------------------------------ | ----------------- |
@@ -1013,28 +926,6 @@ tokens will be unlocked next VC
 
 Tokens are released on the next view change cycle or at the next reward round.
 
-
-#### Updating staking config of a node - `mn-update-settings`
-
-Staking config can only be updated by the node's delegate wallet.
-
-| Parameter         | Required | Description                                   | Default | Valid Values |
-| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
-| `--id`            | Yes      | Node ID of a miner or sharder                 |         |              |
-| `--max_stake`     | No       | Minimum amount of tokens allowed when staking |         | valid number |
-| `--min_stake`     | No       | Maximum amount of tokens allowed when staking |         | valid number |
-| `--num_delegates` | No       | Maximum number of staking pools               |         | valid number |
-| `--service_charge`     | No       | Service Charge |         | valid number |
-| `--sharder` | No       | Whether node is sharder or not               |   False      | set true for sharder node else <empty> or false |
-
-
-![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
-
-Sample command
-
-```sh
-./zwallet mn-update-settings --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --max_stake 1000000000000 --min_stake 10000000 --num_delegates 25
-```
 ## Config
 
 ### ~/.zcn/config.yaml
