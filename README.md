@@ -30,6 +30,8 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
       - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
       - [Collect rewards - `collect-reward`](#collect-rewards)  
+      - [Get nonce - `getnonce`](#get-nonce)
+      - [Reset User nonce - `reset-user-nonce`](#reset-nonce)
     - [Staking on miners and sharders](#staking-on-miners-and-sharders)
       - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
       - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
@@ -38,6 +40,9 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
       - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
       - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+    - [Removing/Killing nodes](#killing/deleting-a-node)
+      - [Killing a miner - `mn-kill`](#killing-a-miner---mn-kill)
+      - [Killing a sharder - `sh-kill`](#killing-a-sharder---sh-kill)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
@@ -642,9 +647,49 @@ You earn rewards for: Sharders and Miners
 
 Sample Command :
 
-```
+```sh
 ./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
+
+The output would print the stake pool id.
+
+```sh
+locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+#### Get Nonce
+
+Use `getnonce` to get nonce of the default wallet
+
+Sample Command :
+
+```sh
+./zwallet getnonce
+```
+
+The output would print the stake pool id.
+
+```sh
+Nonce: 58
+```
+
+#### Reset Nonce
+
+Use `reset-user-nonce` to reset the nonce value of the user wallet
+
+| Parameter | Required | Description                                                  | Default | Valid Values |
+| --------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
+| `--chain_config`    | No      | Chain config file name |    config.yaml     |              |
+| `--path`    | No      | Config home folder |   ~/.zcn     |              |
+
+Sample Command :
+
+Command required ethereum_node_url to be set in config
+
+```sh
+./zwallet reset-user-nonce
+```
+
 ### Staking on miners and sharders
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
@@ -925,6 +970,35 @@ tokens will be unlocked next VC
 ```
 
 Tokens are released on the next view change cycle or at the next reward round.
+
+
+### Killing/Deleting a node
+
+#### Killing a miner - `mn-kill`
+Miners can only be killed by the node's delegate wallet / owner
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--id`            | Yes      | Node ID of a miner            |         |              |
+
+Sample command
+
+```sh
+./zwallet mn-kill --id 860498ec586ef5122efbca77d1d9c215167913d0477830a5aab6a2eb106cb6c2
+```
+
+#### Killing a sharder - `sh-kill`
+Miners can only be killed by the node's delegate wallet / owner
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--id`            | Yes      | Node ID of a sharder                 |         |              |
+
+Sample command
+
+```sh
+./zwallet sh-kill --id 860498ec586ef5122efbca77d1d9c215167913d0477830a5aab6a2eb106cb6c2
+```
 
 ## Config
 
