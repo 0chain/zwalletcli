@@ -252,6 +252,7 @@ The list of sharders are retrieved using the latest finalized magic block. All r
 | `--limit`   | No       | Limits the number of miners returned | 20      | integer |
 | `--offset`  | No       | Skips the number of miners mentioned |         | integer |
 | `--stakable`| No       | Gets stakable miners only if set to true | false        |  boolean  |
+
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
 ```sh
@@ -832,7 +833,9 @@ Note however that if a node becomes offline, all stake pools are automatically u
 | `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
 | `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
 | `--tokens` | Yes      | Amounts of token to stake                                    |         | 1000 - 1997000|
-* - Either one of miner_id / sharder_id needs to be passed
+
+> At most one of miner_id / sharder_id needs to be passed.
+
 ![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
 
 Sample command
@@ -971,7 +974,9 @@ Reformatted output
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
 | `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
 | `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
-* - Either one of miner_id / sharder_id needs to be passed
+
+> At most one of miner_id / sharder_id needs to be passed
+
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
 ```sh
