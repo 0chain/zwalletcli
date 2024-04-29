@@ -19,7 +19,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
       - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
       - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
-      - [Listing all authorizers - `bridge-list-auth`](#list-authorizers)
+      - [Listing all authorizers - `bridge-list-auth`](#list-authorizers---bridge-list-auth)
       - [Getting Auhorizer Configuration - `bridge-auth-config`](#get-authorizer-configuration)
       - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
       - [Getting Storage Smart Contract Configuration - `sc-config`](#show-storage-smart-contract-configuration)
@@ -44,6 +44,20 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
     - [Removing/Killing nodes](#killing/deleting-a-node)
       - [Killing a miner - `mn-kill`](#killing-a-miner---mn-kill)
       - [Killing a sharder - `sh-kill`](#killing-a-sharder---sh-kill)
+    - [Bridge](#bridge-commands)
+      - [Import Account](#import-account---bridge-import-account)
+      - [List Accounts](#list-accounts---bridge-list-accounts)
+      - [Burn ETH](#burn-eth---bridge-burn-eth)
+      - [Burn BNT](#burn-bnt---bridge-burn-bnt)
+      - [Burn EURC](#burn-eurc---bridge-burn-eurc)
+      - [Burn USDC](#burn-usdc---bridge-burn-usdc)
+      - [Burn WZCN](#burn-wzcn---bridge-burn-wzcn)
+      - [Burn ZCN](#burn-zcn---bridge-burn-zcn)
+      - [Get WZCN Burn](#get-wzcn-burn---bridge-get-wzcn-burn)
+      - [Get ZCN Burn](#get-zcn-burn---bridge-get-zcn-burn)
+      - [Mint ZCN](#mint-zcn---bridge-mint-zcn)
+      - [Mint WZCN](#mint-wzcn---bridge-mint-wzcn)
+      - [Verify Transaction](#verify-transaction---bridge-verify)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
@@ -1018,6 +1032,217 @@ Sample command
 
 ```sh
 ./zwallet sh-kill --id 860498ec586ef5122efbca77d1d9c215167913d0477830a5aab6a2eb106cb6c2
+```
+
+### Bridge Commands
+
+#### Import Account - `bridge-import-account`
+Import account to local key storage using mnemonic, protected with password
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--account_index` | No      | Index of the account to use                 |     0    |       int       |
+| `--address_index` | No      | Index of the address to use                 |     0    |       int       |
+| `--bip32` | No      | Use BIP32 derivation path                 |     false    |       boolean       |
+| `--mnemonic` | Yes      | Ethereum mnemonic                 |     0    |       string       |
+| `--password` | Yes      | Password to lock and unlock account to sign transaction |     0    |       string       |
+| `--path` | No      | Home config directory                 |     ~/.zcn    |       string       |
+
+Sample Command : 
+```sh
+./zwallet bridge-import-account --mnemonic "{MNEMONIC}" --password {WALLET_PASSWORD}
+```
+
+Sample Response :
+```sh
+Imported account 0x7503125Cf087E20Ac07dd323513c9A6a6312DE56 to path: /Users/gaurboysm3pro/.zcn/wallets/UTC--2024-04-29T16-40-28.126055000Z--7503125cf087e9a6a6312de5620ac07dd323513c
+```
+
+#### List Accounts - `bridge-list-accounts`
+List available ethereum accounts
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-list-accounts
+```
+
+Sample Response :
+```sh
+Ethereum available account:
+0x7503125Cf087E9A6a6312DE5620Ac07dd323513c
+```
+
+#### Burn ETH - `bridge-burn-eth`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-eth --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn BNT - `bridge-burn-bnt`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-bnt --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn EURC - `bridge-burn-eurc`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-eurc --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn USDC - `bridge-burn-usdc`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-usdc --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn WZCN - `bridge-burn-wzcn`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-wzcn --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn ZCN - `bridge-burn-zcn`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--token`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-zcn --amount 10
+```
+
+Sample Response :
+```sh
+Executed smart contract successfully with txn:  1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
+Transaction completed successfully: 1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
+```
+
+#### Get WZCN Burn - `bridge-get-wzcn-burn`
+
+#### Get ZCN Burn - `bridge-get-zcn-burn`
+
+#### Mint ZCN - `bridge-mint-zcn`
+
+#### Mint WZCN - `bridge-mint-wzcn`
+
+#### Verify Transaction - `bridge-verify`
+
+Verify Ethereum transaction
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--hash`          | Yes      | Ethereum transaction hash                     |         |    int       |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-verify --hash 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+Sample Response :
+```sh
+Transaction verification success: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
 ```
 
 ## Config
