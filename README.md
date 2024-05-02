@@ -1022,7 +1022,7 @@ Sample command
 ```
 
 #### Killing a sharder - `sh-kill`
-Miners can only be killed by the node's delegate wallet / owner
+Sharders can only be killed by the node's delegate wallet / owner
 
 | Parameter         | Required | Description                                   | Default | Valid Values |
 | ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
@@ -1035,6 +1035,7 @@ Sample command
 ```
 
 ### Bridge Commands
+Bridge Protocol is used to exchange tokens between Züs Network and Ethereum Network tokens.
 
 #### Import Account - `bridge-import-account`
 Import account to local key storage using mnemonic, protected with password
@@ -1216,14 +1217,6 @@ Sample Response :
 Executed smart contract successfully with txn:  1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
 Transaction completed successfully: 1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
 ```
-
-#### Get WZCN Burn - `bridge-get-wzcn-burn`
-
-#### Get ZCN Burn - `bridge-get-zcn-burn`
-
-#### Mint ZCN - `bridge-mint-zcn`
-
-#### Mint WZCN - `bridge-mint-wzcn`
 
 #### Verify Transaction - `bridge-verify`
 
