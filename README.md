@@ -687,7 +687,7 @@ The output would print the stake pool id.
 locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
 ```
 
-#### Get Nonce
+#### Get Nonce - `getnonce`
 
 Use `getnonce` to get nonce of the default wallet
 
@@ -703,7 +703,7 @@ The output would print the stake pool id.
 Nonce: 58
 ```
 
-#### Reset Nonce
+#### Reset Nonce - `reset-user-nonce`
 
 Use `reset-user-nonce` to reset the nonce value of the user wallet
 
