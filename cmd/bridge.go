@@ -274,7 +274,7 @@ func getUint64(args []*Arg, name string) uint64 {
 }
 
 // createCommand Function to initialize bridge commands with DRY principle
-func createCommand(use, short, long string, functor Command, opts ...*Option) *cobra.Command {
+func createCommand(use, short, long string, functor Command, hidden bool, opts ...*Option,) *cobra.Command {
 	fn := func(parameters ...*Arg) {
 		functor(parameters...)
 	}
@@ -282,13 +282,13 @@ func createCommand(use, short, long string, functor Command, opts ...*Option) *c
 	opts = append(opts, configFolderOption)
 	opts = append(opts, configChainFileOption)
 
-	command := createBridgeComm(use, short, long, fn, opts)
+	command := createBridgeComm(use, short, long, fn, opts, hidden)
 	AppendOptions(opts, command)
 	return command
 }
 
 // createCommandWithBridge Function to initialize bridge commands with DRY principle
-func createCommandWithBridge(use, short, long string, functor CommandWithBridge, opts ...*Option) *cobra.Command {
+func createCommandWithBridge(use, short, long string, functor CommandWithBridge, hidden bool, opts ...*Option) *cobra.Command {
 	fn := func(parameters ...*Arg) {
 		folder := GetConfigFolder(parameters)
 		chainConfigFile := GetChainConfigFile(parameters)
@@ -299,8 +299,7 @@ func createCommandWithBridge(use, short, long string, functor CommandWithBridge,
 
 	opts = append(opts, configFolderOption)
 	opts = append(opts, configChainFileOption)
-
-	command := createBridgeComm(use, short, long, fn, opts)
+	command := createBridgeComm(use, short, long, fn, opts, hidden)
 	AppendOptions(opts, command)
 	return command
 }
@@ -330,12 +329,14 @@ func createBridgeComm(
 	long string,
 	functor Command,
 	opts []*Option,
+	hidden bool,
 ) *cobra.Command {
 	var cobraCommand = &cobra.Command{
 		Use:   use,
 		Short: short,
 		Long:  long,
 		Args:  cobra.MinimumNArgs(0),
+		Hidden: hidden,
 		Run: func(cmd *cobra.Command, args []string) {
 			fflags := cmd.Flags()
 

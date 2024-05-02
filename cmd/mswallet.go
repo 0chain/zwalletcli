@@ -18,6 +18,7 @@ var createmswalletcmd = &cobra.Command{
 	Long: `create multisig wallet
 			<numsigners> <threshold> <testN>`,
 	Args: cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		MaxSigners := 20 //This is the limitation from MultiSigSC
 		MinSigners := 2  //This is the limitation from MultiSigSC

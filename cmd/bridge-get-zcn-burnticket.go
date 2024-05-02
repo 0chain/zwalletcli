@@ -13,6 +13,7 @@ func init() {
 			"get the confirmed burn ticket for zcn burn transaction",
 			"get transaction ticket with the given ZCN transaction hash",
 			commandGetZCNBurnTicket,
+			false,
 			WithHash("ZCN transaction hash"),
 		))
 }

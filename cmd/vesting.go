@@ -18,6 +18,7 @@ var getVestingPoolInfoCmd = &cobra.Command{
 	Short: "Check out vesting pool information.",
 	Long:  `Check out vesting pool information.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var flags = cmd.Flags()
 		if !flags.Changed("pool_id") {
@@ -74,6 +75,7 @@ var getVestingClientPoolsCmd = &cobra.Command{
 	Short: "Check out vesting pools list.",
 	Long:  `Check out vesting pools list.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			flags    = cmd.Flags()
@@ -148,6 +150,7 @@ var vestingPoolAddCmd = &cobra.Command{
 	Short: "Add a vesting pool",
 	Long:  "Add a vesting pool.",
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
@@ -261,6 +264,7 @@ var vestingPoolDeleteCmd = &cobra.Command{
 	Short: "Delete a vesting pool",
 	Long:  "Delete a vesting pool.",
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
@@ -323,6 +327,7 @@ var vestingPoolStopCmd = &cobra.Command{
 	Short: "Stop vesting for one of destinations and unlock tokens not vested",
 	Long:  "Stop vesting for one of destinations and unlock tokens not vested",
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
@@ -397,6 +402,7 @@ var vestingPoolUnlockCmd = &cobra.Command{
 	Short: "Unlock tokens of a vesting pool",
 	Long:  "Unlock tokens of a vesting pool.",
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (
@@ -460,6 +466,7 @@ var vestingPoolTriggerCmd = &cobra.Command{
 	Short: "Trigger a vesting pool work.",
 	Long:  `Move current vested tokens to destinations`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (

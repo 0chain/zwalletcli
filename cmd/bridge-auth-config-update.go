@@ -17,6 +17,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 	Short: "Update ZCNSC authorizer settings by ID",
 	Long:  `Update ZCNSC authorizer settings by ID.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		const (
 			IDFlag  = "id"

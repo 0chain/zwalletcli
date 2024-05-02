@@ -16,6 +16,7 @@ func init() {
 			"burn zcn tokens",
 			"burn zcn tokens that will be minted for WZCN tokens",
 			commandBurnZCN,
+			false,
 			WithToken("ZCN tokens quantity to be burned"),
 		))
 }

@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var getBridgeConfigCmd = &cobra.Command{
@@ -12,6 +13,7 @@ var getBridgeConfigCmd = &cobra.Command{
 	Short: "Show ZCNBridge configurations.",
 	Long:  `Show ZCNBridge configurations.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			response = new(zcncore.InputMap)

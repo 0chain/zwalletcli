@@ -16,6 +16,7 @@ var updateStoragScConfigCmd = &cobra.Command{
 	Short: "Update the storage smart contract",
 	Long:  `Update the storage smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 

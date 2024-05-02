@@ -16,6 +16,7 @@ func init() {
 			"Reset user minted nonce",
 			"Resets user minted nonce in bridge SC",
 			resetUserNonce,
+			false,
 		))
 }
 
