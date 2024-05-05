@@ -69,6 +69,7 @@ var minerscMiners = &cobra.Command{
 
 		limit, offset := 20, 0
 		active := true
+		stakable := false
 
 		var allFlag, jsonFlag bool
 
@@ -107,9 +108,16 @@ var minerscMiners = &cobra.Command{
 			}
 		}
 
+		if flags.Changed("stakable") {
+			stakable, err = flags.GetBool("stakable")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		if !allFlag {
 			cb := NewJSONInfoCB(info)
-			zcncore.GetMiners(cb, limit, offset, active)
+			zcncore.GetMiners(cb, limit, offset, active, stakable)
 
 			if err = cb.Waiting(); err != nil {
 				log.Fatal(err)
@@ -134,7 +142,7 @@ var minerscMiners = &cobra.Command{
 			var nodes []zcncore.Node
 			for curOff := offset; ; curOff += limit {
 				cb := NewJSONInfoCB(info)
-				zcncore.GetMiners(cb, limit, curOff, active)
+				zcncore.GetMiners(cb, limit, curOff, active, stakable)
 
 				if err = cb.Waiting(); err != nil {
 					log.Fatal(err)
@@ -174,7 +182,7 @@ var minerscSharders = &cobra.Command{
 		flags := cmd.Flags()
 
 		var err error
-		var jsonFlag, allFlag bool
+		var jsonFlag, allFlag, stakable bool
 
 		if flags.Changed("json") {
 			jsonFlag, err = flags.GetBool("json")
@@ -217,6 +225,13 @@ var minerscSharders = &cobra.Command{
 			}
 		}
 
+		if flags.Changed("stakable") {
+			stakable, err = flags.GetBool("stakable")
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		if !allFlag {
 			if mb != nil && mb.Sharders != nil {
 				fmt.Println("MagicBlock Sharders")
@@ -240,7 +255,7 @@ var minerscSharders = &cobra.Command{
 			var nodes []zcncore.Node
 			for curOff := offset; ; curOff += limit {
 				callback := NewJSONInfoCB(sharders)
-				zcncore.GetSharders(callback, limit, curOff, active)
+				zcncore.GetSharders(callback, limit, curOff, active, stakable)
 
 				if err = callback.Waiting(); err != nil {
 					log.Fatal(err)
@@ -627,12 +642,14 @@ func init() {
 	minerscMiners.PersistentFlags().Int("limit", 20, "Limits the amount of miners returned")
 	minerscMiners.PersistentFlags().Int("offset", 0, "Skips the number of miners mentioned")
 	minerscMiners.PersistentFlags().Bool("active", true, "Gets active miners only, set it false to get all miners")
+	minerscMiners.PersistentFlags().Bool("stakable", false, "Gets stakable miners only if set to true")
 	minerscMiners.PersistentFlags().Bool("all", false, "include all registered miners, default returns the first page of miners")
 	minerscSharders.PersistentFlags().Bool("json", false, "as JSON")
 	minerscSharders.PersistentFlags().Int("limit", 20, "Limits the amount of sharders returned")
 	minerscSharders.PersistentFlags().Int("offset", 0, "Skips the number of sharders mentioned")
 	minerscSharders.PersistentFlags().Bool("all", false, "include all registered sharders, default returns the first page of sharders")
 	minerscSharders.PersistentFlags().Bool("active", true, "Gets active sharders only, set it false to get all sharders")
+	minerscSharders.PersistentFlags().Bool("stakable", false, "Gets stakable sharders only if set to true")
 
 	minerscInfo.PersistentFlags().String("id", "", "miner/sharder ID to get info for")
 	minerscInfo.MarkFlagRequired("id")

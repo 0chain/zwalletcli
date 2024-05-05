@@ -5,7 +5,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
@@ -20,6 +19,7 @@ func init() {
 			"Register an authorizer manually",
 			"Register an authorizer manually",
 			registerAuthorizerInChain,
+			true,
 			&Option{
 				name:     "url",
 				typename: "string",
@@ -78,8 +78,6 @@ func registerAuthorizerInChain(bc *zcnbridge.BridgeClient, args ...*Arg) {
 	clientID := GetClientID(args)
 	clientKey := GetClientKey(args)
 	url := GetURL(args)
-	minStake := GetMinStake(args)
-	maxStake := GetMaxStake(args)
 	numDelegates := GetNumDelegates(args)
 	serviceCharge := GetServiceCharge(args)
 
@@ -88,8 +86,6 @@ func registerAuthorizerInChain(bc *zcnbridge.BridgeClient, args ...*Arg) {
 		URL:       url,
 		StakePoolSettings: zcncore.AuthorizerStakePoolSettings{
 			DelegateWallet: clientID,
-			MinStake:       common.Balance(minStake),
-			MaxStake:       common.Balance(maxStake),
 			NumDelegates:   numDelegates,
 			ServiceCharge:  serviceCharge,
 		},

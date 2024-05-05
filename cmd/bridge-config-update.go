@@ -16,6 +16,7 @@ var updateBridgeGlobalConfigCmd = &cobra.Command{
 	Short: "Update ZCNSC bridge global settings",
 	Long:  `Update ZCNSC bridge global settings.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 

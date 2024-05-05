@@ -11,6 +11,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
     - [2. Run `zwallet` commands](#2-run-zwallet-commands)
   - [Global parameters](#global-parameters)
   - [Commands](#commands)
+    - [Set up bash autocompletion - `zwallet completion`](#set-up-bash-autocompletion---zwallet-completion)
     - [Creating and restoring wallets](#creating-and-restoring-wallets)
       - [Creating wallet - (any command)](#creating-wallet---any-command)
       - [Recovering wallet - `recoverwallet`](#recovering-wallet---recoverwallet)
@@ -18,7 +19,7 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Listing all miners - `ls-miners`](#listing-all-miners---ls-miners)
       - [Listing all sharders -`ls-sharders`](#listing-all-sharders--ls-sharders)
       - [Listing all blobbers - `getblobbers`](#listing-all-blobbers---getblobbers)
-      - [Listing all authorizers - `bridge-list-auth`](#list-authorizers)
+      - [Listing all authorizers - `bridge-list-auth`](#list-authorizers---bridge-list-auth)
       - [Getting Auhorizer Configuration - `bridge-auth-config`](#get-authorizer-configuration)
       - [Getting node ID by URL - `getid`](#getting-node-id-by-url---getid)
       - [Getting Storage Smart Contract Configuration - `sc-config`](#show-storage-smart-contract-configuration)
@@ -30,6 +31,8 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Sending tokens to another wallet - `send`](#sending-tokens-to-another-wallet---send)
       - [Verifying a transaction - `verify`](#verifying-a-transaction---verify)
       - [Collect rewards - `collect-reward`](#collect-rewards)  
+      - [Get nonce - `getnonce`](#get-nonce)
+      - [Reset User nonce - `reset-user-nonce`](#reset-nonce)
     - [Staking on miners and sharders](#staking-on-miners-and-sharders)
       - [Getting the staking config - `mn-config`](#getting-the-staking-config---mn-config)
       - [Getting a miner or sharder info for staking - `mn-info`](#getting-a-miner-or-sharder-info-for-staking---mn-info)
@@ -38,6 +41,23 @@ The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
       - [Getting the stake pool info - `mn-pool-info`](#getting-the-stake-pool-info---mn-pool-info)
       - [Unlock a stake - `mn-unlock`](#unlock-a-stake---mn-unlock)
       - [Updating staking config of a node - `mn-update-settings`](#updating-staking-config-of-a-node---mn-update-settings)
+    - [Removing/Killing nodes](#killing/deleting-a-node)
+      - [Killing a miner - `mn-kill`](#killing-a-miner---mn-kill)
+      - [Killing a sharder - `sh-kill`](#killing-a-sharder---sh-kill)
+    - [Bridge](#bridge-commands)
+      - [Import Account](#import-account---bridge-import-account)
+      - [List Accounts](#list-accounts---bridge-list-accounts)
+      - [Burn ETH](#burn-eth---bridge-burn-eth)
+      - [Burn BNT](#burn-bnt---bridge-burn-bnt)
+      - [Burn EURC](#burn-eurc---bridge-burn-eurc)
+      - [Burn USDC](#burn-usdc---bridge-burn-usdc)
+      - [Burn WZCN](#burn-wzcn---bridge-burn-wzcn)
+      - [Burn ZCN](#burn-zcn---bridge-burn-zcn)
+      - [Get WZCN Burn](#get-wzcn-burn---bridge-get-wzcn-burn)
+      - [Get ZCN Burn](#get-zcn-burn---bridge-get-zcn-burn)
+      - [Mint ZCN](#mint-zcn---bridge-mint-zcn)
+      - [Mint WZCN](#mint-wzcn---bridge-mint-wzcn)
+      - [Verify Transaction](#verify-transaction---bridge-verify)
   - [Config](#config)
     - [~/.zcn/config.yaml](#zcnconfigyaml)
     - [(Optional) Override Network](#override-network)
@@ -125,9 +145,23 @@ The following steps assume that your terminal's working directory is inside the 
 | `--silent`    | Do not print detailed logs      | `false`        |
 | `--wallet`    | Wallet file                     | `wallet.json`  |
 | `--withNonce` | Nonce that will be used in transaction    | `0`  |
-| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee)  |
+| `--fee`       | Transaction Fee for given transaction     | if not set, default is blockchain min fee  |
 
 ## Commands
+
+### Set up bash autocompletion - `zwallet completion`
+
+Generate the autocompletion script for zwallet for the specified shell and instructions to enable them.
+
+Sample Usage:
+
+```sh
+  zwallet completion [command]
+```
+
+commands : bash/fish/powershell/zsh based on the specified shell
+
+See each sub-command's help for details on how to use the generated script.
 
 ### Creating and restoring wallets
 
@@ -152,32 +186,6 @@ wallet saved in /home/ubuntu/.zcn/wallet.json
 "private_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}],
 "mnemonics":"xxxx xxxx xxxx xxxxx",
 "version":"1.0","date_created":"2023-05-03T12:44:46+05:30","nonce":0}
-
-```
-Here is a sample with `faucet` command and this creates a wallet at default location`~/.zcn/wallet.json`
-
-```sh
-./zwallet faucet --methodName pour --input "new wallet"
-```
-
-Another `faucet` command to create a second wallet at `~/.zcn/new_wallet.json`
-
-```sh
-./zwallet faucet --methodName pour --input "new wallet" --wallet new_wallet.json
-```
-
-Sample Output
-```
-No wallet in path  <home directory>/.zcn/new_wallet.json found. Creating wallet...
-ZCN wallet created!!
-Creating related read pool for storage smart-contract...
-Read pool created successfully
-```
-
-Verify second wallet
-
-```sh
-cat ~/.zcn/new_wallet.json
 ```
 
 #### Recovering wallet - `recoverwallet`
@@ -216,9 +224,15 @@ cat ~/.zcn/recovered_wallet.json
 
 The list of miners are retrieved using the Miner smart contract.
 
-| Parameter | Required | Description          | Default | Valid Values      |
-| --------- | -------- | -------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON |         | <empty to enable> |
+| Parameter   | Required | Description          | Default | Valid Values      |
+| ----------- | -------- | -------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
+| `--active`  | No       | Gets active miners only, set it false to get all miners |   true    | boolean |
+| `--all`     | No       | Include all registered miners, default returns the first page of miners |         | <empty to enable> |
+| `--limit`   | No       | Limits the number of miners returned | 20      | integer |
+| `--offset`  | No       | Skips the number of miners mentioned |         | integer |
+| `--stakable`| No       | Gets stakable miners only if set to true | false        |  boolean  |
+
 
 ![List miner nodes](docs/ls-miners.png "List miner nodes")
 
@@ -246,8 +260,12 @@ The list of sharders are retrieved using the latest finalized magic block. All r
 
 | Parameter | Required | Description                             | Default | Valid Values      |
 | --------- | -------- | --------------------------------------- | ------- | ----------------- |
-| `--json`  | No       | Print output as JSON                    |         | <empty to enable> |
-| `--all`   | No       | Print also registered nodes on Miner SC |         | <empty to enable> |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
+| `--active`  | No       | Gets active miners only, set it false to get all miners |   true    | boolean |
+| `--all`     | No       | Include all registered miners, default returns the first page of miners |         | <empty to enable> |
+| `--limit`   | No       | Limits the number of miners returned | 20      | integer |
+| `--offset`  | No       | Skips the number of miners mentioned |         | integer |
+| `--stakable`| No       | Gets stakable miners only if set to true | false        |  boolean  |
 
 ![List sharder nodes](docs/ls-sharders.png "List sharder nodes")
 
@@ -292,6 +310,10 @@ ID: fd02f4436692bd9f679fae809f4f140fd4daaa35769ae9c6db1ab9664f766c22
 
 The list of blobbers are retrieved using the Storage smart contract.
 
+| Parameter   | Required | Description          | Default | Valid Values      |
+| ----------- | -------- | -------------------- | ------- | ----------------- |
+| `--all`     | No       | Gets all blobbers, including inactive blobbers |         | <empty to enable> |
+
 ![List blobber nodes](docs/getblobbers.png "List blobber nodes")
 
 ```sh
@@ -308,7 +330,7 @@ Blobbers:
   http://demo1.zus.network:31306 | 2efc85d6a2f36380e1e77b843cd9f4fe55668271cae4925ab38a92504176e5df | 107.8 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
   http://demo1.zus.network:31302 | 34934babf0781c21736023ff89bc554928d77c028a968ef7344a460611d5a8d2 | 104.3 GiB / 1000.0 GiB | 0.010000 / 0.010000 |    0.1
 ```
-#### List Authorizers
+#### List Authorizers - `bridge-list-auth`
 
 `./zwallet bridge-list-auth ` command can be used to list all authorizers available to validate client transactions.
 
@@ -337,37 +359,6 @@ Blobbers:
 ]
 ```
 
-#### Get Authorizer Configuration
-`./zwallet bridge-auth-config `command can be used to view authorizer configuration. Here are the parameters for the command.
-
-| Parameter | Required | Description                                       |
-| --------- | -------- | ------------------------------------------------- |
-| --id      | Yes      | Provide Authorizer ID to view its configuration . |
-| --help    |          | Syntax Help for the command                       |
-
-Sample Command:
-
-```
-./zwallet bridge-auth-config --id $AUTHORIZER_ID
-```
-
-Sample Response:
-
-```
-{
-  "id": "2f945f7310689f17afd8c8cb291e1e3ba21677243aa1d404a2293064e7983d60",
-  "url": "https://demo.zus.network/authorizer01/",
-  "fee": 0,
-  "latitude": 0,
-  "longitude": 0,
-  "last_health_check": 0,
-  "delegate_wallet": "",
-  "min_stake": 0,
-  "max_stake": 0,
-  "num_delegates": 0,
-  "service_charge": 0
-}
-```
 #### Getting node ID by URL - `getid`
 
 Print the ID of a blockchain node.
@@ -390,9 +381,13 @@ URL: http://demo1.zus.network:31101
 ID: 675502b613ba1c5985636e3e92b9a857855a52155e3316bb40fe9607e14167fb
 ```
 
-#### Show Storage Smart Contract Configuration
+#### Show Storage Smart Contract Configuration - `sc-config`
 
 `./zwallet sc-config ` command displays current storage smart contract configuration  
+
+| Parameter | Required | Description          | Default | Valid Values      |
+| --------- | -------- | -------------------- | ------- | ----------------- |
+| `--json`  | No       | Print output as JSON |         | <empty to enable> |
 
 Sample Command: 
 ```
@@ -476,8 +471,12 @@ validators_per_challenge         2
 writepool.min_lock       0.1
 ```
 
-#### Get Version 
+#### Get Version - `version`
 The version of zwallet and gosdk can be fetched using the `./zwallet version` command.
+
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
 
 Sample Command :
 ```
@@ -489,7 +488,7 @@ Version info:
         zwallet...:  v1.2.3-21-gb10c459
         gosdk.....:  v1.8.17-0.20230522160233-570f983a6283
 ```
-#### Show global configurations 
+#### Show global configurations  - `global-config`
 `./zwallet global-config ` command displays global chain configuration 
 
 Sample Command :
@@ -572,41 +571,15 @@ server_chain.view_change         false
 
 ### Getting and sending tokens
 
-#### Getting tokens with Faucet smart contract - `faucet`
-
-Tokens can be retrieved and added to your wallet through the Faucet smart contract.
-
-| Parameter      | Required | Description                                                  | Default | Valid Values     |
-| -------------- | -------- | ------------------------------------------------------------ | ------- | ---------------- |
-| `--methodName` | Yes      | Smart Contract method to call (`pour` - get tokens, `refill` - return tokens) |         | `pour`, `refill` |
-| `--input`      | Yes      | Request description                                          |         | any string       |
-| `--tokens`     | No       | Amount of tokens (maximum of 1.0)                            | 1.0     | (0 - 1.0]        |
-
-![Faucet](docs/faucet.png "Faucet")
-
-The following command will give 1 token to the default wallet.
-
-```sh
-./zwallet faucet --methodName pour --input "need token"
-```
-
-The following command will return 0.5 token to faucet.
-
-```sh
-./zwallet faucet --methodName refill --input "not using" --tokens 0.5
-```
-
-Sample output from `faucet` prints the transaction
-
-```
-Execute faucet smart contract success with txn :  d25acd4a339f38a9ce4d1fa91b287302fab713ef4385522e16d18fd147b2ebaf
-```
-
 #### Checking balance - `getbalance`
 
 Wallet balances are retrieved from sharders.
 
 > Note: Balance would not show any [locked tokens](#locking-tokens-for-interest---lock).
+
+| Parameter | Required | Description                             | Default | Valid Values      |
+| --------- | -------- | --------------------------------------- | ------- | ----------------- |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
 
 ![Get wallet balance](docs/getbalance.png "Get wallet balance")
 
@@ -636,6 +609,7 @@ Transferring tokens from a wallet to another is done through `send`
 
 | Parameter        | Required | Description                    | Default | Valid Values |
 | ---------------- | -------- | ------------------------------ | ------- | ------------ |
+| `--json`    | No       | Print output as JSON |         | <empty to enable> |
 | `--to_client_id` | Yes      | Client ID of the recipient     |         |              |
 | `--tokens`       | Yes      | Amount of tokens to send       |         | valid number |
 | `--desc`         | Yes      | Transfer description           |         | any string   |
@@ -688,7 +662,7 @@ To see more details about the transaction on `verify`, use `--verbose` global pa
 ```sh
 ./zwallet verify --hash 867c240b640e3d128643330af383cb3a0a229ebce08cae667edd7766c7ccc850 --verbose
 ```
-#### Collect rewards
+#### Collect rewards - `collect-reward`
 
 Use `collect-reward` to transfer reward tokens from a stake pool.The stake pool keeps an account for all stakeholders to maintain accrued rewards. 
 You earn rewards for: Sharders and Miners
@@ -698,14 +672,54 @@ You earn rewards for: Sharders and Miners
 
 | Parameter     | Required | Description         | Valid values |
 | ------------- | -------- | ------------------- | ------------ |
-| provider_type | yes      | miner or sharder or authorizer   | string       |
+| provider_type | yes      | miner or sharder or authorizer   | miner/sharder/authorizer       |
 | provider_id   | yes      | miner or sharder id | string       |
 
 Sample Command :
 
-```
+```sh
 ./zwallet collect-reward --provider_type miner --provider_id $MINER/SHARDER_ID
 ```
+
+The output would print the stake pool id.
+
+```sh
+locked with: b488738546d84aed9d3dcb2bbe24c161bc4338638669e64e814631efd430fd85
+```
+
+#### Get Nonce - `getnonce`
+
+Use `getnonce` to get nonce of the default wallet
+
+Sample Command :
+
+```sh
+./zwallet getnonce
+```
+
+The output would print the stake pool id.
+
+```sh
+Nonce: 58
+```
+
+#### Reset Nonce - `reset-user-nonce`
+
+Use `reset-user-nonce` to reset the nonce value of the user wallet
+
+| Parameter | Required | Description                                                  | Default | Valid Values |
+| --------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
+| `--chain_config`    | No      | Chain config file name |    config.yaml     |              |
+| `--path`    | No      | Config home folder |   ~/.zcn     |              |
+
+Sample Command :
+
+Command required ethereum_node_url to be set in config
+
+```sh
+./zwallet reset-user-nonce
+```
+
 ### Staking on miners and sharders
 
 [Miner smart contract](https://github.com/0chain/0chain/blob/master/code/go/0chain.net/smartcontract/minersc/READEME.md) allows staking on the miner and sharder nodes.
@@ -830,8 +844,11 @@ Note however that if a node becomes offline, all stake pools are automatically u
 
 | Parameter  | Required | Description                                                  | Default | Valid Values |
 | ---------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
-| `--id`     | Yes      | Node ID of a miner or sharder to stake for (get at `ls-miners` or `ls-sharders`) |         |              |
-| `--tokens` | Yes      | Amounts of token to stake                                    |         | valid number |
+| `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
+| `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
+| `--tokens` | Yes      | Amounts of token to stake                                    |         | 1000 - 1997000|
+
+> At most one of miner_id / sharder_id needs to be passed.
 
 ![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
 
@@ -853,7 +870,7 @@ If the locking of stakes is failing, verify the following.
 2. Node ID is valid
 3. Node has available delegate
 
-### Getting the stake pools of a wallet - `mn-user-info`
+#### Getting the stake pools of a wallet - `mn-user-info`
 
 | Parameter     | Required | Description             | Default                        | Valid Values      |
 | ------------- | -------- | ----------------------- | ------------------------------ | ----------------- |
@@ -969,7 +986,10 @@ Reformatted output
 
 | Parameter   | Required | Description                                                  | Default | Valid Values |
 | ----------- | -------- | ------------------------------------------------------------ | ------- | ------------ |
-| `--id`      | Yes      | Node ID of a miner or sharder to unlock stakes from (get at `mn-user-info`) |         |              |
+| `--miner_id`     | Yes*     | Node ID of a miner to stake for (get at `ls-miners`) |         |              |
+| `--sharder_id`     | Yes*      | Node ID of a sharder to stake for (get at `ls-sharders`) |         |              |
+
+> At most one of miner_id / sharder_id needs to be passed
 
 ![Unlock a stake](docs/mn-unlock.png "Unlock a stake")
 
@@ -986,24 +1006,238 @@ tokens will be unlocked next VC
 Tokens are released on the next view change cycle or at the next reward round.
 
 
-#### Updating staking config of a node - `mn-update-settings`
+### Killing/Deleting a node
 
-Staking config can only be updated by the node's delegate wallet.
+#### Killing a miner - `mn-kill`
+Miners can only be killed by the node's delegate wallet / owner
 
 | Parameter         | Required | Description                                   | Default | Valid Values |
 | ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
-| `--id`            | Yes      | Node ID of a miner or sharder                 |         |              |
-| `--max_stake`     | No       | Minimum amount of tokens allowed when staking |         | valid number |
-| `--min_stake`     | No       | Maximum amount of tokens allowed when staking |         | valid number |
-| `--num_delegates` | No       | Maximum number of staking pools               |         | valid number |
-
-![Update node settings for staking](docs/mn-update-settings.png "Update node settings for staking")
+| `--id`            | Yes      | Node ID of a miner            |         |              |
 
 Sample command
 
 ```sh
-./zwallet mn-update-settings --id dc8c6c93fb42e7f6d1c0f93baf66cc77e52725f79c3428a37da28e294aa2319a --max_stake 1000000000000 --min_stake 10000000 --num_delegates 25
+./zwallet mn-kill --id 860498ec586ef5122efbca77d1d9c215167913d0477830a5aab6a2eb106cb6c2
 ```
+
+#### Killing a sharder - `sh-kill`
+Sharders can only be killed by the node's delegate wallet / owner
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--id`            | Yes      | Node ID of a sharder                 |         |              |
+
+Sample command
+
+```sh
+./zwallet sh-kill --id 860498ec586ef5122efbca77d1d9c215167913d0477830a5aab6a2eb106cb6c2
+```
+
+### Bridge Commands
+Bridge Protocol is used to exchange tokens between Züs Network and Ethereum Network tokens.
+
+#### Import Account - `bridge-import-account`
+Import account to local key storage using mnemonic, protected with password
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--account_index` | No      | Index of the account to use                 |     0    |       int       |
+| `--address_index` | No      | Index of the address to use                 |     0    |       int       |
+| `--bip32` | No      | Use BIP32 derivation path                 |     false    |       boolean       |
+| `--mnemonic` | Yes      | Ethereum mnemonic                 |     0    |       string       |
+| `--password` | Yes      | Password to lock and unlock account to sign transaction |     0    |       string       |
+| `--path` | No      | Home config directory                 |     ~/.zcn    |       string       |
+
+Sample Command : 
+```sh
+./zwallet bridge-import-account --mnemonic "{MNEMONIC}" --password {WALLET_PASSWORD}
+```
+
+Sample Response :
+```sh
+Imported account 0x7503125Cf087E20Ac07dd323513c9A6a6312DE56 to path: /Users/gaurboysm3pro/.zcn/wallets/UTC--2024-04-29T16-40-28.126055000Z--7503125cf087e9a6a6312de5620ac07dd323513c
+```
+
+#### List Accounts - `bridge-list-accounts`
+List available ethereum accounts
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-list-accounts
+```
+
+Sample Response :
+```sh
+Ethereum available account:
+0x7503125Cf087E9A6a6312DE5620Ac07dd323513c
+```
+
+#### Burn ETH - `bridge-burn-eth`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-eth --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn BNT - `bridge-burn-bnt`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-bnt --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn EURC - `bridge-burn-eurc`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-eurc --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn USDC - `bridge-burn-usdc`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-usdc --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn WZCN - `bridge-burn-wzcn`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--amount`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+| `--retries`       | No       | Num of seconds a transaction status check should run                         | 60  |    int    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-wzcn --amount 10
+```
+
+Sample Response :
+```sh
+Starting IncreaseBurnerAllowance transaction
+Verification: IncreaseBurnerAllowance [OK]: 0xe9b7d008e1469e8256a62b571b43af29fac933e51b0f2cc715224ebc50948a23
+Starting WZCN burn transaction
+Verification: WZCN burn [OK]: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+#### Burn ZCN - `bridge-burn-zcn`
+
+Burn eth tokens that will be minted on ZCN chain
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--token`        | Yes      | WZCN token amount to be burned                |         |    int    |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-burn-zcn --amount 10
+```
+
+Sample Response :
+```sh
+Executed smart contract successfully with txn:  1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
+Transaction completed successfully: 1133e973106fdb953f10810836ad5f7435bf39acf3c302780a9299ab2202c6f2
+```
+
+#### Verify Transaction - `bridge-verify`
+
+Verify Ethereum transaction
+
+| Parameter         | Required | Description                                   | Default | Valid Values |
+| ----------------- | -------- | --------------------------------------------- | ------- | ------------ |
+| `--hash`          | Yes      | Ethereum transaction hash                     |         |    int       |
+| `--chain_config`  | No       | Chain config file name                        | config.yaml  |    string    |
+| `--path`          | No       | Home config directory                         | ~/.zcn  |    string    |
+
+Sample Command : 
+```sh
+./zwallet bridge-verify --hash 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
+Sample Response :
+```sh
+Transaction verification success: 0xd64ef7e7d4d5e18a6f04221a9431ebba13fc06b16fbd03e86b4c6f0603aa10b3
+```
+
 ## Config
 
 ### ~/.zcn/config.yaml

@@ -12,6 +12,7 @@ var getVestingPoolConfigCmd = &cobra.Command{
 	Short: "Check out vesting pool configurations.",
 	Long:  `Check out vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			fields = new(zcncore.InputMap)

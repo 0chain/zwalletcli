@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var getFaucetConfigCmd = &cobra.Command{
@@ -11,6 +12,7 @@ var getFaucetConfigCmd = &cobra.Command{
 	Short: "Show Faucet configurations.",
 	Long:  `Show Faucet configurations.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var (

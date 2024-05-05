@@ -16,6 +16,7 @@ var updateFaucetCmd = &cobra.Command{
 	Short: "Update the Faucet smart contract",
 	Long:  `Update the Faucet smart contract.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 

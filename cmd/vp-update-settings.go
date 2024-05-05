@@ -16,6 +16,7 @@ var updateVestingPoolConfigCmd = &cobra.Command{
 	Short: "Update the vesting pool configurations.",
 	Long:  `Update the vesting pool configurations.`,
 	Args:  cobra.MinimumNArgs(0),
+	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
