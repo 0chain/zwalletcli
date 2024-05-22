@@ -3,7 +3,6 @@
 `zwallet` is a command line interface (CLI) to demonstrate the wallet functionalities of Züs.  For more information on Züs Network and the system overview, refer to [docs.zus.network](https://docs.zus.network).
 
 The CLI utilizes the [Züs GoSDK](https://github.com/0chain/gosdk).
-- [Züs Overview](#züs-overview)
 - [zwallet - a CLI for Züs wallet](#zwallet---a-cli-for-züs-wallet)
   - [Architecture](#architecture)
   - [Getting started](#getting-started)
