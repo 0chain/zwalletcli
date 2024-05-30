@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -34,26 +35,41 @@ func commandBurnEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 		status      int
 	)
 
-	maxAmount, err := b.GetMaxBancorTargetAmount(zcnbridge.SourceTokenETHAddress, amount)
+	var balanceRaw *big.Int
+
+	balanceRaw, err = b.GetTokenBalance()
 	if err != nil {
-		ExitWithError(err, "failed to execute GetMaxBancorTargetAmount")
+		ExitWithError(err, "failed to GetTokenBalance")
 	}
 
-	transaction, err = b.Swap(context.Background(), zcnbridge.SourceTokenETHAddress, amount, maxAmount, time.Now().Add(time.Minute*3))
-	if err != nil {
-		ExitWithError(err, "failed to execute Swap")
-	}
+	balance := balanceRaw.Uint64()
 
-	hash = transaction.Hash().Hex()
-	status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
-	if err != nil {
-		ExitWithError(fmt.Sprintf("Failed to confirm Swap: hash = %s, error = %v", hash, err))
-	}
+	if balance < amount {
+		target := amount - balance
 
-	if status == 1 {
-		fmt.Printf("Verification: Swap [OK]: %s\n", hash)
-	} else {
-		ExitWithError(fmt.Sprintf("Verification: Swap [FAILED]: %s\n", hash))
+		var estimated *big.Int
+
+		estimated, err = b.GetETHSwapAmount(context.Background(), target)
+		if err != nil {
+			ExitWithError(err, "failed to GetETHSwapAmount")
+		}
+
+		transaction, err = b.SwapETH(context.Background(), estimated.Uint64(), target)
+		if err != nil {
+			ExitWithError(err, "failed to execute SwapETH")
+		}
+
+		hash = transaction.Hash().Hex()
+		status, err = zcnbridge.ConfirmEthereumTransaction(hash, retries, time.Second)
+		if err != nil {
+			ExitWithError(fmt.Sprintf("Failed to confirm SwapETH: hash = %s, error = %v", hash, err))
+		}
+
+		if status == 1 {
+			fmt.Printf("Verification: SwapETH [OK]: %s\n", hash)
+		} else {
+			ExitWithError(fmt.Sprintf("Verification: SwapETH [FAILED]: %s\n", hash))
+		}
 	}
 
 	fmt.Println("Starting IncreaseBurnerAllowance transaction")
