@@ -833,6 +833,8 @@ Note however that if a node becomes offline, all stake pools are automatically u
 
 > At most one of miner_id / sharder_id needs to be passed.
 
+> You can use `sp-lock` command from [zboxcli](https://github.com/0chain/zboxcli) to stake tokens against a blobber, validator ot authorizer.
+
 ![Staking tokens on node](docs/mn-lock.png "Staking tokens on node")
 
 Sample command
