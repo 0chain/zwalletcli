@@ -3,7 +3,7 @@ module github.com/0chain/zwalletcli
 go 1.21
 
 require (
-	github.com/0chain/gosdk v1.15.0
+	github.com/0chain/gosdk v1.16.0-RC1
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -45,6 +45,8 @@ require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/h2non/filetype v1.1.4-0.20231228185113-6469358c2bcb // indirect
+	github.com/hack-pad/go-webworkers v0.1.0 // indirect
+	github.com/hack-pad/safejs v0.1.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
