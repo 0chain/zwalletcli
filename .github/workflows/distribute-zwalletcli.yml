@@ -1,14 +1,19 @@
 name: Build, Distribute and Test zwallet
 
 on:
-  push:
+  push: # REMOVE: push once tested
     branches:
-      - main
       - packaging
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of zwallet to release'
+        required: true
+        default: '1.0.0'
 
 env:
   APP_NAME: zwallet
-  APP_VERSION: 1.16.0-1
+  APP_VERSION: 1.16.0 # REMOVE: take as input from workflow
   GO_VERSION: 1.21.0
   REMOTE_SERVER: 5.9.151.246
   REMOTE_USER: root
@@ -101,7 +106,6 @@ jobs:
         Package: ${{ env.APP_NAME }}
         Version: ${{ env.APP_VERSION }}
         Architecture: ${{ matrix.arch.name }}
-        Maintainer: none <no-reply@gmail.com>
         Description: zwallet is a command line interface (CLI) to demonstrate the wallet functionalities of Züs.
         EOT
 
@@ -135,7 +139,7 @@ jobs:
       DISTRIBUTIONS: bionic focal jammy noble bookworm bullseye buster
       ARCHITECTURES: amd64 arm64
       SRC_DIR: ${{ github.workspace }}/src
-      REPO_DIR: ${{ github.workspace }}/aptrepo
+      REPO_DIR: ${{ github.workspace }}/zwallet
       DEB_DIR: ${{ github.workspace }}/deb-files
     steps:
     - name: Checkout code
@@ -172,7 +176,7 @@ jobs:
 
     - name: Download APT repo
       run: |
-          scp -v -i ~/.ssh/id_rsa -r ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/aptrepo/ ${{ github.workspace }}
+          scp -v -i ~/.ssh/id_rsa -r ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/aptrepo/zwallet/ ${{ github.workspace }}
 
     - name: Download all .deb files
       uses: actions/download-artifact@v3
@@ -181,28 +185,35 @@ jobs:
 
     - name: Copy debian packages
       run : |
-            mkdir -p ${{ env.REPO_DIR }}/pool/main/z/${APP_NAME}/
+            mkdir -p ${{ env.REPO_DIR }}/pool/main/z/${{ env.APP_NAME }}/
             find ${{ env.DEB_DIR }} -name "*.deb"
             for deb in $(find ${{ env.DEB_DIR }} -name "*.deb"); do
-              cp $deb ${{ env.REPO_DIR }}/pool/main/z/${APP_NAME}/
+              cp $deb ${{ env.REPO_DIR }}/pool/main/z/${{ env.APP_NAME }}/
             done
 
     - name: Update APT repo
       run: |
         cd ${{ env.REPO_DIR }}
         for dist in ${{ env.DISTRIBUTIONS }}; do
+          mkdir -p dists/${dist}
           for arch in ${{ env.ARCHITECTURES }}; do
-            mkdir -p dists/${dist}/main/binary-${arch}
-            apt-ftparchive packages pool/main > dists/${dist}/main/binary-${arch}/Packages
+              mkdir -p dists/${dist}/main/binary-${arch}
+              find "pool/main/z/${{ env.APP_NAME }}" -type f -name "${{ env.APP_NAME }}_*~${dist}_${arch}.deb" | \
+              xargs -I {} apt-ftparchive -o Tree::dists/${dist}::Sections="main" \
+                          -o Tree::dists/${dist}::Architectures="${arch}" \
+                          -o Dir::ArchiveDir="${{ env.REPO_DIR }}" \
+                          packages {} > dists/${dist}/main/binary-${arch}/Packages
           done
-          apt-ftparchive release -o APT::FTPArchive::Release::Origin="${{ env.APP_NAME }}" \
-                      -o APT::FTPArchive::Release::Label="${{ env.APP_NAME }}" \
-                      -o APT::FTPArchive::Release::Suite="${dist}" \
-                      -o APT::FTPArchive::Release::Codename="${dist}" \
-                      -o APT::FTPArchive::Release::Version="${{ env.APP_VERSION }}" \
-                      -o APT::FTPArchive::Release::Architectures="${{ env.ARCHITECTURES }}" \
-                      -o APT::FTPArchive::Release::Components="main" \
-                      dists/${dist} > dists/${dist}/Release
+
+          apt-ftparchive -o APT::FTPArchive::Release::Origin="${{ env.APP_NAME }}" \
+                -o APT::FTPArchive::Release::Label="${{ env.APP_NAME }}" \
+                -o APT::FTPArchive::Release::Suite="${dist}" \
+                -o APT::FTPArchive::Release::Codename="${dist}" \
+                -o APT::FTPArchive::Release::Version="${{ env.APP_VERSION }}" \
+                -o APT::FTPArchive::Release::Architectures="${{ env.ARCHITECTURES }}" \
+                -o APT::FTPArchive::Release::Components="main" \
+                -o Dir::ArchiveDir="${{ env.REPO_DIR }}" \
+                release dists/${dist} > dists/${dist}/Release
 
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --default-key ${{ secrets.GPG_KEY_ID }} --batch --yes --passphrase-fd 0 -abs -o dists/${dist}/Release.gpg dists/${dist}/Release
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --default-key ${{ secrets.GPG_KEY_ID }} --batch --yes --passphrase-fd 0 --clearsign -o dists/${dist}/InRelease dists/${dist}/Release
@@ -210,7 +221,7 @@ jobs:
 
     - name: Upload APT repo to remote
       run: |
-        scp -v -i ~/.ssh/id_rsa -r ${{ github.workspace }}/aptrepo/ ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/
+        scp -v -i ~/.ssh/id_rsa -r ${{ github.workspace }}/zwallet/ ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/aptrepo/
 
     - name: Upload GPG public key to remote server
       run: |
@@ -219,7 +230,7 @@ jobs:
 
     - name: Upload install script to remote server
       run: |
-        scp -v -i ~/.ssh/id_rsa ${{ env.SRC_DIR }}/scripts/debian/install.sh ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/zwallet_deb_install.sh
+        scp -v -i ~/.ssh/id_rsa ${{ env.SRC_DIR }}/scripts/debian/install.sh ${{ env.REMOTE_USER }}@${{ env.REMOTE_SERVER }}:/var/www/html/aptrepo/zwallet_deb_install.sh
 
     
 
@@ -269,7 +280,7 @@ jobs:
         docker buildx build \
           --platform ${{ matrix.arch.platform }} \
           --build-arg BASE_IMAGE=${{ matrix.distro.base_image }} \
-          --build-arg LOC="https://packages.zus.network/zwallet_deb_install.sh" \
+          --build-arg LOC="https://packages.zus.network/aptrepo/zwallet_deb_install.sh" \
           --tag ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-${{ matrix.distro.name }}-${{ matrix.arch.name }} \
           --load \
           --output type=docker,dest=${{ github.workspace }}/${{ env.APP_NAME }}-${{ env.APP_VERSION }}-${{ matrix.distro.name }}-${{ matrix.arch.name }}.tar \

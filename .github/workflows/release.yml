@@ -1,0 +1,100 @@
+name: Release
+on:
+  push: # REMOVE: push once tested
+    branches:
+      - packaging
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of zwallet to release'
+        required: true
+        default: '1.0.0'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GOSDK }}
+  VERSION: 1.16.0    # REMOVE: take as input from workflow
+  APP_NAME: zwallet
+  GO_VERSION: 1.21
+
+jobs:
+  linux: 
+    runs-on: ubuntu-latest
+    env:
+      SRC_DIR: ${{ github.workspace }}/src
+      OUTPUT_DIR: ${{ github.workspace }}/output
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        path: ${{ env.SRC_DIR }}
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: linux/amd64,linux/arm64
+
+    - name: Install zip
+      uses: montudor/action-zip@v1
+
+    - name: Setup
+      run : |
+        mkdir -p ${{ env.OUTPUT_DIR }}
+
+    - name: Build Docker image for linux/amd64
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --platform linux/amd64 \
+          --build-arg VERSION=${{ env.VERSION }} \
+          --tag ${{ env.APP_NAME }}-amd64 \
+          --load \
+          --output type=docker,dest=${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-amd64.tar \
+          -f ${{ env.SRC_DIR }}/scripts/debian/Dockerfile.build ${{ env.SRC_DIR }}
+
+    - name: Load image ${{ env.APP_NAME }}-amd64 & Extract binary ${{ env.APP_NAME }} from container
+      run: |
+        docker load -i ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-amd64.tar
+        CONTAINER_ID=$(docker create ${{ env.APP_NAME }}-amd64)
+        docker cp ${CONTAINER_ID}:/zwallet ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}
+        docker rm ${CONTAINER_ID}
+
+    - name: Create Zip File for linux/amd64
+      run: |
+        cd ${{ env.OUTPUT_DIR }}
+        zip -qq -r ${{ env.APP_NAME }}-linux-amd64.zip ${{ env.APP_NAME }}
+
+    - name: Upload Zip for Darwin/amd64
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APP_NAME }}-linux-amd64
+        path: ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-linux-amd64.zip
+    
+    - name: Build Docker image for linux/arm64
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --platform linux/arm64 \
+          --build-arg VERSION=${{ env.VERSION }} \
+          --tag ${{ env.APP_NAME }}-arm64 \
+          --load \
+          --output type=docker,dest=${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-arm64.tar \
+          -f ${{ env.SRC_DIR }}/scripts/debian/Dockerfile.build ${{ env.SRC_DIR }}
+
+    - name: Load image ${{ env.APP_NAME }}-arm64 & Extract binary from container
+      run: |
+        docker load -i ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-arm64.tar
+        CONTAINER_ID=$(docker create ${{ env.APP_NAME }}-arm64)
+        docker cp ${CONTAINER_ID}:/zwallet ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}
+        docker rm ${CONTAINER_ID}
+
+    - name: Create Zip File for linux/arm64
+      run: |
+        cd ${{ env.OUTPUT_DIR }}
+        zip -qq -r ${{ env.APP_NAME }}-linux-arm64.zip ${{ env.APP_NAME }}
+  
+    - name: Upload Zip for Darwin/arm64
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APP_NAME }}-linux-arm64
+        path: ${{ env.OUTPUT_DIR }}/${{ env.APP_NAME }}-linux-arm64.zip
+  
