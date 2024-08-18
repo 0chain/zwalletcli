@@ -89,11 +89,11 @@ make install
 
 2. Add config yaml at `~/.zcn/config.yaml`
 
-The following script sets `https://demo.zus.network` as your network.
+The following script sets `https://mainnet.zus.network` as your network.
 
 ```sh
 cat > ~/.zcn/config.yaml << EOF
-block_worker: https://demo.zus.network/dns
+block_worker: https://mainnet.zus.network/dns
 signature_scheme: bls0chain
 min_submit: 50 # in percentage
 min_confirmation: 50 # in percentage
