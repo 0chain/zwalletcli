@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/0chain/gosdk/core/client"
+	"github.com/0chain/gosdk/core/conf"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -97,20 +100,19 @@ func initZCNCore() {
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 
-	err := zcncore.InitZCNSDK(blockWorker, signatureScheme,
-		zcncore.WithChainID(chainID),
-		zcncore.WithMinSubmit(minSubmit),
-		zcncore.WithMinConfirmation(minCfm),
-		zcncore.WithConfirmationChainLength(CfmChainLength),
-		zcncore.WithEthereumNode(ethereumNodeURL))
-	if err != nil {
-		ExitWithError(err.Error())
+	cfg := conf.Config{
+		BlockWorker:             blockWorker,
+		SignatureScheme:         signatureScheme,
+		ChainID:                 chainID,
+		MinSubmit:               minSubmit,
+		MinConfirmation:         minCfm,
+		ConfirmationChainLength: CfmChainLength,
+		EthereumNode:            ethereumNodeURL,
 	}
 
-	miners := cfgNetwork.GetStringSlice("miners")
-	sharders := cfgNetwork.GetStringSlice("sharders")
-	if len(miners) > 0 && len(sharders) > 0 {
-		zcncore.SetNetwork(miners, sharders)
+	err := client.Init(context.Background(), cfg)
+	if err != nil {
+		ExitWithError(err.Error())
 	}
 }
 

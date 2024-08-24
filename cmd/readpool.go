@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/0chain/gosdk/zboxcore/sdk"
 	"strconv"
 	"strings"
 	"sync"
@@ -21,7 +22,7 @@ func createReadPool() (err error) {
 	}
 
 	wg.Add(1)
-	if err = txn.CreateReadPool(); err != nil {
+	if _, _, err = sdk.CreateReadPool(); err != nil {
 		return
 	}
 	wg.Wait()
