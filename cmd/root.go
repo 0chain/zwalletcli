@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -39,6 +40,9 @@ var (
 	cfgConfig  *viper.Viper
 	cfgNetwork *viper.Viper
 	cfgWallet  string
+
+	//go:embed config.yaml
+	configStr string
 )
 
 var rootCmd = &cobra.Command{
@@ -134,7 +138,14 @@ func loadConfigs() {
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
+		fmt.Println("Can't read config:", err, cDir, configDir, cfgFile)
+		fmt.Println("using default config:")
+		fmt.Printf("config: %v", configStr)
+		cfgConfig.SetConfigType("yaml")
+		err := cfgConfig.ReadConfig(strings.NewReader(configStr))
+		if err != nil {
+			ExitWithError("error reading default config:", err)
+		}
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
