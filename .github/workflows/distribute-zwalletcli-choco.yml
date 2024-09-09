@@ -1,11 +1,6 @@
 name: Distribute zwallet using choco
 
 on:
-  # Remove push trigger once tested
-  push:
-    branches:
-      - windows-build 
-
   workflow_dispatch:
     inputs:
       version:
@@ -16,7 +11,7 @@ on:
 env:
   APP_NAME: zwallet
   PACKAGE_ID: zwallet
-  APP_VERSION: '1.17.0' # Update to ${{ github.event.inputs.version }} once tested
+  APP_VERSION: ${{ github.event.inputs.version }} 
   GO_VERSION: '1.21'
 
 jobs:
