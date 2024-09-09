@@ -1,4 +1,4 @@
-name: Distribute zbox using choco
+name: Distribute zwallet using choco
 
 on:
   # Remove push trigger once tested
@@ -41,7 +41,7 @@ jobs:
       - name: Install MinGW for CGo
         run: |
             choco install mingw
-            
+
       - name: Setup
         run : |
             New-Item -ItemType Directory -Force -Path "${{ env.OUTPUT_DIR }}\amd64"
