@@ -1,4 +1,4 @@
-name: Build, Distribute and Test zwallet
+name: Distribute zwallet using apt
 
 on:
   workflow_dispatch:
