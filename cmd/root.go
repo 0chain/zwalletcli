@@ -257,7 +257,7 @@ func loadWallet() {
 	clientWallet = &wallet
 
 	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, false)
+	err = zcncore.SetWalletInfo(clientConfig, signatureScheme, false)
 	if err == nil {
 		wg.Wait()
 	} else {
