@@ -2,8 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
-
+	"github.com/0chain/gosdk/core/client"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
@@ -17,21 +16,12 @@ var getbalancecmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		doJSON, _ := cmd.Flags().GetBool("json")
 
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.GetBalance(statusBar)
+		bal, err := client.GetBalance()
 		if err != nil {
 			ExitWithError(err)
 			return
 		}
-		wg.Wait()
-		if !statusBar.success {
-			ExitWithError(fmt.Sprintf("\nFailed to get balance: %s\n", statusBar.errMsg))
-			return
-		}
-		b := statusBar.balance
-		token, err := b.ToToken()
+		token, err := bal.ToToken()
 		if err != nil {
 			ExitWithError(err)
 			return
@@ -42,15 +32,15 @@ var getbalancecmd = &cobra.Command{
 			j := map[string]string{
 				"usd": fmt.Sprintf("%f", usd),
 				"zcn": fmt.Sprintf("%f", token),
-				"fmt": fmt.Sprintf("%s", b)}
+				"fmt": fmt.Sprintf("%d", bal.Balance)}
 			util.PrintJSON(j)
 			return
 		}
 		if err != nil {
-			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", b, err))
+			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", bal.Balance, err))
 			return
 		}
-		fmt.Printf("\nBalance: %v (%.2f USD)\n", b, usd)
+		fmt.Printf("\nBalance: %v (%.2f USD)\n", bal.Balance, usd)
 	},
 }
 

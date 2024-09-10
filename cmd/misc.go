@@ -1,16 +1,13 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
-	"os"
-	"sync"
-
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
 )
 
 var getidcmd = &cobra.Command{
@@ -77,36 +74,7 @@ var getblobberscmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-
-		var blobberList []*sdk.Blobber
-		limit, offset := 20, 0
-
-		for {
-			wg.Add(1)
-			zcncore.GetBlobbers(statusBar, limit, offset, !active)
-			wg.Wait()
-
-			type nodes struct {
-				Nodes []*sdk.Blobber
-			}
-
-			var wrap nodes
-
-			err := json.Unmarshal([]byte(statusBar.errMsg), &wrap)
-			if err != nil {
-				log.Fatal("error unmarshalling blobbers")
-			}
-			if len(wrap.Nodes) == 0 {
-				break
-			}
-
-			blobberList = append(blobberList, wrap.Nodes...)
-
-			offset += limit
-		}
-
+		blobberList, err := sdk.GetBlobbers(!active, false)
 		printBlobberList(blobberList)
 	},
 }
