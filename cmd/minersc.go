@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -509,47 +508,12 @@ var minerscLock = &cobra.Command{
 			log.Fatal("invalid token amount: negative")
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
+		hash, _, _, _, err := zcncore.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		wg.Add(1)
-		err = txn.MinerSCLock(providerID, providerType, zcncore.ConvertToValue(tokens))
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Println("locked with:", txn.GetTransactionHash())
-			default:
-				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Println("locked with:", hash)
 	},
 }
 
@@ -585,47 +549,12 @@ var minerscUnlock = &cobra.Command{
 			log.Fatal("missing flag: one of 'miner_id' or 'sharder_id' is required")
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
+		_, _, _, _, err = zcncore.MinerSCUnlock(providerID, providerType)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		wg.Add(1)
-		err = txn.MinerSCUnlock(providerID, providerType)
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Println("tokens unlocked")
-			default:
-				ExitWithError("\nExecute miner unlock update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Println("tokens unlocked")
 	},
 }
 
