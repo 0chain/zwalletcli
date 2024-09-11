@@ -35,13 +35,13 @@ jobs:
           go-version: '1.21' # The Go version to download (if necessary) and use.
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install
         run: make install
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zwallet-linux
           path: zwallet
@@ -80,7 +80,7 @@ jobs:
            go env -w "CC=/mingw64/bin/clang.exe"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install
         run: make install
@@ -94,7 +94,7 @@ jobs:
           zip zwallet-windows.zip zwallet.exe libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zwallet-windows.zip
           path: zwallet-windows.zip
@@ -115,13 +115,13 @@ jobs:
           go-version: '1.21' # The Go version to download (if necessary) and use.
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install
         run: make install
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zwallet-macos
           path: zwallet
