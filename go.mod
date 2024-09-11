@@ -3,15 +3,13 @@ module github.com/0chain/zwalletcli
 go 1.21
 
 require (
-	github.com/0chain/gosdk v1.17.7-0.20240910141104-e7c4e4a784e6
+	github.com/0chain/gosdk v1.17.7-0.20240911161636-c9dfb8637fff
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
-	gopkg.in/cheggaaa/pb.v1 v1.0.28
 )
 
 require (
@@ -70,6 +68,7 @@ require (
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/philhofer/fwd v1.1.2-0.20210722190033-5c56ac6d0bb9 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/common v0.39.0 // indirect
 	github.com/prometheus/procfs v0.11.0 // indirect
