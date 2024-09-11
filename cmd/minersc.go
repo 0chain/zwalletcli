@@ -4,15 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
+	"log"
+	"strings"
 )
 
 var minerscInfo = &cobra.Command{
@@ -26,6 +24,7 @@ var minerscInfo = &cobra.Command{
 			flags = cmd.Flags()
 			id    string
 			err   error
+			res   []byte
 		)
 
 		if !flags.Changed("id") {
@@ -36,21 +35,11 @@ var minerscInfo = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		if err = zcncore.GetMinerSCNodeInfo(id, statusBar); err != nil {
+		if res, err = zcncore.GetMinerSCNodeInfo(id); err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
 
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		fmt.Println(statusBar.errMsg)
+		fmt.Println(string(res))
 	},
 }
 
@@ -115,10 +104,12 @@ var minerscMiners = &cobra.Command{
 		}
 
 		if !allFlag {
-			cb := NewJSONInfoCB(info)
-			zcncore.GetMiners(cb, limit, offset, active, stakable)
+			res, err := zcncore.GetMiners(active, stakable, limit, offset)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-			if err = cb.Waiting(); err != nil {
+			if err = json.Unmarshal(res, info); err != nil {
 				log.Fatal(err)
 			}
 
@@ -140,10 +131,12 @@ var minerscMiners = &cobra.Command{
 
 			var nodes []zcncore.Node
 			for curOff := offset; ; curOff += limit {
-				cb := NewJSONInfoCB(info)
-				zcncore.GetMiners(cb, limit, curOff, active, stakable)
+				res, err := zcncore.GetMiners(active, stakable, limit, offset)
+				if err != nil {
+					log.Fatal(err)
+				}
 
-				if err = cb.Waiting(); err != nil {
+				if err = json.Unmarshal(res, info); err != nil {
 					log.Fatal(err)
 				}
 
@@ -253,10 +246,12 @@ var minerscSharders = &cobra.Command{
 			offset = 0
 			var nodes []zcncore.Node
 			for curOff := offset; ; curOff += limit {
-				callback := NewJSONInfoCB(sharders)
-				zcncore.GetSharders(callback, limit, curOff, active, stakable)
+				res, err := zcncore.GetSharders(active, stakable, limit, curOff)
+				if err != nil {
+					log.Fatal(err)
+				}
 
-				if err = callback.Waiting(); err != nil {
+				if err = json.Unmarshal(res, sharders); err != nil {
 					log.Fatal(err)
 				}
 
@@ -307,12 +302,13 @@ var minerscUserInfo = &cobra.Command{
 
 		var (
 			info = new(zcncore.MinerSCUserPoolsInfo)
-			cb   = NewJSONInfoCB(info)
+			res  []byte
 		)
-		if err = zcncore.GetMinerSCUserInfo(clientID, cb); err != nil {
+		if res, err = zcncore.GetMinerSCUserInfo(clientID); err != nil {
 			log.Fatal(err)
 		}
-		if err = cb.Waiting(); err != nil {
+
+		if err = json.Unmarshal(res, info); err != nil {
 			log.Fatal(err)
 		}
 
@@ -376,28 +372,16 @@ var minerscPoolInfo = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		err = zcncore.GetMinerSCNodePool(id, statusBar)
+		_, err = zcncore.GetMinerSCNodePool(id)
 		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
 			fields := map[string]string{}
-			err := json.Unmarshal([]byte(statusBar.errMsg), &fields)
+			err := json.Unmarshal([]byte(err.Error()), &fields)
 			if err != nil {
-				log.Fatal("fatal:", statusBar.errMsg)
+				log.Fatal("fatal:", err.Error())
 			}
 			ExitWithError(fields["error"])
 			return
 		}
-
-		fmt.Println(statusBar.errMsg)
 	},
 }
 

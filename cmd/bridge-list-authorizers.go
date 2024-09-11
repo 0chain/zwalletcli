@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -18,15 +19,17 @@ var listAuthorizers = &cobra.Command{
 	Run: func(*cobra.Command, []string) {
 		var (
 			response = new(zcnbridge.AuthorizerNodesResponse)
-			cb       = NewJSONInfoCB(response)
+			res      []byte
 			err      error
 		)
-		if err = zcnbridge.GetAuthorizers(true, cb); err != nil {
+		if res, err = zcnbridge.GetAuthorizers(true); err != nil {
 			log.Fatal(err)
 		}
-		if err = cb.Waiting(); err != nil {
+		err = json.Unmarshal(res, response)
+		if err != nil {
 			log.Fatal(err)
 		}
+
 		if len(response.Nodes) == 0 {
 			fmt.Println("no response found")
 			return

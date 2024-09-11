@@ -14,7 +14,6 @@ import (
 
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zboxcore/sdk"
-	bridge "github.com/0chain/gosdk/zcnbridge/http"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -93,7 +92,7 @@ func initZCNCore() {
 
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
-	bridge.SetLogFile("bridge.log", !bSilent)
+	//bridge.SetLogFile("bridge.log", !bSilent)
 	sdk.SetLogFile("cmdlog.log", !bSilent)
 
 	blockWorker := cfgConfig.GetString("block_worker")
@@ -257,7 +256,7 @@ func loadWallet() {
 	clientWallet = &wallet
 
 	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, false)
+	err = zcncore.SetWalletInfo(clientConfig, signatureScheme, false)
 	if err == nil {
 		wg.Wait()
 	} else {

@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcnbridge/wallet"
 	"github.com/0chain/gosdk/zcncore"
 )
 
@@ -32,21 +32,14 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	burnHash := getString(args, "burn-txn-hash")
 
 	var mintNonce int64
-	cb := wallet.NewZCNStatus(&mintNonce)
-
-	cb.Begin()
-
-	err := zcncore.GetMintNonce(cb)
+	res, err := zcncore.GetMintNonce()
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	if err := cb.Wait(); err != nil {
+	err = json.Unmarshal(res, &mintNonce)
+	if err != nil {
 		ExitWithError(err)
-	}
-
-	if !cb.Success {
-		ExitWithError(cb.Err)
 	}
 
 	burnTickets, err := b.QueryEthereumBurnEvents(strconv.Itoa(int(mintNonce)))
