@@ -3,7 +3,7 @@ module github.com/0chain/zwalletcli
 go 1.21
 
 require (
-	github.com/0chain/gosdk v1.17.7-0.20240911161636-c9dfb8637fff
+	github.com/0chain/gosdk v1.17.7-0.20240912204323-c9723ae708ba
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
