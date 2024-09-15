@@ -17,7 +17,7 @@ var mnConfigCmd = &cobra.Command{
 			fields = new(transaction.InputMap)
 			err    error
 		)
-		if fields, err = transaction.GetConfig("miner_sc_globals"); err != nil {
+		if fields, err = transaction.GetConfig("miner_sc_configs"); err != nil {
 			log.Fatal(err)
 		}
 
