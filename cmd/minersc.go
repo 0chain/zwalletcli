@@ -382,7 +382,7 @@ var minerscPoolInfo = &cobra.Command{
 			return
 		}
 
-		log.Println(string(res))
+		fmt.Println(string(res))
 	},
 }
 
