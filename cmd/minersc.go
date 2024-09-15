@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/0chain/gosdk/core/common"
@@ -189,7 +188,7 @@ var minerscSharders = &cobra.Command{
 			}
 		}
 
-		mb, err := zcncore.GetLatestFinalizedMagicBlock(context.Background(), 1)
+		mb, err := zcncore.GetLatestFinalizedMagicBlock()
 		if err != nil {
 			log.Fatalf("Failed to get MagicBlock: %v", err)
 		}

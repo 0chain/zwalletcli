@@ -40,7 +40,7 @@ var getbalancecmd = &cobra.Command{
 			ExitWithError(fmt.Sprintf("\nBalance: %v (Failed to get USD: %v)\n", bal.Balance, err))
 			return
 		}
-		fmt.Printf("\nBalance: %v (%.2f USD)\n", bal.Balance, usd)
+		fmt.Printf("\nBalance: %v ZCN (%.2f USD)\n", token, usd)
 	},
 }
 
