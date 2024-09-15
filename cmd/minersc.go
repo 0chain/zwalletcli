@@ -373,13 +373,8 @@ var minerscPoolInfo = &cobra.Command{
 
 		res, err := zcncore.GetMinerSCNodePool(id)
 		if err != nil {
-			fields := map[string]string{}
-			err := json.Unmarshal([]byte(err.Error()), &fields)
-			if err != nil {
-				log.Fatal("fatal:", err.Error())
-			}
-			ExitWithError(fields["error"])
-			return
+			log.Fatal(err)
+
 		}
 
 		fmt.Println(string(res))
