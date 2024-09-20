@@ -34,16 +34,21 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	var mintNonce int64
 	res, err := zcncore.GetMintNonce()
 	if err != nil {
+		fmt.Printf("Error getting mint nonce: %v\n", err)
 		ExitWithError(err)
 	}
 
 	err = json.Unmarshal(res, &mintNonce)
 	if err != nil {
+		fmt.Printf("Error unmarshalling mint nonce: %v\n", err)
+		fmt.Printf("Response: %s\n", string(res))
+		fmt.Printf("Mint nonce: %d\n", mintNonce)
 		ExitWithError(err)
 	}
 
 	burnTickets, err := b.QueryEthereumBurnEvents(strconv.Itoa(int(mintNonce)))
 	if err != nil {
+		fmt.Printf("Error querying Ethereum burn events: %v\n", err)
 		ExitWithError(err)
 	}
 
@@ -60,6 +65,7 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 		payload, err := b.QueryZChainMintPayload(burnTicket.TransactionHash)
 		if err != nil {
+			fmt.Printf("Error querying ZChain mint payload: %v\n", err)
 			ExitWithError(err)
 		}
 
@@ -76,12 +82,12 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 
 		txHash, err := b.MintZCN(ctx, payload)
 		if err != nil {
+			fmt.Printf("Error minting ZCN: %v\n", err)
 			ExitWithError(err)
 		}
 
 		fmt.Println("Completed ZCN mint transaction")
 		fmt.Printf("Transaction hash: %s\n", txHash)
-
 	}
 
 	if len(burnTickets) > 0 {
