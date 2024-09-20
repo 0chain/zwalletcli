@@ -3,7 +3,7 @@ module github.com/0chain/zwalletcli
 go 1.21
 
 require (
-	github.com/0chain/gosdk v1.17.3
+	github.com/0chain/gosdk v1.8.18-0.20230901213317-53d640a9b7f9
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -20,7 +20,6 @@ require (
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/Luzifer/go-openssl/v3 v3.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/bits-and-blooms/bitset v1.9.0 // indirect
 	github.com/btcsuite/btcd v0.23.4 // indirect
@@ -45,15 +44,11 @@ require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/h2non/filetype v1.1.4-0.20231228185113-6469358c2bcb // indirect
-	github.com/hack-pad/go-webworkers v0.1.0 // indirect
-	github.com/hack-pad/safejs v0.1.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
-	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/herumi/bls-go-binary v1.31.0 // indirect
-	github.com/hitenjain14/fasthttp v0.0.0-20240527123209-06019e79bff9 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
@@ -64,7 +59,6 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
@@ -73,7 +67,6 @@ require (
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/common v0.39.0 // indirect
 	github.com/prometheus/procfs v0.11.0 // indirect
-	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
@@ -88,9 +81,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.51.0 // indirect
-	github.com/ybbus/jsonrpc/v3 v3.1.5 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.dedis.ch/fixbuf v1.0.3 // indirect
 	go.dedis.ch/kyber/v3 v3.1.0 // indirect
