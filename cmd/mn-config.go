@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/0chain/gosdk/core/transaction"
 	"log"
 
-	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 )
 
@@ -14,14 +14,10 @@ var mnConfigCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			fields = new(zcncore.InputMap)
-			cb     = NewJSONInfoCB(fields)
+			fields = new(transaction.InputMap)
 			err    error
 		)
-		if err = zcncore.GetMinerSCConfig(cb); err != nil {
-			log.Fatal(err)
-		}
-		if err = cb.Waiting(); err != nil {
+		if fields, err = transaction.GetConfig("miner_sc_configs"); err != nil {
 			log.Fatal(err)
 		}
 

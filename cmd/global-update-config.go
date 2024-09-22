@@ -2,23 +2,22 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var updateGlobalConfigCmd = &cobra.Command{
-	Use:   "global-update-config",
-	Short: "Update global settings",
-	Long:  `Update global settings.`,
-	Args:  cobra.MinimumNArgs(0),
+	Use:    "global-update-config",
+	Short:  "Update global settings",
+	Long:   `Update global settings.`,
+	Args:   cobra.MinimumNArgs(0),
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err error
+		var (
+			hash string
+			err  error
+		)
 
 		input := new(zcncore.InputMap)
 		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
@@ -26,45 +25,10 @@ var updateGlobalConfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var wg sync.WaitGroup
-		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
-		if err != nil {
+		if hash, _, _, _, err = zcncore.MinerScUpdateGlobals(input); err != nil {
 			log.Fatal(err)
 		}
-
-		wg.Add(1)
-		if err = txn.MinerScUpdateGlobals(input); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Printf("global settings updated\nHash: %v\n", txn.GetTransactionHash())
-			default:
-				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
+		fmt.Printf("global settings updated\nHash: %v\n", hash)
 	},
 }
 

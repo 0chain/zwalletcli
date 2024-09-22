@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
-
-	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/gosdk/core/client"
 	"github.com/spf13/cobra"
 )
 
@@ -14,20 +12,12 @@ var getnoncecmd = &cobra.Command{
 	Long:  `Get nonce from sharders`,
 	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		wg.Add(1)
-		err := zcncore.GetNonce(statusBar)
+		bal, err := client.GetBalance()
 		if err != nil {
 			ExitWithError(err)
 			return
 		}
-		wg.Wait()
-		b := int64(0)
-		if statusBar.success {
-			b = statusBar.nonce
-		}
-		fmt.Printf("\nNonce: %v\n", b)
+		fmt.Printf("\nNonce: %v\n", bal.Nonce)
 	},
 }
 

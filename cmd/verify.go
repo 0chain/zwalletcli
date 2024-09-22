@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
-
-	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/gosdk/core/transaction"
 	"github.com/spf13/cobra"
 )
 
@@ -20,28 +18,14 @@ var verifycmd = &cobra.Command{
 			ExitWithError("Error: hash flag is missing")
 		}
 		hash := cmd.Flag("hash").Value.String()
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
+
+		txn, err := transaction.VerifyTransaction(hash)
 		if err != nil {
 			ExitWithError(err)
 		}
 
-		txn.SetTransactionHash(hash)
-		wg.Add(1)
-		err = txn.Verify()
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
-		}
-		if statusBar.success {
-			statusBar.success = false
-			fmt.Printf("\nTransaction verification success\nTransactionStatus: %v\nTransactionOutput: %v",
-				txn.GetVerifyConfirmationStatus(), txn.GetVerifyOutput())
-			return
-		}
-		ExitWithError("\nVerification failed." + statusBar.errMsg + "\n")
+		fmt.Printf("\nTransaction verification success\nTransactionStatus: %v\nTransactionOutput: %v",
+			txn.Status, txn.TransactionOutput)
 	},
 }
 

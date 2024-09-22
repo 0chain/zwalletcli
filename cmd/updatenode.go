@@ -1,15 +1,10 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var minerscUpdateNodeSettings = &cobra.Command{
@@ -24,6 +19,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			id      string
 			sharder bool
 			err     error
+			hash    string
 		)
 
 		if !flags.Changed("id") {
@@ -38,28 +34,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var (
-			miner     *zcncore.MinerSCMinerInfo
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		wg.Add(1)
-		if err = zcncore.GetMinerSCNodeInfo(id, statusBar); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		miner = new(zcncore.MinerSCMinerInfo)
-		err = json.Unmarshal([]byte(statusBar.errMsg), miner)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		miner = &zcncore.MinerSCMinerInfo{
+		miner := &zcncore.MinerSCMinerInfo{
 			SimpleMiner: zcncore.SimpleMiner{
 				ID: id,
 			},
@@ -81,45 +56,16 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			miner.Settings.ServiceCharge = &serviceCharge
 		}
 
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		wg.Add(1)
 		if sharder {
-			err = txn.MinerSCSharderSettings(miner)
+			hash, _, _, _, err = zcncore.MinerSCSharderSettings(miner)
 		} else {
-			err = txn.MinerSCMinerSettings(miner)
+			hash, _, _, _, err = zcncore.MinerSCMinerSettings(miner)
 		}
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Wait()
 
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Printf("settings updated\nHash: %v", txn.GetTransactionHash())
-			default:
-				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Printf("settings updated\nHash: %v", hash)
 	},
 }
 

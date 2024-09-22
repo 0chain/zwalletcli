@@ -2,29 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
-	"sync"
-
+	"github.com/0chain/gosdk/core/client"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
+	"strconv"
 )
 
 func checkBalanceBeforeSend(tokens, fee uint64) {
-	wg := &sync.WaitGroup{}
-	statusBar := &ZCNStatus{wg: wg}
-	wg.Add(1)
-	err := zcncore.GetBalance(statusBar)
+	b, err := client.GetBalance()
 	if err != nil {
 		return // continue sending txn even if getBalance fails
 	}
-	wg.Wait()
-	if !statusBar.success {
-		return // continue sending txn even if getBalance fails
-	}
-	b := statusBar.balance
 
-	if uint64(b) < tokens+fee {
+	if uint64(b.Balance) < tokens+fee {
 		ExitWithError("Insufficient balance for this transaction.")
 	}
 	return
@@ -65,43 +56,20 @@ var sendcmd = &cobra.Command{
 			checkBalanceBeforeSend(tokens, fee)
 		}
 
-		wg := &sync.WaitGroup{}
-		statusBar := &ZCNStatus{wg: wg}
-		txn, err := zcncore.NewTransaction(statusBar, fee, nonce)
+		hash, _, nonce, _, err := zcncore.Send(toClientID, tokens, desc)
 		if err != nil {
-			ExitWithError(err)
+			ExitWithError("Send tokens failed. " + err.Error())
 		}
-
-		wg.Add(1)
-		err = txn.Send(toClientID, tokens, desc)
-		if err == nil {
-			wg.Wait()
-		} else {
-			ExitWithError(err.Error())
+		if doJSON {
+			j := map[string]string{
+				"status": "success",
+				"tx":     hash,
+				"nonce":  strconv.FormatInt(nonce, 10)}
+			util.PrintJSON(j)
+			return
 		}
-		if statusBar.success {
-			statusBar.success = false
-			wg.Add(1)
-			err := txn.Verify()
-			if err == nil {
-				wg.Wait()
-			} else {
-				ExitWithError(err.Error())
-			}
-			if statusBar.success {
-				if doJSON {
-					j := map[string]string{
-						"status": "success",
-						"tx":     txn.Hash(),
-						"nonce":  strconv.FormatInt(txn.GetTransactionNonce(), 10)}
-					util.PrintJSON(j)
-					return
-				}
-				fmt.Println("Send tokens success: ", txn.Hash())
-				return
-			}
-		}
-		ExitWithError("Send tokens failed. " + statusBar.errMsg)
+		fmt.Println("Send tokens success: ", hash)
+		return
 	},
 }
 

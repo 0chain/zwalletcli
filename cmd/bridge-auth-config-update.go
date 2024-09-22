@@ -2,21 +2,18 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
+	"strconv"
 )
 
 var updateAuthorizerConfigCmd = &cobra.Command{
-	Use:   "bridge-auth-config-update",
-	Short: "Update ZCNSC authorizer settings by ID",
-	Long:  `Update ZCNSC authorizer settings by ID.`,
-	Args:  cobra.MinimumNArgs(0),
+	Use:    "bridge-auth-config-update",
+	Short:  "Update ZCNSC authorizer settings by ID",
+	Long:   `Update ZCNSC authorizer settings by ID.`,
+	Args:   cobra.MinimumNArgs(0),
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		const (
@@ -31,6 +28,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 			Fee        string
 			FeeBalance int64
 			URL        string
+			hash       string
 			err        error
 		)
 
@@ -65,46 +63,10 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 			},
 		}
 
-		var wg sync.WaitGroup
-		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
-		if err != nil {
+		if hash, _, _, _, err = zcncore.ZCNSCUpdateAuthorizerConfig(node); err != nil {
 			log.Fatal(err)
 		}
-
-		wg.Add(1)
-		if err = txn.ZCNSCUpdateAuthorizerConfig(node); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			//fmt.Printf("Nonce:%v\n", txn.GetTransactionNonce())
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Printf("global settings updated\nHash: %v\n", txn.GetTransactionHash())
-			default:
-				ExitWithError("\nExecute global settings update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
+		fmt.Printf("global settings updated\nHash: %v\n", hash)
 	},
 }
 
