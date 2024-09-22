@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
@@ -214,18 +213,6 @@ func createAndLoadWallet() {
 	}
 
 	loadWallet()
-
-	_, err = sdk.GetReadPoolInfo(clientWallet.ClientID)
-	if err != nil {
-		if strings.Contains(err.Error(), "resource_not_found") {
-			fmt.Println("Creating related read pool for storage smart-contract...")
-			if _, _, err = sdk.CreateReadPool(); err != nil {
-				fmt.Printf("Failed to create read pool: %v\n", err)
-				os.Exit(1)
-			}
-			fmt.Println("Read pool created successfully")
-		}
-	}
 }
 
 func createWallet() (string, error) {
