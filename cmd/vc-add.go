@@ -16,7 +16,7 @@ var providerRegister = &cobra.Command{
 	Use:   "vc-add",
 	Short: "add node to view change",
 	Long:  "add node to view change, add a miner or sharder to the register list so that they can join the MB. Only chainowner can do this.",
-	Args:  cobra.MinimumNArgs(2),
+	// Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			flags = cmd.Flags()
@@ -36,7 +36,7 @@ var providerRegister = &cobra.Command{
 			log.Fatal("missing provider-type flag")
 		}
 
-		nodeType, err := flags.GetString("node-type")
+		nodeType, err := flags.GetString("provider-type")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -99,7 +99,7 @@ func init() {
 	providerRegister.PersistentFlags().String("id", "", "provider ID to add to view change")
 	_ = providerRegister.MarkFlagRequired("id")
 
-	providerRegister.PersistentFlags().String("provider-type", "pt", "provider type")
+	providerRegister.PersistentFlags().String("provider-type", "", "provider type")
 	_ = providerRegister.MarkFlagRequired("provider-type")
 
 }
