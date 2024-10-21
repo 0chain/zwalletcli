@@ -40,8 +40,8 @@ github.com/0chain/common v1.13.1-0.20240926135437-61b88d39bbbd h1:PDnzyJJA4rF2LB
 github.com/0chain/common v1.13.1-0.20240926135437-61b88d39bbbd/go.mod h1:vHK9Q0/nz28PxmKsLSMLzEs5iK6QVgl1LxdDQdR7y6s=
 github.com/0chain/errors v1.0.3 h1:QQZPFxTfnMcRdt32DXbzRQIfGWmBsKoEdszKQDb0rRM=
 github.com/0chain/errors v1.0.3/go.mod h1:xymD6nVgrbgttWwkpSCfLLEJbFO6iHGQwk/yeSuYkIc=
-github.com/0chain/gosdk v1.18.0-RC1 h1:vQ5Z46Q7GQ5qU6bT098riVbdwC0GO1YOXZmLjlQv5Ho=
-github.com/0chain/gosdk v1.18.0-RC1/go.mod h1:mr7LcQicFFrSzFujItjkLP1LvXz9S0j73i7KDEpMXLo=
+github.com/0chain/gosdk v1.18.0-RC2 h1:NIRQnF2PXXAgFcrbnPM6FvIPNpBshexsuaPr2mQVXqM=
+github.com/0chain/gosdk v1.18.0-RC2/go.mod h1:mr7LcQicFFrSzFujItjkLP1LvXz9S0j73i7KDEpMXLo=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DataDog/zstd v1.5.2 h1:vUG4lAyuPCXO0TLbXvPv7EB7cNK1QV/luu55UHLrrn8=
