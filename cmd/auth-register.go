@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"context"
-	"log"
-	"strings"
-
+	"github.com/0chain/gosdk/core/transaction"
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcnbridge/transaction"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/pkg/errors"
+	"log"
+	"strings"
 )
 
 //goland:noinspection ALL
@@ -91,20 +89,20 @@ func registerAuthorizerInChain(bc *zcnbridge.BridgeClient, args ...*Arg) {
 		},
 	}
 
-	trx, err := transaction.AddAuthorizer(context.Background(), input)
+	hash, _, _, txn, err := zcncore.ZCNSCAddAuthorizer(input)
 	if err != nil {
-		log.Fatal(err, "failed to add authorizer with transaction: '%s'", trx.GetHash())
+		log.Fatal(err, "failed to add authorizer with transaction: '%s'", hash)
 	}
 
-	log.Printf("Authorizer submitted OK... " + trx.GetHash())
-	log.Printf("Starting verification: " + trx.GetHash())
+	log.Printf("Authorizer submitted OK... " + hash)
+	log.Printf("Starting verification: " + hash)
 
-	err = trx.Verify(context.Background())
+	txn, err = transaction.VerifyTransaction(hash)
 	if err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			ExitWithError("Authorizer has already been added to 0Chain...  Continue")
 		} else {
-			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", trx.GetHash()))
+			ExitWithError(errors.Wrapf(err, "failed to verify transaction: '%s'", txn.Hash))
 		}
 	}
 }

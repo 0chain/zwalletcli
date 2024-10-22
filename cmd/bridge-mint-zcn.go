@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
-
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcnbridge/wallet"
 	"github.com/0chain/gosdk/zcncore"
+	"strconv"
 )
 
 func init() {
@@ -32,21 +29,14 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 	burnHash := getString(args, "burn-txn-hash")
 
 	var mintNonce int64
-	cb := wallet.NewZCNStatus(&mintNonce)
-
-	cb.Begin()
-
-	err := zcncore.GetMintNonce(cb)
+	res, err := zcncore.GetMintNonce()
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	if err := cb.Wait(); err != nil {
+	err = json.Unmarshal(res, &mintNonce)
+	if err != nil {
 		ExitWithError(err)
-	}
-
-	if !cb.Success {
-		ExitWithError(cb.Err)
 	}
 
 	burnTickets, err := b.QueryEthereumBurnEvents(strconv.Itoa(int(mintNonce)))
@@ -76,12 +66,9 @@ func commandMintZCN(b *zcnbridge.BridgeClient, args ...*Arg) {
 		fmt.Printf("Payload nonce: %d\n", payload.Nonce)
 		fmt.Printf("Receiving ZCN ClientID: %s\n", payload.ReceivingClientID)
 
-		ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*20)
-		defer cancelFunc()
-
 		fmt.Println("Starting to mint ZCN")
 
-		txHash, err := b.MintZCN(ctx, payload)
+		txHash, err := b.MintZCN(payload)
 		if err != nil {
 			ExitWithError(err)
 		}

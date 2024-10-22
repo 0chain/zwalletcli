@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	_ "embed"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/0chain/gosdk/core/client"
+	"github.com/0chain/gosdk/core/conf"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zboxcore/sdk"
-	bridge "github.com/0chain/gosdk/zcnbridge/http"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,9 +40,6 @@ var (
 	cfgConfig  *viper.Viper
 	cfgNetwork *viper.Viper
 	cfgWallet  string
-
-	//go:embed config.yaml
-	configStr string
 )
 
 var rootCmd = &cobra.Command{
@@ -94,27 +91,26 @@ func initZCNCore() {
 
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
-	bridge.SetLogFile("bridge.log", !bSilent)
+	//bridge.SetLogFile("bridge.log", !bSilent)
 	sdk.SetLogFile("cmdlog.log", !bSilent)
 
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 
-	err := zcncore.InitZCNSDK(blockWorker, signatureScheme,
-		zcncore.WithChainID(chainID),
-		zcncore.WithMinSubmit(minSubmit),
-		zcncore.WithMinConfirmation(minCfm),
-		zcncore.WithConfirmationChainLength(CfmChainLength),
-		zcncore.WithEthereumNode(ethereumNodeURL))
-	if err != nil {
-		ExitWithError(err.Error())
+	cfg := conf.Config{
+		BlockWorker:             blockWorker,
+		SignatureScheme:         signatureScheme,
+		ChainID:                 chainID,
+		MinSubmit:               minSubmit,
+		MinConfirmation:         minCfm,
+		ConfirmationChainLength: CfmChainLength,
+		EthereumNode:            ethereumNodeURL,
 	}
 
-	miners := cfgNetwork.GetStringSlice("miners")
-	sharders := cfgNetwork.GetStringSlice("sharders")
-	if len(miners) > 0 && len(sharders) > 0 {
-		zcncore.SetNetwork(miners, sharders)
+	err := client.Init(context.Background(), cfg)
+	if err != nil {
+		ExitWithError(err.Error())
 	}
 }
 
@@ -138,23 +134,13 @@ func loadConfigs() {
 	}
 
 	if err := cfgConfig.ReadInConfig(); err != nil {
-		fmt.Println("Can't read config:", err, cDir, configDir, cfgFile)
-		fmt.Println("using default config:")
-		fmt.Printf("config: %v", configStr)
-		cfgConfig.SetConfigType("yaml")
-		err := cfgConfig.ReadConfig(strings.NewReader(configStr))
-		if err != nil {
-			ExitWithError("error reading default config:", err)
-		}
+		ExitWithError("Can't read config:", err, cDir, configDir, cfgFile)
 	}
 
 	minSubmit = cfgConfig.GetInt("min_submit")
 	minCfm = cfgConfig.GetInt("min_confirmation")
 	CfmChainLength = cfgConfig.GetInt("confirmation_chain_length")
 	signatureScheme = cfgConfig.GetString("signature_scheme")
-
-	//initialize signature scheme for createmswallet and recoverwallet
-	zcncore.InitSignatureScheme(signatureScheme)
 
 	// ~/.zcn/network.yaml
 	cfgNetwork.AddConfigPath(configDir)
@@ -227,18 +213,6 @@ func createAndLoadWallet() {
 	}
 
 	loadWallet()
-
-	_, err = sdk.GetReadPoolInfo(clientWallet.ClientID)
-	if err != nil {
-		if strings.Contains(err.Error(), "resource_not_found") {
-			fmt.Println("Creating related read pool for storage smart-contract...")
-			if _, _, err = sdk.CreateReadPool(); err != nil {
-				fmt.Printf("Failed to create read pool: %v\n", err)
-				os.Exit(1)
-			}
-			fmt.Println("Read pool created successfully")
-		}
-	}
 }
 
 func createWallet() (string, error) {
@@ -269,7 +243,7 @@ func loadWallet() {
 	clientWallet = &wallet
 
 	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, false)
+	err = zcncore.SetWalletInfo(clientConfig, signatureScheme, false)
 	if err == nil {
 		wg.Wait()
 	} else {
