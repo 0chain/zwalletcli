@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/0chain/common v0.0.7-0.20231108122201-3e2bad6b9d20 // indirect
+	github.com/0chain/common v1.13.1-0.20240926135437-61b88d39bbbd // indirect
 	github.com/0chain/errors v1.0.3 // indirect
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/Luzifer/go-openssl/v3 v3.1.0 // indirect
@@ -26,9 +26,6 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.3 // indirect
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.2 // indirect
-	github.com/cockroachdb/errors v1.9.1 // indirect
-	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
-	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/consensys/bavard v0.1.13 // indirect
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
 	github.com/crate-crypto/go-kzg-4844 v0.6.0 // indirect
@@ -36,7 +33,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/ethereum/c-kzg-4844 v0.3.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/getsentry/sentry-go v0.18.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
@@ -89,6 +86,7 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
+	github.com/x448/float16 v0.8.4 // indirect
 	github.com/ybbus/jsonrpc/v3 v3.1.5 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.dedis.ch/fixbuf v1.0.3 // indirect
