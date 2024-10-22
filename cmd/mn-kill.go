@@ -5,9 +5,6 @@ import (
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"log"
-	"strconv"
-	"strings"
-	"sync"
 )
 
 var minerKill = &cobra.Command{
@@ -30,46 +27,11 @@ var minerKill = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		_, _, _, _, err = zcncore.MinerSCKill(id, zcncore.ProviderMiner)
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Add(1)
-		err = txn.MinerSCKill(id, zcncore.ProviderMiner)
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Println("killed :", id)
-			default:
-				ExitWithError("\nkill " + id + " failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Println("killed :", id)
 	},
 }
 
