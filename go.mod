@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.5
 
 require (
-	github.com/0chain/gosdk v1.18.0-RC4
+	github.com/0chain/gosdk v1.18.0-RC8
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	github.com/0chain/common v1.18.0 // indirect
+	github.com/0chain/common v1.18.1 // indirect
 	github.com/0chain/errors v1.0.3 // indirect
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/Luzifer/go-openssl/v3 v3.1.0 // indirect
