@@ -1,21 +1,14 @@
 package cmd
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/0chain/gosdk/core/client"
-	"github.com/0chain/gosdk/core/conf"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"sync"
-
 	"github.com/0chain/gosdk/core/zcncrypto"
-	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
+	"path/filepath"
 )
 
 var cfgFile string
@@ -87,33 +80,6 @@ func getConfigDir() string {
 	return configDir
 }
 
-func initZCNCore() {
-
-	// set the log file
-	zcncore.SetLogFile("cmdlog.log", !bSilent)
-	//bridge.SetLogFile("bridge.log", !bSilent)
-	sdk.SetLogFile("cmdlog.log", !bSilent)
-
-	blockWorker := cfgConfig.GetString("block_worker")
-	chainID := cfgConfig.GetString("chain_id")
-	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
-
-	cfg := conf.Config{
-		BlockWorker:             blockWorker,
-		SignatureScheme:         signatureScheme,
-		ChainID:                 chainID,
-		MinSubmit:               minSubmit,
-		MinConfirmation:         minCfm,
-		ConfirmationChainLength: CfmChainLength,
-		EthereumNode:            ethereumNodeURL,
-	}
-
-	err := client.Init(context.Background(), cfg)
-	if err != nil {
-		ExitWithError(err.Error())
-	}
-}
-
 func loadConfigs() {
 	cfgConfig = viper.New()
 	cfgNetwork = viper.New()
@@ -165,37 +131,21 @@ var zcncoreIsInitialized bool
 var walletIsLoaded bool
 
 func initCmdContext(cmd *cobra.Command, args []string) {
+	walletString := createAndLoadWallet()
 
 	_, ok := withoutZCNCoreCmds[cmd]
 	if !ok {
-		initZCNCoreContext()
-	}
+		blockWorker := cfgConfig.GetString("block_worker")
+		chainID := cfgConfig.GetString("chain_id")
+		ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 
-	_, ok = withoutWalletCmds[cmd]
-	if !ok {
-		initZwalletContext()
-	}
-
-}
-
-func initZCNCoreContext() {
-	// zcncore is initialized , skip any zcncore checking
-	if !zcncoreIsInitialized {
-		initZCNCore()
-		zcncoreIsInitialized = true
+		if err := client.InitSDK(walletString, blockWorker, chainID, signatureScheme, 0, ethereumNodeURL, false, true, minCfm, minSubmit, CfmChainLength); err != nil {
+			ExitWithError(err.Error())
+		}
 	}
 }
 
-func initZwalletContext() {
-	// create wallet
-	if !walletIsLoaded {
-		createAndLoadWallet()
-		walletIsLoaded = true
-	}
-}
-
-func createAndLoadWallet() {
-
+func createAndLoadWallet() string {
 	_, err := os.Stat(cfgWallet)
 
 	isNewWallet := os.IsNotExist(err)
@@ -212,7 +162,11 @@ func createAndLoadWallet() {
 		}
 	}
 
-	loadWallet()
+	clientBytes, err := os.ReadFile(cfgWallet)
+	if err != nil {
+		ExitWithError("Error reading the wallet", err)
+	}
+	return string(clientBytes)
 }
 
 func createWallet() (string, error) {
@@ -223,32 +177,6 @@ func createWallet() (string, error) {
 
 	fmt.Println("ZCN wallet created!!")
 	return walletStr, nil
-}
-
-func loadWallet() {
-
-	clientBytes, err := ioutil.ReadFile(cfgWallet)
-	if err != nil {
-		ExitWithError("Error reading the wallet", err)
-	}
-	clientConfig = string(clientBytes)
-
-	wallet := zcncrypto.Wallet{}
-	err = json.Unmarshal([]byte(clientConfig), &wallet)
-
-	if err != nil {
-		ExitWithError("Invalid wallet at path:" + cfgWallet)
-	}
-
-	clientWallet = &wallet
-
-	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, signatureScheme, false)
-	if err == nil {
-		wg.Wait()
-	} else {
-		ExitWithError(err.Error())
-	}
 }
 
 func getTxnFee() uint64 {
