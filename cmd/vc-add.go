@@ -2,14 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var providerRegister = &cobra.Command{
@@ -51,46 +47,12 @@ var providerRegister = &cobra.Command{
 			log.Fatalf("unknown provider type: %v", nodeType)
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		hash, _, _, _, err := zcncore.VcRegisterNode(id, pt)
 		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Add(1)
-		err = txn.MinerSCVCAdd(id, pt)
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
+			log.Fatal("Vc register node : ", err)
 		}
 
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Println("vc add: ", id)
-			default:
-				ExitWithError("\nvc add " + id + " failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Println("vc add success with transaction hash : ", hash)
 	},
 }
 

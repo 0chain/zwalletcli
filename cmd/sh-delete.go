@@ -2,13 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var sharderDelete = &cobra.Command{
@@ -31,46 +27,12 @@ var sharderDelete = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var (
-			wg        sync.WaitGroup
-			statusBar = &ZCNStatus{wg: &wg}
-		)
-		txn, err := zcncore.NewTransaction(statusBar, 0, nonce)
+		hash, _, _, _, err := zcncore.DeleteSharder(id)
 		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Add(1)
-		err = txn.MinerSCDeleteSharder(id)
-		if err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
+			log.Fatal("Delete sharder failed : ", err.Error())
 		}
 
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError("\n", strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Println("delete :", id)
-			default:
-				ExitWithError("\ndelete " + id + " failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Println("delete sharder success with transaction hash : ", hash)
 	},
 }
 
