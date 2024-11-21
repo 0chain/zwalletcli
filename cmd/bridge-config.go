@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -9,21 +10,23 @@ import (
 )
 
 var getBridgeConfigCmd = &cobra.Command{
-	Use:   "bridge-config",
-	Short: "Show ZCNBridge configurations.",
-	Long:  `Show ZCNBridge configurations.`,
-	Args:  cobra.MinimumNArgs(0),
+	Use:    "bridge-config",
+	Short:  "Show ZCNBridge configurations.",
+	Long:   `Show ZCNBridge configurations.`,
+	Args:   cobra.MinimumNArgs(0),
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			response = new(zcncore.InputMap)
-			cb       = NewJSONInfoCB(response)
 			err      error
+			res      []byte
 		)
-		if err = zcnbridge.GetGlobalConfig(cb); err != nil {
+		if res, err = zcnbridge.GetGlobalConfig(); err != nil {
 			log.Fatal(err)
 		}
-		if err = cb.Waiting(); err != nil {
+
+		err = json.Unmarshal(res, response)
+		if err != nil {
 			log.Fatal(err)
 		}
 

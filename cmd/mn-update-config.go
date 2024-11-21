@@ -2,23 +2,22 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var updateMinerScConfigCmd = &cobra.Command{
-	Use:   "mn-update-config",
-	Short: "Update the miner smart contract",
-	Long:  `Update the miner smart contract.`,
-	Args:  cobra.MinimumNArgs(0),
+	Use:    "mn-update-config",
+	Short:  "Update the miner smart contract",
+	Long:   `Update the miner smart contract.`,
+	Args:   cobra.MinimumNArgs(0),
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err error
+		var (
+			hash string
+			err  error
+		)
 
 		input := new(zcncore.InputMap)
 		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
@@ -26,45 +25,10 @@ var updateMinerScConfigCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var wg sync.WaitGroup
-		statusBar := &ZCNStatus{wg: &wg}
-		txn, err := zcncore.NewTransaction(statusBar, getTxnFee(), nonce)
-		if err != nil {
+		if hash, _, _, _, err = zcncore.MinerScUpdateConfig(input); err != nil {
 			log.Fatal(err)
 		}
-
-		wg.Add(1)
-		if err = txn.MinerScUpdateConfig(input); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if !statusBar.success {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
-
-		statusBar.success = false
-		wg.Add(1)
-		if err = txn.Verify(); err != nil {
-			log.Fatal(err)
-		}
-		wg.Wait()
-
-		if statusBar.success {
-			//fmt.Printf("\nHash:%v\nNonce:%v\n", txn.GetTransactionHash(), txn.GetTransactionNonce())
-			switch txn.GetVerifyConfirmationStatus() {
-			case zcncore.ChargeableError:
-				ExitWithError(strings.Trim(txn.GetVerifyOutput(), "\""))
-			case zcncore.Success:
-				fmt.Printf("minersc smart contract settings updated\nHash: %v\n", txn.GetTransactionHash())
-			default:
-				ExitWithError("Execute minersc update smart contract failed. Unknown status code: " +
-					strconv.Itoa(int(txn.GetVerifyConfirmationStatus())))
-			}
-			return
-		} else {
-			log.Fatal("fatal:", statusBar.errMsg)
-		}
+		fmt.Printf("minersc smart contract settings updated\nHash: %v\n", hash)
 	},
 }
 

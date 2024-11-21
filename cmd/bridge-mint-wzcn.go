@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcnbridge/wallet"
 	"github.com/0chain/gosdk/zcncore"
 )
 
@@ -28,21 +28,15 @@ func commandMintEth(b *zcnbridge.BridgeClient, args ...*Arg) {
 	}
 
 	var burnTickets []zcncore.BurnTicket
-	cb := wallet.NewZCNStatus(&burnTickets)
 
-	cb.Begin()
-
-	err = zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.String(), cb)
+	res, err := zcncore.GetNotProcessedZCNBurnTickets(b.EthereumAddress, userNonce.String())
 	if err != nil {
 		ExitWithError(err)
 	}
 
-	if err := cb.Wait(); err != nil {
+	err = json.Unmarshal(res, &burnTickets)
+	if err != nil {
 		ExitWithError(err)
-	}
-
-	if !cb.Success {
-		ExitWithError(cb.Err)
 	}
 
 	fmt.Printf("Found %d not processed ZCN burn transactions\n", len(burnTickets))

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/0chain/gosdk/zcnbridge"
@@ -9,10 +10,10 @@ import (
 )
 
 var getAuthorizerConfigCmd = &cobra.Command{
-	Use:   "bridge-auth-config",
-	Short: "Show authorizer configurations.",
-	Long:  `Show authorizer configurations.`,
-	Args:  cobra.MinimumNArgs(0),
+	Use:    "bridge-auth-config",
+	Short:  "Show authorizer configurations.",
+	Long:   `Show authorizer configurations.`,
+	Args:   cobra.MinimumNArgs(0),
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -31,12 +32,14 @@ var getAuthorizerConfigCmd = &cobra.Command{
 
 		var (
 			response = new(zcnbridge.AuthorizerResponse)
-			cb       = NewJSONInfoCB(response)
+			res      []byte
 		)
-		if err = zcnbridge.GetAuthorizer(ID, cb); err != nil {
+		if res, err = zcnbridge.GetAuthorizer(ID); err != nil {
 			log.Fatal(err)
 		}
-		if err = cb.Waiting(); err != nil {
+
+		err = json.Unmarshal(res, response)
+		if err != nil {
 			log.Fatal(err)
 		}
 
