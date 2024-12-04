@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/0chain/gosdk/core/client"
-	"github.com/0chain/gosdk/core/conf"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/0chain/gosdk/core/client"
+	"github.com/0chain/gosdk/core/conf"
 
 	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zboxcore/sdk"
@@ -97,6 +98,7 @@ func initZCNCore() {
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
+	zauthServer := cfgConfig.GetString("zauth_server")
 
 	cfg := conf.Config{
 		BlockWorker:             blockWorker,
@@ -106,6 +108,7 @@ func initZCNCore() {
 		MinConfirmation:         minCfm,
 		ConfirmationChainLength: CfmChainLength,
 		EthereumNode:            ethereumNodeURL,
+		ZauthServer:             zauthServer,
 	}
 
 	err := client.Init(context.Background(), cfg)
@@ -226,7 +229,6 @@ func createWallet() (string, error) {
 }
 
 func loadWallet() {
-
 	clientBytes, err := ioutil.ReadFile(cfgWallet)
 	if err != nil {
 		ExitWithError("Error reading the wallet", err)
@@ -243,11 +245,20 @@ func loadWallet() {
 	clientWallet = &wallet
 
 	wg := &sync.WaitGroup{}
-	err = zcncore.SetWalletInfo(clientConfig, signatureScheme, false)
+	err = zcncore.SetGeneralWalletInfo(clientConfig, signatureScheme)
 	if err == nil {
 		wg.Wait()
 	} else {
 		ExitWithError(err.Error())
+	}
+
+	if client.GetClient().IsSplit {
+		cfg, err := conf.GetClientConfig()
+		if err != nil {
+			ExitWithError(err.Error())
+		}
+
+		zcncore.RegisterZauthServer(cfg.ZauthServer)
 	}
 }
 
