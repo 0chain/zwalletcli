@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk_common/zcnbridge"
 	comm "github.com/ethereum/go-ethereum/common"
 )
 

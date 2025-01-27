@@ -3,9 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcncore"
 	"strconv"
+
+	"github.com/0chain/gosdk_common/zcnbridge"
+	"github.com/0chain/gosdk_common/zcncore"
 )
 
 func init() {

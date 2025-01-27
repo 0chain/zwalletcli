@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/0chain/gosdk/core/transaction"
 	"log"
+
+	"github.com/0chain/gosdk_common/core/transaction"
 
 	"github.com/spf13/cobra"
 )

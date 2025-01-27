@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/core/client"
+
+	"github.com/0chain/gosdk_common/core/client"
 	"github.com/spf13/cobra"
 )
 

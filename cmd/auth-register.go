@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"github.com/0chain/gosdk/core/transaction"
-	"github.com/0chain/gosdk/zcnbridge"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/pkg/errors"
 	"log"
 	"strings"
+
+	"github.com/0chain/gosdk_common/core/transaction"
+	"github.com/0chain/gosdk_common/zcnbridge"
+	"github.com/0chain/gosdk_common/zcncore"
+	"github.com/pkg/errors"
 )
 
 //goland:noinspection ALL

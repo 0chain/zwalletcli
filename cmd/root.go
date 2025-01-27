@@ -9,12 +9,12 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/0chain/gosdk/core/client"
-	"github.com/0chain/gosdk/core/conf"
+	"github.com/0chain/gosdk_common/core/client"
+	"github.com/0chain/gosdk_common/core/conf"
 
-	"github.com/0chain/gosdk/core/zcncrypto"
 	"github.com/0chain/gosdk/zboxcore/sdk"
-	"github.com/0chain/gosdk/zcncore"
+	"github.com/0chain/gosdk_common/core/zcncrypto"
+	"github.com/0chain/gosdk_common/zcncore"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

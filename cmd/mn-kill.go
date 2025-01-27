@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/0chain/gosdk_common/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var minerKill = &cobra.Command{
