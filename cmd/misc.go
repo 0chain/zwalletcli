@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/0chain/gosdk/zboxcore/sdk"
+	"github.com/0chain/gosdk_common/zboxcore/commonsdk"
 	"github.com/0chain/gosdk_common/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
@@ -44,7 +44,7 @@ func byteCountIEC(b int64) string {
 	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
 }
 
-func printBlobberList(nodes []*sdk.Blobber) {
+func printBlobberList(nodes []*commonsdk.Blobber) {
 	fmt.Println("Blobbers:")
 	header := []string{
 		"URL", "ID", "CAP", "R / W PRICE", "DEMAND",
@@ -75,7 +75,7 @@ var getblobberscmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		blobberList, err := sdk.GetBlobbers(!active, false)
+		blobberList, err := commonsdk.GetBlobbers(!active, false)
 		printBlobberList(blobberList)
 	},
 }

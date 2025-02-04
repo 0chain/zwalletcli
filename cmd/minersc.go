@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/0chain/gosdk_common/core/common"
-	"github.com/0chain/gosdk/zboxcore/sdk"
+	"github.com/0chain/gosdk_common/zboxcore/commonsdk"
 	"github.com/0chain/gosdk_common/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
@@ -393,7 +393,7 @@ var spLock = &cobra.Command{
 		var (
 			flags        = cmd.Flags()
 			providerID   string
-			providerType sdk.ProviderType
+			providerType commonsdk.ProviderType
 			tokens       float64
 			fee          float64
 			err          error
@@ -403,13 +403,13 @@ var spLock = &cobra.Command{
 			if providerID, err = flags.GetString("blobber_id"); err != nil {
 				log.Fatalf("invalid 'blobber_id' flag: %v", err)
 			} else {
-				providerType = sdk.ProviderBlobber
+				providerType = commonsdk.ProviderBlobber
 			}
 		} else if flags.Changed("validator_id") {
 			if providerID, err = flags.GetString("validator_id"); err != nil {
 				log.Fatalf("invalid 'validator_id' flag: %v", err)
 			} else {
-				providerType = sdk.ProviderValidator
+				providerType = commonsdk.ProviderValidator
 			}
 		}
 
@@ -436,7 +436,7 @@ var spLock = &cobra.Command{
 		}
 
 		var hash string
-		hash, _, err = sdk.StakePoolLock(providerType, providerID,
+		hash, _, err = commonsdk.StakePoolLock(providerType, providerID,
 			zcncore.ConvertToValue(tokens), zcncore.ConvertToValue(fee))
 		if err != nil {
 			log.Fatalf("Failed to lock tokens in stake pool: %v", err)

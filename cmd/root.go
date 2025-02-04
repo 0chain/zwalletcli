@@ -11,8 +11,8 @@ import (
 
 	"github.com/0chain/gosdk_common/core/client"
 	"github.com/0chain/gosdk_common/core/conf"
+	"github.com/0chain/gosdk_common/zboxcore/commonsdk"
 
-	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk_common/core/zcncrypto"
 	"github.com/0chain/gosdk_common/zcncore"
 	"github.com/spf13/cobra"
@@ -93,7 +93,7 @@ func initZCNCore() {
 	// set the log file
 	zcncore.SetLogFile("cmdlog.log", !bSilent)
 	//bridge.SetLogFile("bridge.log", !bSilent)
-	sdk.SetLogFile("cmdlog.log", !bSilent)
+	commonsdk.SetLogFile("cmdlog.log", !bSilent)
 
 	blockWorker := cfgConfig.GetString("block_worker")
 	chainID := cfgConfig.GetString("chain_id")
