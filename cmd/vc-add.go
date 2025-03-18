@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/0chain/gosdk/zboxcore/sdk"
-	"github.com/0chain/gosdk/zcncore"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/0chain/gosdk_common/zboxcore/commonsdk"
+	"github.com/0chain/gosdk_common/zcncore"
+	"github.com/spf13/cobra"
 )
 
 var providerRegister = &cobra.Command{
@@ -37,12 +38,12 @@ var providerRegister = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		var pt sdk.ProviderType
+		var pt commonsdk.ProviderType
 		switch nodeType {
 		case "miner":
-			pt = sdk.ProviderMiner
+			pt = commonsdk.ProviderMiner
 		case "sharder":
-			pt = sdk.ProviderSharder
+			pt = commonsdk.ProviderSharder
 		default:
 			log.Fatalf("unknown provider type: %v", nodeType)
 		}
