@@ -5,7 +5,7 @@ go 1.22.5
 toolchain go1.23.1
 
 require (
-	github.com/0chain/gosdk_common v0.0.0-20250318121140-c82820c54dea
+	github.com/0chain/gosdk_common v0.0.0-20250318134004-c9cbffc71102
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
