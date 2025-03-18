@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk_common/zcnbridge"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
 )

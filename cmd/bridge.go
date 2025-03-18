@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/0chain/gosdk/core/conf"
-	"github.com/0chain/gosdk/zcnbridge"
+	"github.com/0chain/gosdk_common/core/conf"
+	"github.com/0chain/gosdk_common/zcnbridge"
 	"github.com/spf13/cobra"
 )
 
@@ -274,7 +274,7 @@ func getUint64(args []*Arg, name string) uint64 {
 }
 
 // createCommand Function to initialize bridge commands with DRY principle
-func createCommand(use, short, long string, functor Command, hidden bool, opts ...*Option,) *cobra.Command {
+func createCommand(use, short, long string, functor Command, hidden bool, opts ...*Option) *cobra.Command {
 	fn := func(parameters ...*Arg) {
 		functor(parameters...)
 	}
@@ -332,10 +332,10 @@ func createBridgeComm(
 	hidden bool,
 ) *cobra.Command {
 	var cobraCommand = &cobra.Command{
-		Use:   use,
-		Short: short,
-		Long:  long,
-		Args:  cobra.MinimumNArgs(0),
+		Use:    use,
+		Short:  short,
+		Long:   long,
+		Args:   cobra.MinimumNArgs(0),
 		Hidden: hidden,
 		Run: func(cmd *cobra.Command, args []string) {
 			fflags := cmd.Flags()
