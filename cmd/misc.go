@@ -6,7 +6,6 @@ import (
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/0chain/zwalletcli/util"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 )
 
@@ -72,7 +71,7 @@ var getblobberscmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		active, err := cmd.Flags().GetBool("all")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		blobberList, err := sdk.GetBlobbers(!active, false)
 		printBlobberList(blobberList)

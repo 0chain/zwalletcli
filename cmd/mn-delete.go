@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var minerDelete = &cobra.Command{
@@ -20,16 +19,16 @@ var minerDelete = &cobra.Command{
 		)
 
 		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+			ExitWithError("missing id flag")
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		hash, _, _, _, err := zcncore.DeleteMiner(id)
 		if err != nil {
-			log.Fatal("Delete miner failed : ", err.Error())
+			ExitWithError("Delete miner failed : ", err.Error())
 		}
 
 		fmt.Println("delete miner success with transaction hash : ", hash)

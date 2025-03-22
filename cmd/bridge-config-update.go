@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var updateBridgeGlobalConfigCmd = &cobra.Command{
@@ -22,11 +21,11 @@ var updateBridgeGlobalConfigCmd = &cobra.Command{
 		input := new(zcncore.InputMap)
 		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		if hash, _, _, _, err = zcncore.ZCNSCUpdateGlobalConfig(input); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		fmt.Printf("global settings updated\nHash: %v\n", hash)
 

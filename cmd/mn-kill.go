@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var minerKill = &cobra.Command{
@@ -20,16 +19,16 @@ var minerKill = &cobra.Command{
 		)
 
 		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+			ExitWithError("missing id flag")
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		_, _, _, _, err = zcncore.MinerSCKill(id, zcncore.ProviderMiner)
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		fmt.Println("killed :", id)
 	},

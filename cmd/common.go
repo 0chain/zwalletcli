@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/pflag"
-	"log"
 	"os"
 	"sort"
 	"strings"
@@ -18,13 +17,18 @@ func ExitWithError(v ...interface{}) {
 	os.Exit(1)
 }
 
+func ExitWithErrorf(format string, v ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, v...)
+	os.Exit(1)
+}
+
 func setupInputMap(flags *pflag.FlagSet, sKeys, sValues string) map[string]string {
 	var err error
 	var keys []string
 	if flags.Changed(sKeys) {
 		keys, err = flags.GetStringSlice(sKeys)
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 	}
 
@@ -32,13 +36,13 @@ func setupInputMap(flags *pflag.FlagSet, sKeys, sValues string) map[string]strin
 	if flags.Changed(sValues) {
 		values, err = flags.GetStringSlice(sValues)
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 	}
 
 	input := make(map[string]string)
 	if len(keys) != len(values) {
-		log.Fatal("number " + sKeys + " must equal the number " + sValues)
+		ExitWithError("number " + sKeys + " must equal the number " + sValues)
 	}
 	for i := 0; i < len(keys); i++ {
 		v := strings.TrimSpace(values[i])

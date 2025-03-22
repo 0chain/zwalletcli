@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var updateMinerScConfigCmd = &cobra.Command{
@@ -22,11 +21,11 @@ var updateMinerScConfigCmd = &cobra.Command{
 		input := new(zcncore.InputMap)
 		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		if hash, _, _, _, err = zcncore.MinerScUpdateConfig(input); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		fmt.Printf("minersc smart contract settings updated\nHash: %v\n", hash)
 	},

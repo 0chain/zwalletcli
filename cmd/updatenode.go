@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var minerscUpdateNodeSettings = &cobra.Command{
@@ -23,15 +22,15 @@ var minerscUpdateNodeSettings = &cobra.Command{
 		)
 
 		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+			ExitWithError("missing id flag")
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		if sharder, err = flags.GetBool("sharder"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		miner := &zcncore.MinerSCMinerInfo{
@@ -43,7 +42,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 		if flags.Changed("num_delegates") {
 			numDelegates, err := flags.GetInt("num_delegates")
 			if err != nil {
-				log.Fatal(err)
+				ExitWithError(err)
 			}
 			miner.Settings.NumDelegates = &numDelegates
 		}
@@ -51,7 +50,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 		if flags.Changed("service_charge") {
 			serviceCharge, err := flags.GetFloat64("service_charge")
 			if err != nil {
-				log.Fatal(err)
+				ExitWithError(err)
 			}
 			miner.Settings.ServiceCharge = &serviceCharge
 		}
@@ -62,7 +61,7 @@ var minerscUpdateNodeSettings = &cobra.Command{
 			hash, _, _, _, err = zcncore.MinerSCMinerSettings(miner)
 		}
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		fmt.Printf("settings updated\nHash: %v", hash)

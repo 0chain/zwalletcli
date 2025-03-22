@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var deleteAuthorizerConfigCmd = &cobra.Command{
@@ -26,7 +25,7 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 
 		if flags.Changed(IDFlag) {
 			if ID, err = flags.GetString(IDFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", IDFlag, err)
+				ExitWithErrorf("error in '%s' flag: %v", IDFlag, err)
 			}
 		} else {
 			ExitWithError("Error: id flag is missing")
@@ -36,7 +35,7 @@ var deleteAuthorizerConfigCmd = &cobra.Command{
 			ID: ID,
 		}
 		if hash, _, _, _, err = zcncore.ZCNSCDeleteAuthorizer(payload); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		fmt.Printf("global settings updated\nHash: %v\n", hash)
 	},
