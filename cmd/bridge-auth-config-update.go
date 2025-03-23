@@ -5,7 +5,6 @@ import (
 	"github.com/0chain/gosdk/core/common"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 	"strconv"
 )
 
@@ -34,24 +33,24 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 
 		if flags.Changed(IDFlag) {
 			if ID, err = flags.GetString(IDFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", IDFlag, err)
+				ExitWithErrorf("error in '%s' flag: %v", IDFlag, err)
 			}
 		}
 
 		if flags.Changed(FeeFlag) {
 			if Fee, err = flags.GetString(FeeFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
+				ExitWithErrorf("error in '%s' flag: %v", FeeFlag, err)
 			}
 		}
 
 		FeeBalance, err = strconv.ParseInt(Fee, 10, 64)
 		if err != nil {
-			log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
+			ExitWithErrorf("error in '%s' flag: %v", FeeFlag, err)
 		}
 
 		if flags.Changed(URLFlag) {
 			if URL, err = flags.GetString(URLFlag); err != nil {
-				log.Fatalf("error in '%s' flag: %v", FeeFlag, err)
+				ExitWithErrorf("error in '%s' flag: %v", FeeFlag, err)
 			}
 		}
 
@@ -64,7 +63,7 @@ var updateAuthorizerConfigCmd = &cobra.Command{
 		}
 
 		if hash, _, _, _, err = zcncore.ZCNSCUpdateAuthorizerConfig(node); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		fmt.Printf("global settings updated\nHash: %v\n", hash)
 	},

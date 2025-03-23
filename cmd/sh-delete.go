@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var sharderDelete = &cobra.Command{
@@ -20,16 +19,16 @@ var sharderDelete = &cobra.Command{
 		)
 
 		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+			ExitWithError("missing id flag")
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		hash, _, _, _, err := zcncore.DeleteSharder(id)
 		if err != nil {
-			log.Fatal("Delete sharder failed : ", err.Error())
+			ExitWithError("Delete sharder failed : ", err.Error())
 		}
 
 		fmt.Println("delete sharder success with transaction hash : ", hash)

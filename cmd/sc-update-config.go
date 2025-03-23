@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var updateStoragScConfigCmd = &cobra.Command{
@@ -19,12 +18,12 @@ var updateStoragScConfigCmd = &cobra.Command{
 		input := new(zcncore.InputMap)
 		input.Fields = setupInputMap(cmd.Flags(), "keys", "values")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		hash, _, _, _, err := zcncore.StorageScUpdateConfig(input)
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		fmt.Printf("storagesc smart contract settings updated\nHash: %v\n", hash)

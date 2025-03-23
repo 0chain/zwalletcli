@@ -5,7 +5,6 @@ import (
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var providerRegister = &cobra.Command{
@@ -21,20 +20,20 @@ var providerRegister = &cobra.Command{
 		)
 
 		if !flags.Changed("id") {
-			log.Fatal("missing id flag")
+			ExitWithError("missing id flag")
 		}
 
 		if id, err = flags.GetString("id"); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		if !flags.Changed("provider-type") {
-			log.Fatal("missing provider-type flag")
+			ExitWithError("missing provider-type flag")
 		}
 
 		nodeType, err := flags.GetString("provider-type")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		var pt sdk.ProviderType
@@ -44,12 +43,12 @@ var providerRegister = &cobra.Command{
 		case "sharder":
 			pt = sdk.ProviderSharder
 		default:
-			log.Fatalf("unknown provider type: %v", nodeType)
+			ExitWithErrorf("unknown provider type: %v", nodeType)
 		}
 
 		hash, _, _, _, err := zcncore.VcRegisterNode(id, pt)
 		if err != nil {
-			log.Fatal("Vc register node : ", err)
+			ExitWithError("Vc register node : ", err)
 		}
 
 		fmt.Println("vc add success with transaction hash : ", hash)

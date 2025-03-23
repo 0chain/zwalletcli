@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/0chain/gosdk/zcnbridge"
 	"github.com/0chain/zwalletcli/util"
@@ -23,11 +22,11 @@ var listAuthorizers = &cobra.Command{
 			err      error
 		)
 		if res, err = zcnbridge.GetAuthorizers(true); err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 		err = json.Unmarshal(res, response)
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		if len(response.Nodes) == 0 {

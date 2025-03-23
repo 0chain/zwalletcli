@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/0chain/gosdk/zcncore"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var minerScPayReward = &cobra.Command{
@@ -22,13 +21,13 @@ var minerScPayReward = &cobra.Command{
 		if flags.Changed("provider_id") {
 			providerId, err = flags.GetString("provider_id")
 			if err != nil {
-				log.Fatal(err)
+				ExitWithError(err)
 			}
 		}
 
 		providerName, err := flags.GetString("provider_type")
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		switch providerName {
@@ -39,11 +38,11 @@ var minerScPayReward = &cobra.Command{
 		case "authorizer":
 			hash, _, _, _, err = zcncore.ZCNSCCollectReward(providerId, zcncore.ProviderAuthorizer)
 		default:
-			log.Fatal("unknown provider type")
+			ExitWithError("unknown provider type")
 		}
 
 		if err != nil {
-			log.Fatal(err)
+			ExitWithError(err)
 		}
 
 		fmt.Println("locked with:", hash)
