@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.5
 
 require (
-	github.com/0chain/gosdk v1.19.0-RC2.0.20250117164514-4933fa5602a5
+	github.com/0chain/gosdk v1.20.0
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/icza/bitio v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -54,7 +54,7 @@ require (
 	github.com/hitenjain14/fasthttp v0.0.0-20240916135632-f9303a91736c // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/klauspost/reedsolomon v1.11.8 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
