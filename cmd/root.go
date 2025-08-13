@@ -32,7 +32,6 @@ var nonce int64
 // If the fee is absent/low it is adjusted to the min fee required
 // (acquired from miner) for the transaction to write into blockchain.
 var gTxnFee float64
-
 var clientConfig string
 var minSubmit int
 var minCfm int
@@ -88,68 +87,6 @@ func getConfigDir() string {
 	}
 	configDir = filepath.Join(home, "/.zcn")
 	return configDir
-}
-
-// checkLocalNodes checks if local nodes are reachable
-func checkLocalNodes() bool {
-	localNodes := []string{
-		"http://localhost:7071",
-		"http://localhost:7072",
-		"http://localhost:7073",
-		"http://localhost:7171",
-	}
-
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	for _, node := range localNodes {
-		resp, err := client.Get(node)
-		if err == nil && resp.StatusCode == 200 {
-			fmt.Printf("✓ Local node %s is reachable\n", node)
-			return true
-		}
-	}
-
-	fmt.Println("⚠ No local nodes are reachable")
-	return false
-}
-
-// initLocalClient initializes the client with local nodes only
-func initLocalClient() error {
-	fmt.Println("Initializing client with local nodes only...")
-
-	// Create a minimal configuration for local nodes
-	cfg := conf.Config{
-		BlockWorker:             "http://localhost:7071", // Dummy, won't be used
-		SignatureScheme:         signatureScheme,
-		ChainID:                 "",
-		MinSubmit:               minSubmit,
-		MinConfirmation:         minCfm,
-		ConfirmationChainLength: CfmChainLength,
-		EthereumNode:            "",
-		ZauthServer:             "",
-	}
-
-	// Try to initialize with minimal configuration
-	err := client.Init(context.Background(), cfg)
-	if err != nil {
-		// If the standard initialization fails, try a more direct approach
-		fmt.Println("Standard initialization failed, trying direct node configuration...")
-
-		// Create a configuration that bypasses network discovery
-		cfg.BlockWorker = "http://localhost:7071"
-		cfg.ChainID = "0afc093ffb509f45"
-
-		// Try again with more specific configuration
-		err = client.Init(context.Background(), cfg)
-		if err != nil {
-			return fmt.Errorf("failed to initialize local client: %v", err)
-		}
-	}
-
-	fmt.Println("✓ Local client initialized successfully")
-	return nil
 }
 
 func initZCNCore() {
