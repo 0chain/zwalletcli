@@ -5,14 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches:
-      - master
-      - staging
-      - sprint*
-    tags:
-      - 'v*.*.*'
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build-linux:
