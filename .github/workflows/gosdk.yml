@@ -16,7 +16,7 @@ on:
 
 jobs:
   create-pr:
-    runs-on: [arc-runner]
+    runs-on: [self-hosted, arc-runner]
     steps:
       - name: Setup go 1.21
         uses: actions/setup-go@v5
