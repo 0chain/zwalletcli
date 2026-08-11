@@ -89,7 +89,7 @@ make install
 
 2. Add config yaml at `~/.zcn/config.yaml`
 
-The following script sets `https://demo.zus.network` as your network.
+The following script sets `https://dev.zus.network` as your network.
 
 ```sh
 cat > ~/.zcn/config.yaml << EOF
@@ -329,15 +329,15 @@ Blobbers:
 [
   {
    "id": "2f945f7310689f17afd8c8cb291e1e3ba21677243aa1d404a2293064e7983d60",
-   "url": "https://demo.zus.network/authorizer01/"
+   "url": "https://dev.zus.network/authorizer01/"
   },
   {
    "id": "7b07c0489e2f35d7c13160f4da2866b4aa69aa4e8d2b2cd9c4fc002693dca5d7",
-   "url": "https://demo.zus.network/authorizer02/"
+   "url": "https://dev.zus.network/authorizer02/"
   },
   {
     "id": "896c171639937a647f9e91d5ba676be580f6d2b7e0d708e4fe6ea36610a13ffd",
-    "url": "https://demo.zus.network/authorizer03/"
+    "url": "https://dev.zus.network/authorizer03/"
   }
 ]
 ```
