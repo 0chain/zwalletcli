@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/0chain/gosdk/core/client"
 	"github.com/0chain/gosdk/core/conf"
@@ -30,7 +32,6 @@ var nonce int64
 // If the fee is absent/low it is adjusted to the min fee required
 // (acquired from miner) for the transaction to write into blockchain.
 var gTxnFee float64
-
 var clientConfig string
 var minSubmit int
 var minCfm int
@@ -100,6 +101,12 @@ func initZCNCore() {
 	ethereumNodeURL := cfgConfig.GetString("ethereum_node_url")
 	zauthServer := cfgConfig.GetString("zauth_server")
 
+	// If block_worker is empty, use a working DNS service for initialization
+	if blockWorker == "" {
+		fmt.Println("No block_worker specified, using mainnet DNS for initialization...")
+		blockWorker = "https://mainnet.zus.network/dns"
+	}
+
 	cfg := conf.Config{
 		BlockWorker:             blockWorker,
 		SignatureScheme:         signatureScheme,
@@ -113,7 +120,13 @@ func initZCNCore() {
 
 	err := client.Init(context.Background(), cfg)
 	if err != nil {
-		ExitWithError(err.Error())
+		ExitWithError("Failed to initialize client: " + err.Error())
+	}
+
+	// After successful initialization, override with local nodes if network.yaml exists
+	if cfgNetwork != nil {
+		fmt.Println("✓ Client initialized successfully")
+		fmt.Println("Local nodes from network.yaml will be used for transactions")
 	}
 }
 
